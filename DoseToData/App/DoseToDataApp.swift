@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct DoseToDataApp: App {
     @State private var appState = AppState()
+    @State private var userPreferences = UserPreferences()
 
     let sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -27,6 +28,7 @@ struct DoseToDataApp: App {
         WindowGroup {
             RootView()
                 .environment(appState)
+                .environment(userPreferences)
                 .task {
                     MedicationSeeder.seedIfNeeded(context: sharedModelContainer.mainContext)
                 }
