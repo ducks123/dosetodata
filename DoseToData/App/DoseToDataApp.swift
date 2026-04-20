@@ -15,6 +15,8 @@ struct DoseToDataApp: App {
             SideEffectEntry.self,
             Test.self,
             ScaleResponse.self,
+            DailyCheckIn.self,
+            CustomCheckInQuestion.self,
         ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         do {

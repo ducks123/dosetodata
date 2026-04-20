@@ -5,22 +5,21 @@ struct TodayView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(UserPreferences.self) private var prefs
 
-    @Query(sort: \MoodEntry.date, order: .reverse) private var moodEntries: [MoodEntry]
+    @Query(sort: \DailyCheckIn.date, order: .reverse) private var checkIns: [DailyCheckIn]
     @Query(sort: \Test.startDate, order: .reverse) private var tests: [Test]
     @Query(sort: \UserMedication.startDate, order: .reverse) private var userMedications: [UserMedication]
 
     @State private var showingCheckIn = false
-    @State private var showingSideEffectSheet = false
-    @State private var showingAddMedFlow = false
+    @State private var showingCreateTest = false
 
     private let calendar = Calendar.current
 
-    private var todaysMood: MoodEntry? {
-        moodEntries.first { calendar.isDateInToday($0.date) }
+    private var todaysCheckIn: DailyCheckIn? {
+        checkIns.first { calendar.isDateInToday($0.date) }
     }
 
     private var completedDates: Set<Date> {
-        Set(moodEntries.map { calendar.startOfDay(for: $0.date) })
+        Set(checkIns.map { calendar.startOfDay(for: $0.date) })
     }
 
     private var activeTest: Test? {
@@ -37,21 +36,16 @@ struct TodayView: View {
                 if let activeTest, let startEvent = activeTest.startEvent {
                     activeTestCard(test: activeTest, startEvent: startEvent)
                 }
-                quickActions
+                changesSection
             }
             .padding(20)
         }
         .background(Theme.Palette.background.ignoresSafeArea())
         .sheet(isPresented: $showingCheckIn) {
-            DailyCheckInSheet(existingMood: todaysMood)
+            DailyCheckInSheet()
         }
-        .sheet(isPresented: $showingSideEffectSheet) {
-            SideEffectQuickAddSheet()
-                .presentationDetents([.medium])
-        }
-        .sheet(isPresented: $showingAddMedFlow) {
-            MedEventPlaceholderSheet()
-                .presentationDetents([.medium])
+        .sheet(isPresented: $showingCreateTest) {
+            CreateTestSheet()
         }
     }
 
@@ -79,7 +73,13 @@ struct TodayView: View {
     }
 
     private var isTodayCompleted: Bool {
-        todaysMood != nil
+        todaysCheckIn != nil
+    }
+
+    private var answerCountLabel: String {
+        guard let ci = todaysCheckIn else { return "" }
+        let n = ci.answers.count
+        return "\(n) question\(n == 1 ? "" : "s") logged"
     }
 
     private var checkInCard: some View {
@@ -107,11 +107,15 @@ struct TodayView: View {
             }
 
             Text(isTodayCompleted
-                 ? "Mood: \(todaysMood?.moodScore ?? 0)/10. You can update it anytime before midnight."
-                 : "A quick three-step check-in: mood, side effects, optional note.")
+                 ? "\(answerCountLabel). You can update anytime before midnight."
+                 : "Quick panel: anxiety, happiness, focus, irritability, social, plus anything you add.")
                 .font(Theme.Font.body)
                 .foregroundStyle(Theme.Palette.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
+
+            if let ci = todaysCheckIn, !ci.answers.isEmpty {
+                summaryChips(for: ci)
+            }
 
             Button {
                 showingCheckIn = true
@@ -129,6 +133,33 @@ struct TodayView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Theme.Palette.heroAccent)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
+    }
+
+    private func summaryChips(for ci: DailyCheckIn) -> some View {
+        FlowLayout(spacing: 6) {
+            ForEach(ci.answers, id: \.self) { answer in
+                if let level = answer.checkInLevel {
+                    HStack(spacing: 4) {
+                        Text(shortLabel(for: answer.questionKey))
+                            .font(.system(size: 11, weight: .semibold))
+                        Text(level.displayName.lowercased())
+                            .font(.system(size: 11, weight: .regular))
+                            .foregroundStyle(Theme.Palette.textSecondary)
+                    }
+                    .padding(.vertical, 4)
+                    .padding(.horizontal, 8)
+                    .background(Color.white)
+                    .clipShape(Capsule())
+                }
+            }
+        }
+    }
+
+    private func shortLabel(for key: String) -> String {
+        if let std = StandardCheckInQuestion(rawValue: key) {
+            return std.shortLabel
+        }
+        return "Custom"
     }
 
     private func activeTestCard(test: Test, startEvent: MedEvent) -> some View {
@@ -168,33 +199,26 @@ struct TodayView: View {
         .cardStyle()
     }
 
-    private var quickActions: some View {
+    private var changesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Quick log")
+            Text("Medication changes")
                 .font(Theme.Font.caption)
                 .foregroundStyle(Theme.Palette.textSecondary)
                 .padding(.leading, 4)
-            QuickActionRow(
-                icon: "exclamationmark.triangle.fill",
-                iconColor: Theme.Palette.negative,
-                title: "Add a side effect",
-                subtitle: "Headache, appetite loss, anything you've noticed"
-            ) {
-                showingSideEffectSheet = true
-            }
-            QuickActionRow(
-                icon: "pill.fill",
+
+            ActionRow(
+                icon: "flask.fill",
                 iconColor: Theme.Palette.primary,
-                title: "Log a medication change",
-                subtitle: userMedications.isEmpty ? "Started something new? Add it here" : "Started, stopped, or changed a dose"
+                title: "Create a test",
+                subtitle: "Add or change a med for a set period, then compare that window to your baseline."
             ) {
-                showingAddMedFlow = true
+                showingCreateTest = true
             }
         }
     }
 }
 
-private struct QuickActionRow: View {
+private struct ActionRow: View {
     let icon: String
     let iconColor: Color
     let title: String
@@ -219,7 +243,8 @@ private struct QuickActionRow: View {
                     Text(subtitle)
                         .font(Theme.Font.caption)
                         .foregroundStyle(Theme.Palette.textSecondary)
-                        .lineLimit(1)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
                 Image(systemName: "chevron.right")
@@ -237,38 +262,5 @@ private struct QuickActionRow: View {
             )
         }
         .buttonStyle(.plain)
-    }
-}
-
-private struct MedEventPlaceholderSheet: View {
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationStack {
-            VStack(alignment: .leading, spacing: 14) {
-                Text("Medication changes")
-                    .font(Theme.Font.sectionTitle)
-                Text("Phase 2 lands the full \"started / stopped / changed dose / missed\" flow plus the optional test toggle. For now you can add your current medications under Settings → My Medications.")
-                    .font(Theme.Font.body)
-                    .foregroundStyle(Theme.Palette.textSecondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Spacer()
-                Button {
-                    dismiss()
-                } label: {
-                    Text("Got it")
-                }
-                .buttonStyle(PrimaryButtonStyle())
-            }
-            .padding(24)
-            .background(Theme.Palette.background)
-            .navigationTitle("Coming soon")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Close") { dismiss() }
-                }
-            }
-        }
     }
 }
