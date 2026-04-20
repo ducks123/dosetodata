@@ -4,7 +4,7 @@ struct MainTabView: View {
     @State private var selectedTab: Tab = .today
 
     enum Tab: Hashable {
-        case today, timeline, history, settings
+        case today, schedule, timeline, history, settings
     }
 
     var body: some View {
@@ -14,6 +14,12 @@ struct MainTabView: View {
                     Label("Today", systemImage: "sun.max.fill")
                 }
                 .tag(Tab.today)
+
+            ScheduleView()
+                .tabItem {
+                    Label("Schedule", systemImage: "calendar")
+                }
+                .tag(Tab.schedule)
 
             TimelinePlaceholderView()
                 .tabItem {

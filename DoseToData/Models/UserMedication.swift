@@ -10,6 +10,7 @@ final class UserMedication {
     var endDate: Date?
     var schedule: String?
     var notes: String?
+    var scheduledTimes: [String] = []
 
     @Relationship(deleteRule: .cascade, inverse: \MedEvent.userMedication)
     var events: [MedEvent] = []
@@ -21,7 +22,8 @@ final class UserMedication {
         startDate: Date,
         endDate: Date? = nil,
         schedule: String? = nil,
-        notes: String? = nil
+        notes: String? = nil,
+        scheduledTimes: [String] = []
     ) {
         self.id = id
         self.medication = medication
@@ -30,5 +32,6 @@ final class UserMedication {
         self.endDate = endDate
         self.schedule = schedule
         self.notes = notes
+        self.scheduledTimes = scheduledTimes
     }
 }

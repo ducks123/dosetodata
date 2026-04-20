@@ -9,16 +9,18 @@ struct TodayView: View {
     @Query(sort: \Test.startDate, order: .reverse) private var tests: [Test]
     @Query(sort: \UserMedication.startDate, order: .reverse) private var userMedications: [UserMedication]
 
-    @State private var pendingMood: Double = 7
+    @State private var showingCheckIn = false
     @State private var showingSideEffectSheet = false
-    @State private var showingNoteSheet = false
     @State private var showingAddMedFlow = false
-    @State private var moodJustLogged = false
 
     private let calendar = Calendar.current
 
     private var todaysMood: MoodEntry? {
         moodEntries.first { calendar.isDateInToday($0.date) }
+    }
+
+    private var completedDates: Set<Date> {
+        Set(moodEntries.map { calendar.startOfDay(for: $0.date) })
     }
 
     private var activeTest: Test? {
@@ -29,7 +31,9 @@ struct TodayView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 headerSection
-                moodCard
+                WeekStrip(completedDates: completedDates, today: Date())
+                    .padding(.horizontal, 4)
+                checkInCard
                 if let activeTest, let startEvent = activeTest.startEvent {
                     activeTestCard(test: activeTest, startEvent: startEvent)
                 }
@@ -38,18 +42,16 @@ struct TodayView: View {
             .padding(20)
         }
         .background(Theme.Palette.background.ignoresSafeArea())
+        .sheet(isPresented: $showingCheckIn) {
+            DailyCheckInSheet(existingMood: todaysMood)
+        }
         .sheet(isPresented: $showingSideEffectSheet) {
             SideEffectQuickAddSheet()
                 .presentationDetents([.medium])
         }
-        .sheet(isPresented: $showingNoteSheet) {
-            MoodNoteSheet(mood: todaysMood)
+        .sheet(isPresented: $showingAddMedFlow) {
+            MedEventPlaceholderSheet()
                 .presentationDetents([.medium])
-        }
-        .onAppear {
-            if let todaysMood {
-                pendingMood = Double(todaysMood.moodScore)
-            }
         }
     }
 
@@ -76,75 +78,57 @@ struct TodayView: View {
         return name.isEmpty ? base : "\(base), \(name)"
     }
 
-    private var moodCard: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
+    private var isTodayCompleted: Bool {
+        todaysMood != nil
+    }
+
+    private var checkInCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Today's check-in")
                         .font(Theme.Font.heroLabel)
                         .foregroundStyle(Theme.Palette.textSecondary)
-                    Text(moodHeadline)
+                    Text(isTodayCompleted ? "You're logged for today" : "How are you today?")
                         .font(Theme.Font.hero)
                         .foregroundStyle(Theme.Palette.textPrimary)
                 }
                 Spacer(minLength: 0)
-            }
-
-            Text(moodSubline)
-                .font(Theme.Font.body)
-                .foregroundStyle(Theme.Palette.textSecondary)
-
-            HStack(spacing: 8) {
-                Text("\(Int(pendingMood))")
-                    .font(.system(size: 46, weight: .bold))
-                    .foregroundStyle(Theme.Palette.primary)
-                    .contentTransition(.numericText())
-                    .animation(.snappy, value: pendingMood)
-                Text("/ 10")
-                    .font(Theme.Font.body)
-                    .foregroundStyle(Theme.Palette.textSecondary)
-            }
-
-            Slider(value: $pendingMood, in: 1...10, step: 1)
-                .tint(Theme.Palette.primary)
-
-            HStack(spacing: 10) {
-                Button {
-                    commitMood()
-                } label: {
-                    HStack(spacing: 6) {
-                        if moodJustLogged {
-                            Image(systemName: "checkmark.circle.fill")
-                        }
-                        Text(todaysMood == nil ? "Log mood" : "Update mood")
+                if isTodayCompleted {
+                    ZStack {
+                        Circle()
+                            .fill(Theme.Palette.success)
+                            .frame(width: 40, height: 40)
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(.white)
                     }
                 }
-                .buttonStyle(PrimaryButtonStyle(fullWidth: false))
-
-                Button {
-                    showingNoteSheet = true
-                } label: {
-                    Text(todaysMood?.note?.isEmpty == false ? "Edit note" : "Add a note")
-                }
-                .buttonStyle(SecondaryButtonStyle())
             }
+
+            Text(isTodayCompleted
+                 ? "Mood: \(todaysMood?.moodScore ?? 0)/10. You can update it anytime before midnight."
+                 : "A quick three-step check-in: mood, side effects, optional note.")
+                .font(Theme.Font.body)
+                .foregroundStyle(Theme.Palette.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Button {
+                showingCheckIn = true
+            } label: {
+                HStack(spacing: 8) {
+                    if isTodayCompleted {
+                        Image(systemName: "checkmark.circle.fill")
+                    }
+                    Text(isTodayCompleted ? "Completed — tap to update" : "Complete today's check-in")
+                }
+            }
+            .buttonStyle(PrimaryButtonStyle())
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Theme.Palette.heroAccent)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
-    }
-
-    private var moodHeadline: String {
-        guard todaysMood != nil else { return "How are you today?" }
-        return "Logged for today"
-    }
-
-    private var moodSubline: String {
-        if todaysMood != nil {
-            return "You can change your score or add a note anytime before midnight."
-        }
-        return "One tap. No clinical jargon. Slide and hit log."
     }
 
     private func activeTestCard(test: Test, startEvent: MedEvent) -> some View {
@@ -207,26 +191,6 @@ struct TodayView: View {
                 showingAddMedFlow = true
             }
         }
-        .sheet(isPresented: $showingAddMedFlow) {
-            MedEventPlaceholderSheet()
-                .presentationDetents([.medium])
-        }
-    }
-
-    private func commitMood() {
-        let score = Int(pendingMood)
-        if let existing = todaysMood {
-            existing.moodScore = score
-            existing.date = Date()
-        } else {
-            let entry = MoodEntry(moodScore: score)
-            modelContext.insert(entry)
-        }
-        try? modelContext.save()
-        withAnimation { moodJustLogged = true }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            withAnimation { moodJustLogged = false }
-        }
     }
 }
 
@@ -273,63 +237,6 @@ private struct QuickActionRow: View {
             )
         }
         .buttonStyle(.plain)
-    }
-}
-
-private struct MoodNoteSheet: View {
-    let mood: MoodEntry?
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
-    @State private var note: String = ""
-
-    var body: some View {
-        NavigationStack {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("A quick note")
-                    .font(Theme.Font.sectionTitle)
-                Text("What's on your mind today? One or two sentences is plenty.")
-                    .font(Theme.Font.body)
-                    .foregroundStyle(Theme.Palette.textSecondary)
-                TextEditor(text: $note)
-                    .padding(8)
-                    .frame(minHeight: 150)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
-                            .stroke(Theme.Palette.divider, lineWidth: 1)
-                    )
-                Button {
-                    save()
-                } label: {
-                    Text("Save")
-                }
-                .buttonStyle(PrimaryButtonStyle())
-            }
-            .padding(20)
-            .background(Theme.Palette.background)
-            .navigationTitle("Note")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") { dismiss() }
-                }
-            }
-            .onAppear {
-                note = mood?.note ?? ""
-            }
-        }
-    }
-
-    private func save() {
-        if let mood {
-            mood.note = note.isEmpty ? nil : note
-        } else {
-            let entry = MoodEntry(moodScore: 7, note: note.isEmpty ? nil : note)
-            modelContext.insert(entry)
-        }
-        try? modelContext.save()
-        dismiss()
     }
 }
 
