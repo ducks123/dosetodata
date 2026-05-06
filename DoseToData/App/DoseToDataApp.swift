@@ -30,13 +30,21 @@ struct DoseToDataApp: App {
             // Migration failure — wipe the store and start fresh rather than crashing.
             // This is acceptable during beta; user data for this session is lost but
             // the app no longer hard-crashes on schema changes.
-            let storeURL = URL.applicationSupportDirectory.appending(path: "default.store")
-            for ext in ["", ".wal", "-wal", ".shm", "-shm"] {
-                let url = storeURL.appendingPathExtension(ext.isEmpty ? "" : ext).standardized
-                try? FileManager.default.removeItem(at: url)
+            //
+            // SQLite names its WAL/SHM journal files as "default.store-wal" and
+            // "default.store-shm" (hyphen suffix, NOT a file extension). We enumerate
+            // the Application Support directory and remove every file whose name starts
+            // with "default.store" so orphaned journal files don't block the fresh store.
+            let appSupportURL = FileManager.default
+                .urls(for: .applicationSupportDirectory, in: .userDomainMask)
+                .first ?? URL.applicationSupportDirectory
+            if let contents = try? FileManager.default.contentsOfDirectory(
+                at: appSupportURL, includingPropertiesForKeys: nil
+            ) {
+                for url in contents where url.lastPathComponent.hasPrefix("default.store") {
+                    try? FileManager.default.removeItem(at: url)
+                }
             }
-            // Also try without extension in case the filename is different
-            try? FileManager.default.removeItem(at: storeURL)
             do {
                 return try ModelContainer(for: schema, configurations: [config])
             } catch {
