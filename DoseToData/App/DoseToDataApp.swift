@@ -27,29 +27,41 @@ struct DoseToDataApp: App {
         do {
             return try ModelContainer(for: schema, configurations: [config])
         } catch {
-            // Migration failure — wipe the store and start fresh rather than crashing.
-            // This is acceptable during beta; user data for this session is lost but
-            // the app no longer hard-crashes on schema changes.
-            //
-            // SQLite names its WAL/SHM journal files as "default.store-wal" and
-            // "default.store-shm" (hyphen suffix, NOT a file extension). We enumerate
-            // the Application Support directory and remove every file whose name starts
-            // with "default.store" so orphaned journal files don't block the fresh store.
-            let appSupportURL = FileManager.default
-                .urls(for: .applicationSupportDirectory, in: .userDomainMask)
-                .first ?? URL.applicationSupportDirectory
-            if let contents = try? FileManager.default.contentsOfDirectory(
-                at: appSupportURL, includingPropertiesForKeys: nil
-            ) {
-                for url in contents where url.lastPathComponent.hasPrefix("default.store") {
-                    try? FileManager.default.removeItem(at: url)
+            // Migration failure — wipe every possible SwiftData store location and
+            // try again. SwiftData can place the store in Application Support or
+            // Documents depending on the iOS version; we sweep both. SQLite WAL/SHM
+            // journal files use a hyphen suffix (default.store-wal, default.store-shm),
+            // NOT a dotted extension, so we match by prefix.
+            let fm = FileManager.default
+            let searchDirs: [URL] = [
+                fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first,
+                fm.urls(for: .documentDirectory, in: .userDomainMask).first,
+            ].compactMap { $0 }
+
+            for dir in searchDirs {
+                guard let contents = try? fm.contentsOfDirectory(
+                    at: dir, includingPropertiesForKeys: nil
+                ) else { continue }
+                for url in contents where
+                    url.lastPathComponent.hasPrefix("default.store") ||
+                    url.lastPathComponent.hasSuffix(".sqlite") ||
+                    url.lastPathComponent.hasSuffix(".sqlite-wal") ||
+                    url.lastPathComponent.hasSuffix(".sqlite-shm") {
+                    try? fm.removeItem(at: url)
                 }
             }
-            do {
-                return try ModelContainer(for: schema, configurations: [config])
-            } catch {
-                fatalError("Could not create ModelContainer even after reset: \(error)")
+
+            // Retry persistent store after cleanup.
+            if let container = try? ModelContainer(for: schema, configurations: [config]) {
+                return container
             }
+            // Last resort: in-memory store so the app always opens.
+            // Data won't persist this session but there's no crash.
+            let memConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+            if let memContainer = try? ModelContainer(for: schema, configurations: [memConfig]) {
+                return memContainer
+            }
+            fatalError("Could not create any ModelContainer: \(error)")
         }
     }()
 
