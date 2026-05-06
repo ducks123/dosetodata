@@ -4,17 +4,30 @@ import SwiftData
 struct DailyCheckInSheet: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppState.self) private var appState
 
     @Query(sort: \UserMedication.startDate, order: .reverse) private var userMedications: [UserMedication]
     @Query(sort: \CustomCheckInQuestion.createdAt) private var customQuestions: [CustomCheckInQuestion]
     @Query(sort: \DailyCheckIn.date, order: .reverse) private var allCheckIns: [DailyCheckIn]
+    @Query(sort: \Test.startDate, order: .reverse) private var tests: [Test]
+    @Query private var adherenceLogs: [MedAdherenceLog]
+
+    let targetDate: Date
+
+    init(targetDate: Date = Date()) {
+        self.targetDate = targetDate
+    }
 
     @State private var answers: [String: CheckInLevel] = [:]
+    /// Free-form answers keyed by question storage key (for open-ended custom questions).
+    @State private var textAnswers: [String: String] = [:]
     @State private var sideEffectsToday: [PendingSideEffect] = []
     @State private var note: String = ""
     @State private var showingAddQuestion = false
-    @State private var newQuestionPrompt: String = ""
     @State private var showingAddSideEffect = false
+    @State private var saveError: String? = nil
+    /// UserMedication IDs the user has marked as skipped for this day.
+    @State private var skippedMedIDs: Set<UUID> = []
 
     struct PendingSideEffect: Identifiable, Hashable {
         let id = UUID()
@@ -24,8 +37,10 @@ struct DailyCheckInSheet: View {
 
     private let calendar = Calendar.current
 
+    private var isToday: Bool { calendar.isDateInToday(targetDate) }
+
     private var existingCheckIn: DailyCheckIn? {
-        allCheckIns.first { calendar.isDateInToday($0.date) }
+        allCheckIns.first { calendar.isDate($0.date, inSameDayAs: targetDate) }
     }
 
     var body: some View {
@@ -33,6 +48,9 @@ struct DailyCheckInSheet: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     header
+                    if !scheduledMedsForDate.isEmpty {
+                        medStatusSection
+                    }
                     standardQuestionsSection
                     customQuestionsSection
                     sideEffectsSection
@@ -42,20 +60,11 @@ struct DailyCheckInSheet: View {
                 .padding(.bottom, 100)
             }
             .background(Theme.Palette.background)
-            .navigationTitle("Today's check-in")
+            .navigationTitle(isToday ? "Today's check-in" : "Check-in")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Close") { dismiss() }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        finish()
-                    } label: {
-                        Text(existingCheckIn == nil ? "Complete" : "Update")
-                            .fontWeight(.semibold)
-                    }
-                    .disabled(answers.isEmpty)
                 }
             }
             .safeAreaInset(edge: .bottom) {
@@ -68,8 +77,8 @@ struct DailyCheckInSheet: View {
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
                 .background(Theme.Palette.background.opacity(0.96))
-                .disabled(answers.isEmpty)
-                .opacity(answers.isEmpty ? 0.5 : 1)
+                .disabled(!hasAnyAnswer)
+                .opacity(hasAnyAnswer ? 1 : 0.5)
             }
         }
         .sheet(isPresented: $showingAddSideEffect) {
@@ -78,32 +87,184 @@ struct DailyCheckInSheet: View {
             }
             .presentationDetents([.medium])
         }
-        .alert("Add a question", isPresented: $showingAddQuestion) {
-            TextField("e.g. How's your sleep?", text: $newQuestionPrompt)
-            Button("Cancel", role: .cancel) { newQuestionPrompt = "" }
-            Button("Add") { addCustomQuestion() }
+        .alert("Something went wrong", isPresented: Binding(
+            get: { saveError != nil },
+            set: { if !$0 { saveError = nil } }
+        )) {
+            Button("OK", role: .cancel) { saveError = nil }
         } message: {
-            Text("This question will appear in every future check-in.")
+            Text(saveError ?? "")
+        }
+        .sheet(isPresented: $showingAddQuestion) {
+            AddCustomQuestionSheet { prompt, kind, leftAnchor, rightAnchor in
+                let q = CustomCheckInQuestion(
+                    prompt: prompt,
+                    kind: kind,
+                    leftAnchor: leftAnchor,
+                    rightAnchor: rightAnchor
+                )
+                modelContext.insert(q)
+                try? modelContext.save()
+            }
+            .presentationDetents([.large])
         }
         .onAppear {
             if let existing = existingCheckIn {
                 for answer in existing.answers {
                     if let level = answer.checkInLevel {
                         answers[answer.questionKey] = level
+                    } else if let text = answer.text, !text.isEmpty {
+                        textAnswers[answer.questionKey] = text
                     }
                 }
                 note = existing.note ?? ""
             }
+            // Pre-fill med status from any notification quick-actions taken earlier.
+            if let log = existingAdherenceLog {
+                skippedMedIDs = Set(log.skippedMedIDs)
+            }
         }
+    }
+
+    /// True when the user has entered *anything* — a scale answer or a non-empty
+    /// text answer. Either counts as "logged for today".
+    private var hasAnyAnswer: Bool {
+        !answers.isEmpty || textAnswers.values.contains { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
     }
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(Date().formatted(.dateTime.weekday(.wide).month().day()))
+            Text(targetDate.formatted(.dateTime.weekday(.wide).month().day()))
                 .font(Theme.Font.heroLabel)
                 .foregroundStyle(Theme.Palette.textSecondary)
-            Text(existingCheckIn == nil ? "How was today?" : "Updating today's check-in")
+            Text(headerTitle)
                 .font(Theme.Font.hero)
+        }
+    }
+
+    private var headerTitle: String {
+        if existingCheckIn == nil {
+            return isToday ? "How was today?" : "How was this day?"
+        }
+        return isToday ? "Updating today's check-in" : "Updating check-in"
+    }
+
+    // MARK: - Medication status
+
+    /// Active meds scheduled on the weekday of targetDate.
+    private var scheduledMedsForDate: [UserMedication] {
+        let weekday = calendar.component(.weekday, from: targetDate)
+        return userMedications.filter { med in
+            let startOK = calendar.startOfDay(for: med.startDate) <= calendar.startOfDay(for: targetDate)
+            let endOK   = med.endDate.map { calendar.startOfDay(for: $0) >= calendar.startOfDay(for: targetDate) } ?? true
+            guard startOK && endOK else { return false }
+            let days = med.scheduledDays.isEmpty ? [1,2,3,4,5,6,7] : med.scheduledDays
+            return days.contains(weekday)
+        }
+    }
+
+    private var existingAdherenceLog: MedAdherenceLog? {
+        adherenceLogs.first { calendar.isDate($0.date, inSameDayAs: targetDate) }
+    }
+
+    private var medStatusSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Medications today")
+                .font(Theme.Font.caption)
+                .foregroundStyle(Theme.Palette.textSecondary)
+                .padding(.leading, 4)
+
+            VStack(spacing: 0) {
+                // "Took everything" quick row
+                Button {
+                    skippedMedIDs.removeAll()
+                } label: {
+                    HStack(spacing: 12) {
+                        ZStack {
+                            Circle()
+                                .fill(skippedMedIDs.isEmpty
+                                      ? Theme.Palette.success
+                                      : Theme.Palette.primary.opacity(0.10))
+                                .frame(width: 32, height: 32)
+                            Image(systemName: skippedMedIDs.isEmpty ? "checkmark" : "pills.fill")
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundStyle(skippedMedIDs.isEmpty ? Color.white : Theme.Palette.primary)
+                        }
+                        Text("Took everything")
+                            .font(Theme.Font.bodyEmphasis)
+                            .foregroundStyle(Theme.Palette.textPrimary)
+                        Spacer()
+                        if skippedMedIDs.isEmpty {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(Theme.Palette.success)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(Color.white)
+                }
+                .buttonStyle(.plain)
+
+                Divider().padding(.leading, 60)
+
+                // Individual med rows — tap to mark as skipped / restore
+                ForEach(scheduledMedsForDate) { med in
+                    let isSkipped = skippedMedIDs.contains(med.id)
+                    Button {
+                        if isSkipped {
+                            skippedMedIDs.remove(med.id)
+                        } else {
+                            skippedMedIDs.insert(med.id)
+                        }
+                    } label: {
+                        HStack(spacing: 12) {
+                            ZStack {
+                                Circle()
+                                    .fill(isSkipped
+                                          ? Theme.Palette.attention.opacity(0.15)
+                                          : med.scheduleColor)
+                                    .frame(width: 32, height: 32)
+                                Image(systemName: med.medication.category.iconSystemName)
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(isSkipped
+                                                     ? Theme.Palette.attention
+                                                     : Theme.Palette.primary)
+                            }
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(med.medication.brandName)
+                                    .font(Theme.Font.bodyEmphasis)
+                                    .foregroundStyle(isSkipped
+                                                     ? Theme.Palette.textSecondary
+                                                     : Theme.Palette.textPrimary)
+                                    .strikethrough(isSkipped, color: Theme.Palette.textSecondary)
+                                Text(isSkipped ? "Didn't take" : med.currentDose)
+                                    .font(Theme.Font.caption)
+                                    .foregroundStyle(isSkipped
+                                                     ? Theme.Palette.attention
+                                                     : Theme.Palette.textSecondary)
+                            }
+                            Spacer()
+                            Image(systemName: isSkipped
+                                  ? "xmark.circle.fill"
+                                  : "checkmark.circle.fill")
+                                .foregroundStyle(isSkipped
+                                                 ? Theme.Palette.attention
+                                                 : Theme.Palette.success)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(Color.white)
+                    }
+                    .buttonStyle(.plain)
+
+                    if med.id != scheduledMedsForDate.last?.id {
+                        Divider().padding(.leading, 60)
+                    }
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
+            .shadow(color: Theme.cardShadow.color, radius: Theme.cardShadow.radius,
+                    x: Theme.cardShadow.x, y: Theme.cardShadow.y)
         }
     }
 
@@ -111,7 +272,9 @@ struct DailyCheckInSheet: View {
         VStack(spacing: 12) {
             ForEach(StandardCheckInQuestion.allCases) { question in
                 QuestionCard(
-                    prompt: question.prompt,
+                    prompt: question.config.question,
+                    leftAnchor: question.config.leftAnchor,
+                    rightAnchor: question.config.rightAnchor,
                     selected: answers[question.rawValue]
                 ) { level in
                     answers[question.rawValue] = level
@@ -120,24 +283,55 @@ struct DailyCheckInSheet: View {
         }
     }
 
+    private var visibleCustomQuestions: [CustomCheckInQuestion] {
+        customQuestions.filter { q in
+            guard let testID = q.testID else { return true }
+            guard let test = tests.first(where: { $0.id == testID }) else { return false }
+            let day = calendar.startOfDay(for: targetDate)
+            let start = calendar.startOfDay(for: test.startDate)
+            let end = test.actualEndDate ?? test.plannedEndDate ?? Date.distantFuture
+            return day >= start && day <= calendar.startOfDay(for: end)
+        }
+    }
+
     private var customQuestionsSection: some View {
         VStack(spacing: 12) {
-            ForEach(customQuestions) { question in
-                QuestionCard(
-                    prompt: question.prompt,
-                    selected: answers[question.storageKey],
-                    onDelete: {
-                        answers.removeValue(forKey: question.storageKey)
-                        modelContext.delete(question)
-                        try? modelContext.save()
+            ForEach(visibleCustomQuestions) { question in
+                switch question.kind {
+                case .scale:
+                    // Custom scale questions now carry their own anchor labels (set in
+                    // AddCustomQuestionSheet). Pre-migration rows have nil anchors, in
+                    // which case the card simply omits the anchor row.
+                    QuestionCard(
+                        prompt: question.prompt,
+                        leftAnchor: question.leftAnchor,
+                        rightAnchor: question.rightAnchor,
+                        selected: answers[question.storageKey],
+                        onDelete: {
+                            answers.removeValue(forKey: question.storageKey)
+                            modelContext.delete(question)
+                            try? modelContext.save()
+                        }
+                    ) { level in
+                        answers[question.storageKey] = level
                     }
-                ) { level in
-                    answers[question.storageKey] = level
+                case .text:
+                    TextQuestionCard(
+                        prompt: question.prompt,
+                        text: Binding(
+                            get: { textAnswers[question.storageKey] ?? "" },
+                            set: { textAnswers[question.storageKey] = $0 }
+                        ),
+                        onDelete: {
+                            textAnswers.removeValue(forKey: question.storageKey)
+                            modelContext.delete(question)
+                            try? modelContext.save()
+                        }
+                    )
                 }
             }
 
             Button {
-                newQuestionPrompt = ""
                 showingAddQuestion = true
             } label: {
                 HStack {
@@ -222,7 +416,7 @@ struct DailyCheckInSheet: View {
 
     private var noteSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Note (optional)")
+            Text("Anything else? (optional)")
                 .font(Theme.Font.caption)
                 .foregroundStyle(Theme.Palette.textSecondary)
                 .padding(.leading, 4)
@@ -238,27 +432,24 @@ struct DailyCheckInSheet: View {
         }
     }
 
-    private func addCustomQuestion() {
-        let trimmed = newQuestionPrompt.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-        let q = CustomCheckInQuestion(prompt: trimmed)
-        modelContext.insert(q)
-        try? modelContext.save()
-        newQuestionPrompt = ""
-    }
-
     private func finish() {
-        let encodedAnswers = answers.map { (key, level) in
-            CheckInAnswer(questionKey: key, level: level.rawValue)
+        let scaleEncoded = answers.map { (key, level) in
+            CheckInAnswer.scale(questionKey: key, level: level)
         }
+        let textEncoded = textAnswers.compactMap { (key, text) -> CheckInAnswer? in
+            let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { return nil }
+            return CheckInAnswer.text(questionKey: key, text: trimmed)
+        }
+        let encodedAnswers = scaleEncoded + textEncoded
 
         if let existing = existingCheckIn {
             existing.answers = encodedAnswers
             existing.note = note.isEmpty ? nil : note
-            existing.date = Date()
         } else {
+            let savedDate: Date = isToday ? Date() : calendar.startOfDay(for: targetDate)
             let ci = DailyCheckIn(
-                date: Date(),
+                date: savedDate,
                 answers: encodedAnswers,
                 note: note.isEmpty ? nil : note
             )
@@ -270,13 +461,50 @@ struct DailyCheckInSheet: View {
             modelContext.insert(entry)
         }
 
-        try? modelContext.save()
+        // Persist med adherence for this day.
+        if !scheduledMedsForDate.isEmpty {
+            let takenIDs = scheduledMedsForDate.map(\.id).filter { !skippedMedIDs.contains($0) }
+            if let log = existingAdherenceLog {
+                log.takenMedIDs = takenIDs
+                log.skippedMedIDs = Array(skippedMedIDs)
+            } else {
+                let log = MedAdherenceLog(date: targetDate)
+                log.takenMedIDs = takenIDs
+                log.skippedMedIDs = Array(skippedMedIDs)
+                modelContext.insert(log)
+            }
+        }
+
+        do {
+            try modelContext.save()
+        } catch {
+            saveError = "Couldn't save your check-in. Please try again."
+            return
+        }
+
+        // Only celebrate when the user is logging *today*. Editing a past day shouldn't fire confetti.
+        if isToday {
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            appState.confettiTrigger = UUID()
+
+            // Streak milestone check
+            let dates = allCheckIns.map { $0.date } + [Date()]
+            let streak = AppState.currentStreak(from: dates)
+            Task {
+                await ReminderManager.shared.fireMilestoneNotificationIfNeeded(streak: streak)
+            }
+        }
+
         dismiss()
     }
 }
 
 private struct QuestionCard: View {
     let prompt: String
+    /// Label shown under value 1. Represents the "harder / more symptomatic" end.
+    let leftAnchor: String?
+    /// Label shown under value 5. Represents the "easier / better" end.
+    let rightAnchor: String?
     let selected: CheckInLevel?
     var onDelete: (() -> Void)? = nil
     let onSelect: (CheckInLevel) -> Void
@@ -298,24 +526,42 @@ private struct QuestionCard: View {
                     }
                 }
             }
-            HStack(spacing: 8) {
-                ForEach(CheckInLevel.allCases) { level in
-                    Button {
-                        onSelect(level)
-                    } label: {
-                        Text(level.displayName)
-                            .font(Theme.Font.bodyEmphasis)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(backgroundColor(for: level))
-                            .foregroundStyle(foregroundColor(for: level))
-                            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
-                                    .stroke(Theme.Palette.divider, lineWidth: selected == level ? 0 : 1)
-                            )
+            VStack(spacing: 6) {
+                HStack(spacing: 8) {
+                    ForEach(CheckInLevel.allCases) { level in
+                        Button {
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            onSelect(level)
+                        } label: {
+                            Text(level.displayName)
+                                .font(Theme.Font.bodyEmphasis)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                                .background(backgroundColor(for: level))
+                                .foregroundStyle(foregroundColor(for: level))
+                                .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
+                                        .stroke(Theme.Palette.divider, lineWidth: selected == level ? 0 : 1)
+                                )
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
+                }
+                // Anchor row: left anchor under "1", right anchor under "5".
+                // Only rendered when both anchors are provided (standard questions);
+                // custom questions currently omit this row.
+                if let leftAnchor, let rightAnchor {
+                    HStack {
+                        Text(leftAnchor)
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(Theme.Palette.textSecondary)
+                        Spacer()
+                        Text(rightAnchor)
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(Theme.Palette.textSecondary)
+                    }
+                    .padding(.horizontal, 4)
                 }
             }
         }
@@ -432,5 +678,394 @@ struct InlineSideEffectPicker: View {
         ]
         var seen = Set<String>()
         return (fromMeds + fallback).filter { seen.insert($0).inserted }.prefix(12).map { $0 }
+    }
+}
+
+/// Card for an open-ended custom question — prompt plus a multi-line text field.
+private struct TextQuestionCard: View {
+    let prompt: String
+    @Binding var text: String
+    var onDelete: (() -> Void)? = nil
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(prompt)
+                    .font(Theme.Font.bodyEmphasis)
+                    .foregroundStyle(Theme.Palette.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer()
+                if let onDelete {
+                    Menu {
+                        Button("Remove question", role: .destructive, action: onDelete)
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .foregroundStyle(Theme.Palette.textSecondary)
+                    }
+                }
+            }
+            TextEditor(text: $text)
+                .padding(8)
+                .frame(minHeight: 80)
+                .background(Theme.Palette.background)
+                .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
+                        .stroke(Theme.Palette.divider, lineWidth: 1)
+                )
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
+        .shadow(
+            color: Theme.cardShadow.color,
+            radius: Theme.cardShadow.radius,
+            x: Theme.cardShadow.x,
+            y: Theme.cardShadow.y
+        )
+    }
+}
+
+/// Sheet presented from the check-in view for creating a new custom question.
+///
+/// UX goals:
+/// - Teach the 5-is-better scoring convention inside the flow itself (not a docs page).
+/// - Ask for the two anchor labels up front instead of leaving the scale unlabeled.
+/// - Show a live preview so the user sees how the question will render on check-in.
+/// - Soft-warn when the anchors look flipped (e.g. "Good" on left, "Anxious" on right).
+/// - Offer a one-tap Swap to reverse the labels if the warning is right.
+///
+/// Anchors are required for scale kind; free-text questions don't use them.
+struct AddCustomQuestionSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var prompt: String = ""
+    @State private var kind: CheckInQuestionKind = .scale
+    @State private var leftAnchor: String = ""
+    @State private var rightAnchor: String = ""
+
+    /// Called with the trimmed prompt + kind + trimmed anchors when the user taps Add.
+    /// For text-kind questions both anchors are nil.
+    let onAdd: (_ prompt: String, _ kind: CheckInQuestionKind, _ leftAnchor: String?, _ rightAnchor: String?) -> Void
+
+    private var trimmedPrompt: String { prompt.trimmingCharacters(in: .whitespacesAndNewlines) }
+    private var trimmedLeft: String { leftAnchor.trimmingCharacters(in: .whitespacesAndNewlines) }
+    private var trimmedRight: String { rightAnchor.trimmingCharacters(in: .whitespacesAndNewlines) }
+
+    /// Enable Add when the prompt is filled and — for scale questions — both anchors are.
+    private var canSave: Bool {
+        guard !trimmedPrompt.isEmpty else { return false }
+        switch kind {
+        case .text:  return true
+        case .scale: return !trimmedLeft.isEmpty && !trimmedRight.isEmpty
+        }
+    }
+
+    /// True when the heuristic thinks the anchors are probably reversed.
+    private var looksBackwards: Bool {
+        guard kind == .scale, !trimmedLeft.isEmpty, !trimmedRight.isEmpty else { return false }
+        return CheckInAnchorHeuristic.looksBackwards(left: trimmedLeft, right: trimmedRight)
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    answerTypePicker
+                    questionField
+
+                    if kind == .scale {
+                        anchorFields
+                        conventionCallout
+                        if looksBackwards { backwardsWarning }
+                        previewSection
+                    }
+
+                    footerNote
+                }
+                .padding(20)
+            }
+            .background(Theme.Palette.background)
+            .navigationTitle("Add a question")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Add") {
+                        guard canSave else { return }
+                        switch kind {
+                        case .scale:
+                            onAdd(trimmedPrompt, .scale, trimmedLeft, trimmedRight)
+                        case .text:
+                            onAdd(trimmedPrompt, .text, nil, nil)
+                        }
+                        dismiss()
+                    }
+                    .fontWeight(.semibold)
+                    .disabled(!canSave)
+                }
+            }
+        }
+    }
+
+    // MARK: Sections
+
+    private var answerTypePicker: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Answer type")
+                .font(Theme.Font.caption)
+                .foregroundStyle(Theme.Palette.textSecondary)
+                .padding(.leading, 4)
+            HStack(spacing: 8) {
+                ForEach(CheckInQuestionKind.allCases) { option in
+                    Button {
+                        kind = option
+                    } label: {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(option.displayName)
+                                .font(Theme.Font.bodyEmphasis)
+                            Text(hint(for: option))
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundStyle(kind == option ? Color.white.opacity(0.8) : Theme.Palette.textSecondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(12)
+                        .background(kind == option ? Theme.Palette.primary : Color.white)
+                        .foregroundStyle(kind == option ? Color.white : Theme.Palette.textPrimary)
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Theme.Radius.button)
+                                .stroke(Theme.Palette.divider, lineWidth: kind == option ? 0 : 1)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    private var questionField: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Question")
+                .font(Theme.Font.caption)
+                .foregroundStyle(Theme.Palette.textSecondary)
+                .padding(.leading, 4)
+            TextField("e.g. How is your sleep?", text: $prompt, axis: .vertical)
+                .lineLimit(1...3)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 12)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.button)
+                        .stroke(Theme.Palette.divider, lineWidth: 1)
+                )
+        }
+    }
+
+    /// Two side-by-side fields whose horizontal position matches where their labels
+    /// will show up in the real scale row (left = under "1", right = under "5").
+    /// A small "Swap labels" link in the header lets the user flip them in one tap.
+    private var anchorFields: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Scale labels")
+                    .font(Theme.Font.caption)
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                Spacer()
+                Button {
+                    let tmp = leftAnchor
+                    leftAnchor = rightAnchor
+                    rightAnchor = tmp
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.left.arrow.right")
+                        Text("Swap labels")
+                    }
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.primary)
+                }
+                .buttonStyle(.plain)
+                .disabled(trimmedLeft.isEmpty && trimmedRight.isEmpty)
+                .opacity((trimmedLeft.isEmpty && trimmedRight.isEmpty) ? 0.4 : 1)
+            }
+            .padding(.horizontal, 4)
+
+            HStack(alignment: .top, spacing: 10) {
+                anchorField(
+                    caption: "1 means (harder)",
+                    placeholder: "e.g. Poor",
+                    text: $leftAnchor
+                )
+                anchorField(
+                    caption: "5 means (better)",
+                    placeholder: "e.g. Great",
+                    text: $rightAnchor
+                )
+            }
+        }
+    }
+
+    private func anchorField(caption: String, placeholder: String, text: Binding<String>) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(caption)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(Theme.Palette.textSecondary)
+                .padding(.leading, 4)
+            TextField(placeholder, text: text)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.button)
+                        .stroke(Theme.Palette.divider, lineWidth: 1)
+                )
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    /// Gentle blue callout that appears once the user has switched to scale mode.
+    /// Teaches the convention without being loud.
+    private var conventionCallout: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "arrow.up.right.circle.fill")
+                .foregroundStyle(Theme.Palette.primary)
+                .font(.system(size: 16))
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Keep 1 as the harder state, 5 as the better.")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.textPrimary)
+                Text("That way, higher averages always mean a better day.")
+                    .font(.system(size: 12))
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Theme.Palette.heroAccent)
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
+    }
+
+    /// Amber warning only shown when `CheckInAnchorHeuristic` thinks the anchors are flipped.
+    /// Non-blocking — Add button stays enabled so a determined user can override.
+    private var backwardsWarning: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(Theme.Palette.attention)
+                .font(.system(size: 16))
+            VStack(alignment: .leading, spacing: 2) {
+                Text("These look flipped.")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.textPrimary)
+                Text("1 should describe the harder state and 5 the better state. Tap Swap labels.")
+                    .font(.system(size: 12))
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Theme.Palette.attention.opacity(0.18))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
+    }
+
+    /// Read-only preview using the same visual language as the live QuestionCard.
+    /// Renders the placeholder prompt if the user hasn't typed one yet, so the
+    /// layout doesn't jump when they start typing.
+    private var previewSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Preview")
+                .font(Theme.Font.caption)
+                .foregroundStyle(Theme.Palette.textSecondary)
+                .padding(.leading, 4)
+
+            QuestionPreviewCard(
+                prompt: trimmedPrompt.isEmpty ? "How is your …?" : trimmedPrompt,
+                leftAnchor: trimmedLeft.isEmpty ? nil : trimmedLeft,
+                rightAnchor: trimmedRight.isEmpty ? nil : trimmedRight
+            )
+        }
+    }
+
+    private var footerNote: some View {
+        Text("This question appears on every future check-in. Remove it anytime from the question card's menu.")
+            .font(Theme.Font.caption)
+            .foregroundStyle(Theme.Palette.textSecondary)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.horizontal, 4)
+    }
+
+    private func hint(for kind: CheckInQuestionKind) -> String {
+        switch kind {
+        case .scale: return "Tap 1–5 each day."
+        case .text:  return "Type a note each day."
+        }
+    }
+}
+
+/// Non-interactive preview of a scale question. Mirrors `QuestionCard` so the user
+/// sees exactly what they'll get on their daily check-in. Kept as a separate view
+/// (vs reusing QuestionCard in a "read-only" mode) so the preview's tappability
+/// can't be confused with the real thing.
+private struct QuestionPreviewCard: View {
+    let prompt: String
+    let leftAnchor: String?
+    let rightAnchor: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(prompt)
+                .font(Theme.Font.bodyEmphasis)
+                .foregroundStyle(Theme.Palette.textPrimary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            VStack(spacing: 6) {
+                HStack(spacing: 8) {
+                    ForEach(CheckInLevel.allCases) { level in
+                        Text(level.displayName)
+                            .font(Theme.Font.bodyEmphasis)
+                            .foregroundStyle(Theme.Palette.textPrimary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color.white)
+                            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
+                                    .stroke(Theme.Palette.divider, lineWidth: 1)
+                            )
+                    }
+                }
+                if let leftAnchor, let rightAnchor {
+                    HStack {
+                        Text(leftAnchor)
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(Theme.Palette.textSecondary)
+                        Spacer()
+                        Text(rightAnchor)
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(Theme.Palette.textSecondary)
+                    }
+                    .padding(.horizontal, 4)
+                }
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
+        .shadow(
+            color: Theme.cardShadow.color,
+            radius: Theme.cardShadow.radius,
+            x: Theme.cardShadow.x,
+            y: Theme.cardShadow.y
+        )
+        // Make it obvious this is a preview, not interactive.
+        .allowsHitTesting(false)
     }
 }

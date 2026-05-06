@@ -4,6 +4,7 @@ import SwiftData
 @Model
 final class Test {
     @Attribute(.unique) var id: UUID
+    var name: String = ""
     var startEvent: MedEvent?
     var startDate: Date
     var plannedEndDate: Date?
@@ -17,6 +18,7 @@ final class Test {
 
     init(
         id: UUID = UUID(),
+        name: String = "",
         startEvent: MedEvent? = nil,
         startDate: Date,
         plannedEndDate: Date? = nil,
@@ -26,6 +28,7 @@ final class Test {
         scaleType: ScaleType? = nil
     ) {
         self.id = id
+        self.name = name
         self.startEvent = startEvent
         self.startDate = startDate
         self.plannedEndDate = plannedEndDate
@@ -33,5 +36,13 @@ final class Test {
         self.watchingFor = watchingFor
         self.weeklyScalesEnabled = weeklyScalesEnabled
         self.scaleType = scaleType
+    }
+
+    var displayName: String {
+        if !name.trimmingCharacters(in: .whitespaces).isEmpty {
+            return name
+        }
+        let medName = startEvent?.userMedication?.medication.brandName ?? "Test"
+        return medName
     }
 }

@@ -1,10 +1,11 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @Environment(AppState.self) private var appState
     @State private var selectedTab: Tab = .today
 
     enum Tab: Hashable {
-        case today, schedule, timeline, history, settings
+        case today, schedule, insights
     }
 
     var body: some View {
@@ -21,64 +22,29 @@ struct MainTabView: View {
                 }
                 .tag(Tab.schedule)
 
-            TimelinePlaceholderView()
+            InsightsView()
                 .tabItem {
-                    Label("Timeline", systemImage: "chart.xyaxis.line")
+                    Label("Insights", systemImage: "chart.xyaxis.line")
                 }
-                .tag(Tab.timeline)
-
-            HistoryPlaceholderView()
-                .tabItem {
-                    Label("History", systemImage: "clock.arrow.circlepath")
-                }
-                .tag(Tab.history)
-
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gearshape.fill")
-                }
-                .tag(Tab.settings)
+                .tag(Tab.insights)
         }
         .tint(Theme.Palette.primary)
-    }
-}
-
-struct TimelinePlaceholderView: View {
-    var body: some View {
-        PlaceholderContent(
-            title: "Timeline",
-            subtitle: "Phase 3 unlocks the mood chart with medication event markers and before/after panels."
-        )
-    }
-}
-
-struct HistoryPlaceholderView: View {
-    var body: some View {
-        PlaceholderContent(
-            title: "History",
-            subtitle: "Completed tests and exports will live here once Phases 4–5 ship."
-        )
-    }
-}
-
-private struct PlaceholderContent: View {
-    let title: String
-    let subtitle: String
-
-    var body: some View {
-        NavigationStack {
-            VStack(alignment: .leading, spacing: 14) {
-                Text(title)
-                    .font(Theme.Font.hero)
-                Text(subtitle)
-                    .font(Theme.Font.body)
-                    .foregroundStyle(Theme.Palette.textSecondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Spacer()
+        .onChange(of: appState.pendingInsightsTestID) { _, newValue in
+            if newValue != nil {
+                selectedTab = .insights
             }
-            .padding(24)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Theme.Palette.background.ignoresSafeArea())
+        }
+        .onChange(of: appState.shouldNavigateToInsights) { _, newValue in
+            if newValue {
+                selectedTab = .insights
+                appState.shouldNavigateToInsights = false
+            }
+        }
+        .onChange(of: appState.pendingTodayDate) { _, newValue in
+            if newValue != nil {
+                selectedTab = .today
+            }
         }
     }
 }
+

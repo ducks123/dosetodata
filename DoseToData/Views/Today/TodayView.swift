@@ -4,135 +4,383 @@ import SwiftData
 struct TodayView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(UserPreferences.self) private var prefs
+    @Environment(AppState.self) private var appState
+    @Environment(SubscriptionService.self) private var sub
 
     @Query(sort: \DailyCheckIn.date, order: .reverse) private var checkIns: [DailyCheckIn]
     @Query(sort: \Test.startDate, order: .reverse) private var tests: [Test]
     @Query(sort: \UserMedication.startDate, order: .reverse) private var userMedications: [UserMedication]
+    @Query private var adherenceLogs: [MedAdherenceLog]
 
     @State private var showingCheckIn = false
     @State private var showingCreateTest = false
+    @State private var showingEditMeds = false
+    @State private var showingCheckInSetup = false
+    @State private var showingSettings = false
+    @State private var showingPaywall = false
+    @State private var editingPastDate: Date? = nil
+    @State private var viewingCheckIn: DailyCheckIn? = nil
+    @State private var selectedDate: Date = Calendar.current.startOfDay(for: Date())
+
+    private struct EditableDate: Identifiable {
+        let date: Date
+        var id: TimeInterval { date.timeIntervalSince1970 }
+    }
 
     private let calendar = Calendar.current
 
-    private var todaysCheckIn: DailyCheckIn? {
-        checkIns.first { calendar.isDateInToday($0.date) }
+    private func consumePendingTodayDate() {
+        guard let date = appState.pendingTodayDate else { return }
+        selectedDate = calendar.startOfDay(for: date)
+        appState.pendingTodayDate = nil
     }
 
-    private var completedDates: Set<Date> {
-        Set(checkIns.map { calendar.startOfDay(for: $0.date) })
+    // MARK: - Earliest data date (drives how far back the strip reaches)
+
+    private var earliestDataDate: Date? {
+        var cal = Calendar(identifier: .iso8601)
+        cal.firstWeekday = 2
+        let checkInDates  = checkIns.map  { cal.startOfDay(for: $0.date) }
+        let adherenceDates = adherenceLogs.map { cal.startOfDay(for: $0.date) }
+        return (checkInDates + adherenceDates).min()
+    }
+
+    // MARK: - Day states (for all dates shown in the scroll strip)
+
+    private var allDayStates: [Date: WeekDayState] {
+        var cal = Calendar(identifier: .iso8601)
+        cal.firstWeekday = 2
+        let today = cal.startOfDay(for: Date())
+        let daysBack: Int
+        if let earliest = earliestDataDate {
+            let computed = cal.dateComponents([.day], from: earliest, to: today).day ?? 180
+            daysBack = max(computed, 0)
+        } else {
+            daysBack = 180
+        }
+        guard let startDate = cal.date(byAdding: .day, value: -daysBack, to: today) else { return [:] }
+        var result: [Date: WeekDayState] = [:]
+        var current = startDate
+        while current <= today {
+            result[current] = dayState(for: current, using: cal)
+            current = cal.date(byAdding: .day, value: 1, to: current) ?? today
+        }
+        return result
+    }
+
+    private func dayState(for date: Date, using cal: Calendar) -> WeekDayState {
+        let isCheckedIn = checkIns.contains { cal.isDate($0.date, inSameDayAs: date) }
+
+        let weekday = cal.component(.weekday, from: date)
+        let scheduledIDs = Set(
+            userMedications.filter { med in
+                let startOK = cal.startOfDay(for: med.startDate) <= date
+                let endOK   = med.endDate.map { cal.startOfDay(for: $0) >= date } ?? true
+                guard startOK && endOK else { return false }
+                let days = med.scheduledDays.isEmpty ? [1,2,3,4,5,6,7] : med.scheduledDays
+                return days.contains(weekday)
+            }.map(\.id)
+        )
+
+        if scheduledIDs.isEmpty {
+            return isCheckedIn ? .complete : .empty
+        }
+
+        let log = adherenceLogs.first { cal.isDate($0.date, inSameDayAs: date) }
+        let anySkipped = log?.anySkipped(scheduledIDs: scheduledIDs) ?? false
+        let allTaken   = log?.allTaken(scheduledIDs: scheduledIDs) ?? false
+
+        if isCheckedIn {
+            return anySkipped ? .medsMissed : .complete
+        } else if allTaken {
+            return .medsTaken
+        } else {
+            return .empty
+        }
     }
 
     private var activeTest: Test? {
         tests.first { $0.actualEndDate == nil && $0.startEvent != nil }
     }
 
+    /// Returns false and triggers the paywall when the user can't write.
+    private func requireSubscription() -> Bool {
+        guard sub.status.canWrite else {
+            showingPaywall = true
+            return false
+        }
+        return true
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                // Subscription banners sit above everything else
+                TrialBanner()
+                ExpiredBanner()
                 headerSection
-                WeekStrip(completedDates: completedDates, today: Date())
-                    .padding(.horizontal, 4)
-                checkInCard
+                DateScrollStrip(
+                    dayStates: allDayStates,
+                    today: Date(),
+                    selectedDate: selectedDate,
+                    earliestDate: earliestDataDate
+                ) { date in
+                    selectedDate = date
+                }
+                checkInCard(for: selectedDate)
                 if let activeTest, let startEvent = activeTest.startEvent {
-                    activeTestCard(test: activeTest, startEvent: startEvent)
+                    currentTestsSection(test: activeTest, startEvent: startEvent)
                 }
                 changesSection
             }
             .padding(20)
         }
         .background(Theme.Palette.background.ignoresSafeArea())
+        .onAppear { consumePendingTodayDate() }
+        .onChange(of: appState.pendingTodayDate) { _, _ in consumePendingTodayDate() }
+        .overlay(alignment: .top) {
+            ConfettiBurst(trigger: appState.confettiTrigger)
+        }
         .sheet(isPresented: $showingCheckIn) {
             DailyCheckInSheet()
         }
         .sheet(isPresented: $showingCreateTest) {
             CreateTestSheet()
         }
+        .sheet(isPresented: $showingEditMeds) {
+            EditMedicationsSheet()
+        }
+        .sheet(isPresented: $showingCheckInSetup) {
+            CheckInReminderSheet()
+                .presentationDetents([.medium])
+        }
+        .sheet(isPresented: $showingSettings) {
+            SettingsView()
+        }
+        .sheet(item: Binding(
+            get: { editingPastDate.map { EditableDate(date: $0) } },
+            set: { editingPastDate = $0?.date }
+        )) { wrapper in
+            DailyCheckInSheet(targetDate: wrapper.date)
+        }
+        .sheet(isPresented: $showingPaywall) {
+            PaywallView()
+                .environment(sub)
+        }
+        .sheet(item: $viewingCheckIn) { ci in
+            CheckInDetailView(checkIn: ci) {
+                // Edit callback: open the edit sheet for this day
+                if calendar.isDateInToday(ci.date) {
+                    showingCheckIn = true
+                } else {
+                    editingPastDate = ci.date
+                }
+            }
+        }
+    }
+
+    private var headerRelativeLabel: String {
+        if calendar.isDateInToday(selectedDate)     { return "Today" }
+        if calendar.isDateInYesterday(selectedDate)  { return "Yesterday" }
+        if calendar.isDateInTomorrow(selectedDate)   { return "Tomorrow" }
+        return ""
     }
 
     private var headerSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(greeting)
-                .font(Theme.Font.heroLabel)
-                .foregroundStyle(Theme.Palette.textSecondary)
-            Text(Date().formatted(.dateTime.weekday(.wide).month().day()))
-                .font(Theme.Font.sectionTitle)
+        HStack(alignment: .bottom) {
+            VStack(alignment: .leading, spacing: 4) {
+                if !headerRelativeLabel.isEmpty {
+                    Text(headerRelativeLabel)
+                        .font(Theme.Font.heroLabel)
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                }
+                Text(selectedDate.formatted(.dateTime.weekday(.wide).month().day()))
+                    .font(Theme.Font.sectionTitle)
+            }
+            Spacer()
+            Button {
+                showingSettings = true
+            } label: {
+                Image(systemName: "gearshape")
+                    .font(.system(size: 20))
+                    .foregroundStyle(Theme.Palette.textSecondary)
+            }
+            .buttonStyle(.plain)
         }
         .padding(.top, 8)
     }
 
-    private var greeting: String {
-        let hour = calendar.component(.hour, from: Date())
-        let base: String = switch hour {
-        case 5..<12: "Good morning"
-        case 12..<17: "Good afternoon"
-        case 17..<22: "Good evening"
-        default: "Late night"
+    // MARK: - Today-only stats (for streak / 7-day delta)
+
+    private var todaysCheckIn: DailyCheckIn? {
+        checkIns.first { calendar.isDateInToday($0.date) }
+    }
+
+    private var currentStreak: Int {
+        AppState.currentStreak(from: checkIns.map { $0.date }, calendar: calendar)
+    }
+
+    private var todayAverageScore: Double? {
+        averageScore(for: todaysCheckIn)
+    }
+
+    private var sevenDayAverageScore: Double? {
+        let cal = calendar
+        let sevenDaysAgo = cal.date(byAdding: .day, value: -7, to: cal.startOfDay(for: Date())) ?? Date()
+        let pastCheckIns = checkIns.filter { ci in
+            !cal.isDateInToday(ci.date) && ci.date >= sevenDaysAgo
         }
-        let name = prefs.displayName.trimmingCharacters(in: .whitespaces)
-        return name.isEmpty ? base : "\(base), \(name)"
+        let scores = pastCheckIns.flatMap { ci in
+            ci.answers.compactMap { $0.checkInLevel?.numericValue }.map(Double.init)
+        }
+        guard !scores.isEmpty else { return nil }
+        return scores.reduce(0, +) / Double(scores.count)
     }
 
-    private var isTodayCompleted: Bool {
-        todaysCheckIn != nil
+    private var sevenDayPercentDelta: Double? {
+        guard let today = todayAverageScore, let week = sevenDayAverageScore, week > 0 else { return nil }
+        return ((today - week) / week) * 100
     }
 
-    private var answerCountLabel: String {
-        guard let ci = todaysCheckIn else { return "" }
-        let n = ci.answers.count
-        return "\(n) question\(n == 1 ? "" : "s") logged"
+    private func averageScore(for ci: DailyCheckIn?) -> Double? {
+        guard let ci else { return nil }
+        let scores = ci.answers.compactMap { $0.checkInLevel?.numericValue }.map(Double.init)
+        guard !scores.isEmpty else { return nil }
+        return scores.reduce(0, +) / Double(scores.count)
     }
 
-    private var checkInCard: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .firstTextBaseline) {
+    // MARK: - Check-in card
+
+    private func checkInCard(for date: Date) -> some View {
+        let checkIn = checkIns.first { calendar.isDate($0.date, inSameDayAs: date) }
+        let hasEntry = checkIn != nil
+        let isToday = calendar.isDateInToday(date)
+
+        return VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Today's check-in")
+                    Text(isToday ? "Today's check-in" : "Check-in")
                         .font(Theme.Font.heroLabel)
                         .foregroundStyle(Theme.Palette.textSecondary)
-                    Text(isTodayCompleted ? "You're logged for today" : "How are you today?")
+                    Text(cardHeadline(hasEntry: hasEntry, isToday: isToday))
                         .font(Theme.Font.hero)
                         .foregroundStyle(Theme.Palette.textPrimary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer(minLength: 0)
-                if isTodayCompleted {
-                    ZStack {
-                        Circle()
-                            .fill(Theme.Palette.success)
-                            .frame(width: 40, height: 40)
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(.white)
-                    }
+                Button {
+                    showingCheckInSetup = true
+                } label: {
+                    Image(systemName: "bell.badge")
+                        .font(.system(size: 18))
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                }
+                .buttonStyle(.plain)
+            }
+
+            // Streak — only on today's card
+            if isToday && currentStreak > 0 {
+                HStack(spacing: 5) {
+                    Text("🔥")
+                        .font(.system(size: 14))
+                    Text("\(currentStreak)-day streak")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Theme.Palette.textSecondary)
                 }
             }
 
-            Text(isTodayCompleted
-                 ? "\(answerCountLabel). You can update anytime before midnight."
-                 : "Quick panel: anxiety, happiness, focus, irritability, social, plus anything you add.")
-                .font(Theme.Font.body)
-                .foregroundStyle(Theme.Palette.textSecondary)
-                .fixedSize(horizontal: false, vertical: true)
-
-            if let ci = todaysCheckIn, !ci.answers.isEmpty {
+            if let ci = checkIn, !ci.answers.isEmpty {
                 summaryChips(for: ci)
             }
 
-            Button {
-                showingCheckIn = true
-            } label: {
-                HStack(spacing: 8) {
-                    if isTodayCompleted {
-                        Image(systemName: "checkmark.circle.fill")
+            if let avg = averageScore(for: checkIn) {
+                HStack(alignment: .lastTextBaseline, spacing: 4) {
+                    Text(String(format: "%.1f", avg))
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .foregroundStyle(Theme.Palette.textPrimary)
+                    Text("/ 5 today")
+                        .font(Theme.Font.caption)
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                    if isToday, let delta = sevenDayPercentDelta {
+                        Spacer()
+                        let isUp = delta >= 0
+                        let symbol = isUp ? "↑" : "↓"
+                        let color: Color = isUp ? Theme.Palette.success : Theme.Palette.negative
+                        Text("\(symbol) \(String(format: "%.1f", abs(delta)))% vs 7d")
+                            .font(Theme.Font.caption)
+                            .foregroundStyle(color)
                     }
-                    Text(isTodayCompleted ? "Completed — tap to update" : "Complete today's check-in")
                 }
             }
-            .buttonStyle(PrimaryButtonStyle())
+
+            if hasEntry {
+                Button {
+                    appState.shouldNavigateToInsights = true
+                } label: {
+                    Text("View your progress")
+                }
+                .buttonStyle(PrimaryButtonStyle())
+
+                Button {
+                    viewingCheckIn = checkIn
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: "doc.text")
+                        Text("View check-in")
+                    }
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.primary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Theme.Palette.primary.opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
+                }
+                .buttonStyle(.plain)
+            } else {
+                Button {
+                    guard requireSubscription() else { return }
+                    if isToday {
+                        showingCheckIn = true
+                    } else {
+                        editingPastDate = date
+                    }
+                } label: {
+                    Text(isToday ? "Complete today's check-in" : "Log for this day")
+                }
+                .buttonStyle(PrimaryButtonStyle())
+            }
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.Palette.heroAccent)
+        .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
+                .strokeBorder(
+                    AngularGradient(
+                        colors: [.red, .orange, .yellow, .green, .cyan, .blue, .purple, .pink, .red],
+                        center: .center
+                    ),
+                    lineWidth: 2
+                )
+                .opacity(hasEntry ? 1 : 0)
+                .animation(.easeInOut(duration: 0.4), value: hasEntry)
+        )
+        .shadow(
+            color: Theme.cardShadow.color,
+            radius: Theme.cardShadow.radius,
+            x: Theme.cardShadow.x,
+            y: Theme.cardShadow.y
+        )
+        .animation(.easeInOut(duration: 0.4), value: hasEntry)
+    }
+
+    private func cardHeadline(hasEntry: Bool, isToday: Bool) -> String {
+        if isToday {
+            return hasEntry ? "You're logged for today" : "How are you today?"
+        } else {
+            return hasEntry ? "You're logged for this day" : "No entry for this day"
+        }
     }
 
     private func summaryChips(for ci: DailyCheckIn) -> some View {
@@ -142,7 +390,7 @@ struct TodayView: View {
                     HStack(spacing: 4) {
                         Text(shortLabel(for: answer.questionKey))
                             .font(.system(size: 11, weight: .semibold))
-                        Text(level.displayName.lowercased())
+                        Text("\(level.displayName)/5")
                             .font(.system(size: 11, weight: .regular))
                             .foregroundStyle(Theme.Palette.textSecondary)
                     }
@@ -162,41 +410,54 @@ struct TodayView: View {
         return "Custom"
     }
 
-    private func activeTestCard(test: Test, startEvent: MedEvent) -> some View {
+    private func currentTestsSection(test: Test, startEvent: MedEvent) -> some View {
         let daysSinceStart = calendar.dateComponents([.day], from: test.startDate, to: Date()).day ?? 0
         let plannedDays: Int? = test.plannedEndDate.map {
             calendar.dateComponents([.day], from: test.startDate, to: $0).day ?? 0
         }
-        let medName = startEvent.userMedication?.medication.brandName ?? "Active test"
+        let medName = startEvent.userMedication?.medication.brandName ?? "Current test"
         let dayLabel = plannedDays.map { "Day \(daysSinceStart + 1) of \($0)" } ?? "Day \(daysSinceStart + 1)"
 
-        return HStack(spacing: 14) {
-            ZStack {
-                Circle()
-                    .fill(Theme.Palette.attention.opacity(0.25))
-                    .frame(width: 48, height: 48)
-                Image(systemName: "flame.fill")
-                    .foregroundStyle(Theme.Palette.attention)
-                    .font(.system(size: 20, weight: .semibold))
-            }
-            VStack(alignment: .leading, spacing: 2) {
-                Text(dayLabel)
-                    .font(Theme.Font.caption)
-                    .foregroundStyle(Theme.Palette.textSecondary)
-                Text(medName)
-                    .font(Theme.Font.bodyEmphasis)
-                if !test.watchingFor.isEmpty {
-                    Text("Watching: \(test.watchingFor)")
-                        .font(Theme.Font.caption)
-                        .foregroundStyle(Theme.Palette.textSecondary)
-                        .lineLimit(1)
-                }
-            }
-            Spacer()
-            Image(systemName: "chevron.right")
+        return VStack(alignment: .leading, spacing: 12) {
+            Text("Current tests")
+                .font(Theme.Font.caption)
                 .foregroundStyle(Theme.Palette.textSecondary)
+                .padding(.leading, 4)
+
+            Button {
+                appState.pendingInsightsTestID = test.id
+            } label: {
+                HStack(spacing: 14) {
+                    ZStack {
+                        Circle()
+                            .fill(Theme.Palette.attention.opacity(0.25))
+                            .frame(width: 48, height: 48)
+                        Image(systemName: "flame.fill")
+                            .foregroundStyle(Theme.Palette.attention)
+                            .font(.system(size: 20, weight: .semibold))
+                    }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(dayLabel)
+                            .font(Theme.Font.caption)
+                            .foregroundStyle(Theme.Palette.textSecondary)
+                        Text(test.displayName.isEmpty ? medName : test.displayName)
+                            .font(Theme.Font.bodyEmphasis)
+                            .foregroundStyle(Theme.Palette.textPrimary)
+                        if !test.watchingFor.isEmpty {
+                            Text("Watching: \(test.watchingFor)")
+                                .font(Theme.Font.caption)
+                                .foregroundStyle(Theme.Palette.textSecondary)
+                                .lineLimit(1)
+                        }
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                }
+                .cardStyle()
+            }
+            .buttonStyle(.plain)
         }
-        .cardStyle()
     }
 
     private var changesSection: some View {
@@ -212,7 +473,18 @@ struct TodayView: View {
                 title: "Create a test",
                 subtitle: "Add or change a med for a set period, then compare that window to your baseline."
             ) {
+                guard requireSubscription() else { return }
                 showingCreateTest = true
+            }
+
+            ActionRow(
+                icon: "pills.fill",
+                iconColor: Theme.Palette.success,
+                title: "Edit medications",
+                subtitle: "Add or remove meds from your current schedule. Set doses, times, and reminders."
+            ) {
+                guard requireSubscription() else { return }
+                showingEditMeds = true
             }
         }
     }

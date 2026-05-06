@@ -52,6 +52,14 @@ enum SideEffectSeverity: String, Codable, CaseIterable, Identifiable {
     case severe
 
     var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .mild:     return "Mild"
+        case .moderate: return "Moderate"
+        case .severe:   return "Severe"
+        }
+    }
 }
 
 enum ScaleType: String, Codable, CaseIterable, Identifiable {

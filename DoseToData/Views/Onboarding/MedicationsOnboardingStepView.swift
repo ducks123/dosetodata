@@ -15,7 +15,7 @@ struct MedicationsOnboardingStepView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Step 2 of 3")
+                Text("Step 2 of 4")
                     .font(Theme.Font.heroLabel)
                     .foregroundStyle(Theme.Palette.textSecondary)
                 Text("Any medications\nyou're taking now?")

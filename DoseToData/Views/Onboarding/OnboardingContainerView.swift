@@ -3,6 +3,7 @@ import SwiftData
 
 struct OnboardingContainerView: View {
     @Environment(UserPreferences.self) private var prefs
+    @Environment(SubscriptionService.self) private var sub
     @Environment(\.modelContext) private var modelContext
 
     @State private var step: Int = 0
@@ -18,8 +19,12 @@ struct OnboardingContainerView: View {
             case 1:
                 MedicationsOnboardingStepView(onContinue: advance, onSkip: advance)
                     .transition(.opacity)
+            case 2:
+                PrivacyDisclaimerStepView(onAccept: advance)
+                    .transition(.opacity)
             default:
-                PrivacyDisclaimerStepView(onAccept: finish)
+                PaywallView(isDismissible: false, onComplete: finish)
+                    .environment(sub)
                     .transition(.opacity)
             }
         }

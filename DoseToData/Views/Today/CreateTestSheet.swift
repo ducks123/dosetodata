@@ -57,6 +57,25 @@ struct CreateTestSheet: View {
     @State private var customDays: String = ""
     @State private var useCustomDuration: Bool = false
     @State private var watchingFor: String = ""
+    @State private var testName: String = ""
+    @State private var testNameEdited: Bool = false
+
+    // Step 4 — custom questions scoped to this test
+    @State private var customQuestionPrompts: [String] = []
+    @State private var pendingQuestionText: String = ""
+
+    // For .started: add to schedule + times
+    @State private var addToSchedule: Bool = false
+    @State private var scheduledTimes: [String] = []
+    @State private var showingTimePicker = false
+    @State private var pendingTime: Date = defaultTime()
+
+    private static func defaultTime() -> Date {
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
+        components.hour = 8
+        components.minute = 0
+        return Calendar.current.date(from: components) ?? Date()
+    }
 
     private let durationPresets = [2, 4, 6, 8]
 
@@ -69,7 +88,8 @@ struct CreateTestSheet: View {
                         switch step {
                         case 0: changeTypeStep
                         case 1: medPickerStep
-                        default: detailsStep
+                        case 2: detailsStep
+                        default: customQuestionsStep
                         }
                     }
                     .padding(24)
@@ -86,13 +106,22 @@ struct CreateTestSheet: View {
                 }
             }
         }
+        .sheet(isPresented: $showingTimePicker) {
+            TimePickerSheet(initialTime: pendingTime) { time in
+                let timeString = ScheduleTime.string(from: time)
+                if !scheduledTimes.contains(timeString) {
+                    scheduledTimes.append(timeString)
+                    scheduledTimes.sort()
+                }
+            }
+        }
     }
 
     // MARK: Progress
 
     private var progressBar: some View {
         HStack(spacing: 8) {
-            ForEach(0..<3, id: \.self) { idx in
+            ForEach(0..<4, id: \.self) { idx in
                 Capsule()
                     .fill(idx <= step ? Theme.Palette.primary : Theme.Palette.divider)
                     .frame(height: 4)
@@ -246,7 +275,7 @@ struct CreateTestSheet: View {
     private var currentMedPicker: some View {
         VStack(alignment: .leading, spacing: 10) {
             if userMedications.isEmpty {
-                Text("You haven't added any current medications yet. Head to Settings → My Medications to add one, then come back.")
+                Text("You haven't added any current medications yet. Tap 'Edit medications' on the home screen to add one, then come back.")
                     .font(Theme.Font.body)
                     .foregroundStyle(Theme.Palette.textSecondary)
                     .cardStyle()
@@ -333,7 +362,124 @@ struct CreateTestSheet: View {
                     .datePickerStyle(.compact)
                     .labelsHidden()
             }
+
+            if changeType == .started {
+                scheduleSection
+            }
         }
+    }
+
+    private var scheduleSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Toggle(isOn: $addToSchedule) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Add it to my medication schedule")
+                        .font(Theme.Font.bodyEmphasis)
+                    Text("Adds this med to your daily schedule so you can track doses and reminders.")
+                        .font(Theme.Font.caption)
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .tint(Theme.Palette.primary)
+            .padding(14)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
+
+            if addToSchedule {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("How often")
+                        .font(Theme.Font.caption)
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                        .padding(.horizontal, 4)
+
+                    scheduleChip(title: "Once daily · 8am", times: ["08:00"])
+                    scheduleChip(title: "Twice daily · 8am, 8pm", times: ["08:00", "20:00"])
+                    scheduleChip(title: "With meals · 8am, 12pm, 6pm", times: ["08:00", "12:00", "18:00"])
+                    scheduleChip(title: "At bedtime · 10pm", times: ["22:00"])
+                    addCustomTimeChip
+
+                    if !scheduledTimes.isEmpty {
+                        Divider().padding(.vertical, 4)
+                        ForEach(scheduledTimes, id: \.self) { timeString in
+                            HStack {
+                                Image(systemName: "clock")
+                                    .foregroundStyle(Theme.Palette.primary)
+                                Text(ScheduleTime.displayString(from: timeString))
+                                    .font(Theme.Font.bodyEmphasis)
+                                Spacer()
+                                Button {
+                                    scheduledTimes.removeAll { $0 == timeString }
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundStyle(Theme.Palette.textSecondary)
+                                }
+                            }
+                            .padding(.horizontal, 4)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private var addCustomTimeChip: some View {
+        Button {
+            pendingTime = Self.defaultTime()
+            showingTimePicker = true
+        } label: {
+            HStack {
+                HStack(spacing: 8) {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundStyle(Theme.Palette.primary)
+                    Text("Add a custom time")
+                        .font(Theme.Font.body)
+                        .foregroundStyle(Theme.Palette.textPrimary)
+                }
+                Spacer()
+                Image(systemName: "clock")
+                    .foregroundStyle(Theme.Palette.textSecondary)
+            }
+            .padding(12)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.Radius.button)
+                    .strokeBorder(
+                        Theme.Palette.primary.opacity(0.4),
+                        style: StrokeStyle(lineWidth: 1, dash: [4, 3])
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func scheduleChip(title: String, times: [String]) -> some View {
+        Button {
+            scheduledTimes = times
+        } label: {
+            HStack {
+                Text(title)
+                    .font(Theme.Font.body)
+                    .foregroundStyle(Theme.Palette.textPrimary)
+                Spacer()
+                if Set(scheduledTimes) == Set(times) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(Theme.Palette.primary)
+                } else {
+                    Image(systemName: "arrow.right")
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                }
+            }
+            .padding(12)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.Radius.button)
+                    .stroke(Theme.Palette.divider, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: Step 3
@@ -346,6 +492,20 @@ struct CreateTestSheet: View {
                 .font(Theme.Font.body)
                 .foregroundStyle(Theme.Palette.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Test name")
+                    .font(Theme.Font.caption)
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                TextField("Name this test", text: $testName)
+                    .textFieldStyle(.roundedBorder)
+                    .onChange(of: testName) { _, _ in testNameEdited = true }
+                    .onAppear {
+                        if !testNameEdited {
+                            testName = defaultTestName
+                        }
+                    }
+            }
 
             HStack(spacing: 8) {
                 ForEach(durationPresets, id: \.self) { weeks in
@@ -423,6 +583,120 @@ struct CreateTestSheet: View {
         return "\(verb) \(medName)\(dose) on \(startDate.formatted(date: .abbreviated, time: .omitted)), tracking for \(days) days."
     }
 
+    // MARK: Step 4 — custom questions
+
+    private var customQuestionsStep: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text("Daily questions")
+                .font(Theme.Font.hero)
+            Text("Add questions or symptoms you want to track just during this test. They'll appear in your daily check-in while the test is running.")
+                .font(Theme.Font.body)
+                .foregroundStyle(Theme.Palette.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            VStack(alignment: .leading, spacing: 10) {
+                ForEach(suggestedTestQuestions, id: \.self) { suggestion in
+                    Button {
+                        if !customQuestionPrompts.contains(suggestion) {
+                            customQuestionPrompts.append(suggestion)
+                        }
+                    } label: {
+                        HStack {
+                            Text(suggestion)
+                                .font(Theme.Font.body)
+                                .foregroundStyle(Theme.Palette.textPrimary)
+                            Spacer()
+                            Image(systemName: customQuestionPrompts.contains(suggestion) ? "checkmark.circle.fill" : "plus.circle")
+                                .foregroundStyle(customQuestionPrompts.contains(suggestion) ? Theme.Palette.primary : Theme.Palette.textSecondary)
+                        }
+                        .padding(12)
+                        .background(Color.white)
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
+                        .overlay(RoundedRectangle(cornerRadius: Theme.Radius.button).stroke(Theme.Palette.divider, lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Add your own")
+                    .font(Theme.Font.caption)
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                    .padding(.leading, 4)
+                HStack(spacing: 8) {
+                    TextField("e.g. How was your appetite?", text: $pendingQuestionText)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(Color.white)
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
+                        .overlay(RoundedRectangle(cornerRadius: Theme.Radius.button).stroke(Theme.Palette.divider, lineWidth: 1))
+                    Button {
+                        addPendingQuestion()
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 26))
+                            .foregroundStyle(pendingQuestionText.trimmingCharacters(in: .whitespaces).isEmpty ? Theme.Palette.divider : Theme.Palette.primary)
+                    }
+                    .disabled(pendingQuestionText.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+
+            if !customQuestionPrompts.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Your questions for this test")
+                        .font(Theme.Font.caption)
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                        .padding(.leading, 4)
+                    ForEach(customQuestionPrompts, id: \.self) { prompt in
+                        HStack {
+                            Text(prompt)
+                                .font(Theme.Font.body)
+                            Spacer()
+                            Button {
+                                customQuestionPrompts.removeAll { $0 == prompt }
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(Theme.Palette.textSecondary)
+                            }
+                        }
+                        .padding(12)
+                        .background(Theme.Palette.heroAccent)
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
+                    }
+                }
+            }
+        }
+    }
+
+    private var suggestedTestQuestions: [String] {
+        switch changeType {
+        case .started, .doseChanged:
+            return [
+                "How was your focus today?",
+                "How was your appetite today?",
+                "How well did you sleep last night?",
+                "Any side effects today?"
+            ]
+        case .stopped:
+            return [
+                "How was your mood today?",
+                "How was your sleep?",
+                "Any withdrawal feelings today?"
+            ]
+        case .none:
+            return []
+        }
+    }
+
+    private func addPendingQuestion() {
+        let trimmed = pendingQuestionText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        if !customQuestionPrompts.contains(trimmed) {
+            customQuestionPrompts.append(trimmed)
+        }
+        pendingQuestionText = ""
+    }
+
     // MARK: Footer
 
     private var footer: some View {
@@ -435,13 +709,13 @@ struct CreateTestSheet: View {
             }
 
             Button {
-                if step < 2 {
+                if step < 3 {
                     step += 1
                 } else {
                     commit()
                 }
             } label: {
-                Text(step < 2 ? "Next" : "Create test")
+                Text(step < 3 ? "Next" : "Create test")
             }
             .buttonStyle(PrimaryButtonStyle())
             .disabled(nextDisabled)
@@ -482,6 +756,16 @@ struct CreateTestSheet: View {
         }
     }
 
+    private var defaultTestName: String {
+        let medName = selectedLibraryMed?.brandName ?? selectedUserMed?.medication.brandName ?? "medication"
+        switch changeType {
+        case .started: return "Starting \(medName)"
+        case .stopped: return "Stopping \(medName)"
+        case .doseChanged: return "\(medName) \(selectedDose)"
+        case .none: return ""
+        }
+    }
+
     private var totalDays: Int {
         if useCustomDuration, let n = Int(customDays), n > 0 {
             return n
@@ -501,6 +785,9 @@ struct CreateTestSheet: View {
                     currentDose: selectedDose,
                     startDate: startDate
                 )
+                if addToSchedule {
+                    um.scheduledTimes = scheduledTimes
+                }
                 modelContext.insert(um)
                 return um
             case .stopped, .doseChanged:
@@ -528,7 +815,10 @@ struct CreateTestSheet: View {
         modelContext.insert(event)
 
         let plannedEnd = Calendar.current.date(byAdding: .day, value: totalDays, to: startDate)
+        let trimmedName = testName.trimmingCharacters(in: .whitespaces)
+        let finalName = trimmedName.isEmpty ? defaultTestName : trimmedName
         let test = Test(
+            name: finalName,
             startEvent: event,
             startDate: startDate,
             plannedEndDate: plannedEnd,
@@ -536,6 +826,11 @@ struct CreateTestSheet: View {
         )
         modelContext.insert(test)
         event.test = test
+
+        for prompt in customQuestionPrompts {
+            let q = CustomCheckInQuestion(prompt: prompt, testID: test.id)
+            modelContext.insert(q)
+        }
 
         try? modelContext.save()
         dismiss()

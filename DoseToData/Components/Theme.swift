@@ -13,9 +13,24 @@ enum Theme {
         static let pastelPink = Color(red: 0xF8 / 255, green: 0xC8 / 255, blue: 0xD6 / 255)
         static let pastelPeach = Color(red: 0xFB / 255, green: 0xD3 / 255, blue: 0xB5 / 255)
         static let pastelSky = Color(red: 0xC8 / 255, green: 0xDD / 255, blue: 0xF6 / 255)
+        static let pastelMint = Color(red: 0xC6 / 255, green: 0xE8 / 255, blue: 0xD4 / 255)
+        static let pastelLavender = Color(red: 0xDC / 255, green: 0xCE / 255, blue: 0xF2 / 255)
+        static let pastelCoral = Color(red: 0xFB / 255, green: 0xC4 / 255, blue: 0xBE / 255)
+        static let pastelTeal = Color(red: 0xBE / 255, green: 0xE3 / 255, blue: 0xE4 / 255)
         static let textPrimary = Color(.label)
         static let textSecondary = Color(.secondaryLabel)
         static let divider = Color(red: 0xE5 / 255, green: 0xE7 / 255, blue: 0xEB / 255)
+
+        static let medPalette: [Color] = [
+            pastelSky,
+            pastelPeach,
+            pastelMint,
+            pastelPink,
+            pastelLavender,
+            pastelYellow,
+            pastelCoral,
+            pastelTeal
+        ]
     }
 
     enum Radius {
@@ -24,12 +39,14 @@ enum Theme {
     }
 
     enum Font {
-        static let hero: SwiftUI.Font = .system(size: 30, weight: .bold, design: .default)
-        static let heroLabel: SwiftUI.Font = .system(size: 14, weight: .medium)
-        static let sectionTitle: SwiftUI.Font = .system(size: 20, weight: .semibold)
-        static let body: SwiftUI.Font = .system(size: 16, weight: .regular)
-        static let bodyEmphasis: SwiftUI.Font = .system(size: 16, weight: .semibold)
-        static let caption: SwiftUI.Font = .system(size: 13, weight: .medium)
+        // All fonts use semantic text styles so they scale with the user's
+        // Dynamic Type preference (Settings → Accessibility → Display & Text Size).
+        static let hero: SwiftUI.Font         = .system(.largeTitle,   weight: .bold)
+        static let heroLabel: SwiftUI.Font    = .system(.subheadline,  weight: .medium)
+        static let sectionTitle: SwiftUI.Font = .system(.title3,       weight: .semibold)
+        static let body: SwiftUI.Font         = .system(.callout,      weight: .regular)
+        static let bodyEmphasis: SwiftUI.Font = .system(.callout,      weight: .semibold)
+        static let caption: SwiftUI.Font      = .system(.footnote,     weight: .medium)
     }
 
     static let cardShadow = ShadowStyle(color: .black.opacity(0.04), radius: 8, x: 0, y: 2)
@@ -88,6 +105,14 @@ struct SecondaryButtonStyle: ButtonStyle {
             )
             .clipShape(Capsule())
             .opacity(configuration.isPressed ? 0.8 : 1)
+    }
+}
+
+extension UserMedication {
+    var scheduleColor: Color {
+        let palette = Theme.Palette.medPalette
+        let hash = id.uuidString.unicodeScalars.reduce(0) { $0 &+ Int($1.value) }
+        return palette[abs(hash) % palette.count]
     }
 }
 

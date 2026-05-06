@@ -36,6 +36,8 @@ enum ScheduleTime {
               let hour = Int(parts[0]),
               let minute = Int(parts[1])
         else { return nil }
-        return (hour - startHour) * 60 + minute
+        var offset = (hour - startHour) * 60 + minute
+        if offset < 0 { offset += 24 * 60 }   // wrap past midnight
+        return offset
     }
 }

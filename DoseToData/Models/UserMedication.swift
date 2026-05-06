@@ -11,6 +11,11 @@ final class UserMedication {
     var schedule: String?
     var notes: String?
     var scheduledTimes: [String] = []
+    /// Weekday integers on which the medication is taken.
+    /// Uses Calendar.weekday convention: 1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri, 7=Sat.
+    /// Default (empty = not yet set) is treated as every day.
+    var scheduledDays: [Int] = [1, 2, 3, 4, 5, 6, 7]
+    var remindersEnabled: Bool = true
 
     @Relationship(deleteRule: .cascade, inverse: \MedEvent.userMedication)
     var events: [MedEvent] = []
@@ -23,7 +28,9 @@ final class UserMedication {
         endDate: Date? = nil,
         schedule: String? = nil,
         notes: String? = nil,
-        scheduledTimes: [String] = []
+        scheduledTimes: [String] = [],
+        scheduledDays: [Int] = [1, 2, 3, 4, 5, 6, 7],
+        remindersEnabled: Bool = true
     ) {
         self.id = id
         self.medication = medication
@@ -33,5 +40,7 @@ final class UserMedication {
         self.schedule = schedule
         self.notes = notes
         self.scheduledTimes = scheduledTimes
+        self.scheduledDays = scheduledDays
+        self.remindersEnabled = remindersEnabled
     }
 }

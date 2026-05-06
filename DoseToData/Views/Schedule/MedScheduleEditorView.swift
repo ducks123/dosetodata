@@ -19,11 +19,18 @@ struct MedScheduleEditorView: View {
         userMed.scheduledTimes.sorted()
     }
 
+    /// Weekdays displayed Mon→Sun. weekday values follow Calendar.weekday (1=Sun … 7=Sat).
+    private let orderedDays: [(weekday: Int, label: String)] = [
+        (2, "M"), (3, "Tu"), (4, "W"), (5, "Th"), (6, "F"), (7, "Sa"), (1, "Su")
+    ]
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 headerCard
+                reminderToggleCard
                 timesSection
+                frequencySection
                 quickPresetsSection
             }
             .padding(20)
@@ -60,6 +67,52 @@ struct MedScheduleEditorView: View {
         }
     }
 
+    private var reminderToggleCard: some View {
+        Toggle(isOn: Binding(
+            get: { userMed.remindersEnabled },
+            set: { newValue in
+                userMed.remindersEnabled = newValue
+                try? modelContext.save()
+                Task {
+                    if newValue {
+                        await ReminderManager.shared.scheduleReminders(for: userMed)
+                    } else {
+                        await ReminderManager.shared.clearReminders(for: userMed.id)
+                    }
+                }
+            }
+        )) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Reminders")
+                    .font(Theme.Font.bodyEmphasis)
+                Text(userMed.scheduledTimes.isEmpty
+                     ? "Set at least one time below to receive reminders."
+                     : "Daily notifications at your scheduled times.")
+                    .font(Theme.Font.caption)
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .tint(Theme.Palette.primary)
+        .disabled(userMed.scheduledTimes.isEmpty)
+        .padding(14)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
+        .shadow(
+            color: Theme.cardShadow.color,
+            radius: Theme.cardShadow.radius,
+            x: Theme.cardShadow.x,
+            y: Theme.cardShadow.y
+        )
+        .onChange(of: userMed.scheduledTimes) { _, _ in
+            if userMed.remindersEnabled {
+                Task {
+                    await ReminderManager.shared.scheduleReminders(for: userMed)
+                }
+            }
+        }
+    }
+
     private var headerCard: some View {
         HStack(spacing: 14) {
             ZStack {
@@ -84,24 +137,10 @@ struct MedScheduleEditorView: View {
 
     private var timesSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("Scheduled times")
-                    .font(Theme.Font.caption)
-                    .foregroundStyle(Theme.Palette.textSecondary)
-                Spacer()
-                Button {
-                    pendingTime = Self.defaultPendingTime()
-                    showingTimePicker = true
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "plus.circle.fill")
-                        Text("Add time")
-                    }
-                    .font(Theme.Font.caption)
-                    .foregroundStyle(Theme.Palette.primary)
-                }
-            }
-            .padding(.horizontal, 4)
+            Text("Scheduled times")
+                .font(Theme.Font.caption)
+                .foregroundStyle(Theme.Palette.textSecondary)
+                .padding(.horizontal, 4)
 
             if sortedTimes.isEmpty {
                 Text("No times set. Add one below or pick a preset.")
@@ -137,6 +176,89 @@ struct MedScheduleEditorView: View {
         }
     }
 
+    private var frequencySection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Frequency")
+                    .font(Theme.Font.caption)
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                Spacer()
+                let allSelected = activeDays.count == 7
+                Text(allSelected ? "Every day" : daysSummary(activeDays))
+                    .font(Theme.Font.caption)
+                    .foregroundStyle(Theme.Palette.primary)
+            }
+            .padding(.horizontal, 4)
+
+            HStack(spacing: 6) {
+                ForEach(orderedDays, id: \.weekday) { item in
+                    let isOn = activeDays.contains(item.weekday)
+                    Button {
+                        toggleDay(item.weekday)
+                    } label: {
+                        Text(item.label)
+                            .font(.system(size: 13, weight: .semibold))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(isOn ? Theme.Palette.primary : Color.white)
+                            .foregroundStyle(isOn ? Color.white : Theme.Palette.textSecondary)
+                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .stroke(
+                                        isOn ? Theme.Palette.primary : Theme.Palette.divider,
+                                        lineWidth: 1
+                                    )
+                            )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(14)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
+            .shadow(
+                color: Theme.cardShadow.color,
+                radius: Theme.cardShadow.radius,
+                x: Theme.cardShadow.x,
+                y: Theme.cardShadow.y
+            )
+        }
+    }
+
+    /// Falls back to all-days if the field is empty (pre-migration records).
+    private var activeDays: [Int] {
+        userMed.scheduledDays.isEmpty ? [1, 2, 3, 4, 5, 6, 7] : userMed.scheduledDays
+    }
+
+    private func toggleDay(_ weekday: Int) {
+        var days = activeDays
+        if days.contains(weekday) {
+            guard days.count > 1 else { return }   // always keep at least one day
+            days.removeAll { $0 == weekday }
+        } else {
+            days.append(weekday)
+        }
+        userMed.scheduledDays = days
+        try? modelContext.save()
+        if userMed.remindersEnabled {
+            Task { await ReminderManager.shared.scheduleReminders(for: userMed) }
+        }
+    }
+
+    /// Human-readable summary of selected weekdays, e.g. "Mon, Wed, Fri".
+    private func daysSummary(_ days: [Int]) -> String {
+        let names: [Int: String] = [1: "Sun", 2: "Mon", 3: "Tue", 4: "Wed", 5: "Thu", 6: "Fri", 7: "Sat"]
+        let weekdays = Set(days)
+        if weekdays == [2, 3, 4, 5, 6] { return "Weekdays" }
+        if weekdays == [1, 7]           { return "Weekends" }
+        // Order Mon→Sun for display
+        return orderedDays
+            .filter { weekdays.contains($0.weekday) }
+            .compactMap { names[$0.weekday] }
+            .joined(separator: ", ")
+    }
+
     private var quickPresetsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Quick presets")
@@ -150,8 +272,40 @@ struct MedScheduleEditorView: View {
                 presetButton(title: "With meals · 8am, 12pm, 6pm", times: ["08:00", "12:00", "18:00"])
                 presetButton(title: "Morning + booster · 8am, 2pm", times: ["08:00", "14:00"])
                 presetButton(title: "At bedtime · 10pm", times: ["22:00"])
+                addTimePresetButton
             }
         }
+    }
+
+    private var addTimePresetButton: some View {
+        Button {
+            pendingTime = Self.defaultPendingTime()
+            showingTimePicker = true
+        } label: {
+            HStack {
+                HStack(spacing: 8) {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundStyle(Theme.Palette.primary)
+                    Text("Add a custom time")
+                        .font(Theme.Font.body)
+                        .foregroundStyle(Theme.Palette.textPrimary)
+                }
+                Spacer()
+                Image(systemName: "clock")
+                    .foregroundStyle(Theme.Palette.textSecondary)
+            }
+            .padding(14)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
+                    .strokeBorder(
+                        Theme.Palette.primary.opacity(0.4),
+                        style: StrokeStyle(lineWidth: 1, dash: [4, 3])
+                    )
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     private func presetButton(title: String, times: [String]) -> some View {
