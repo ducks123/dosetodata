@@ -101,6 +101,16 @@ struct PaywallView: View {
                 .foregroundStyle(Theme.Palette.textSecondary)
                 .padding(.top, 14)
 
+                // ── Legal links ──────────────────────────────────────────
+                HStack(spacing: 4) {
+                    Link("Privacy Policy", destination: LegalLinks.privacyPolicy)
+                    Text("·")
+                    Link("Terms of Use", destination: LegalLinks.termsOfService)
+                }
+                .font(.system(size: 12))
+                .foregroundStyle(Theme.Palette.textSecondary)
+                .padding(.top, 8)
+
                 // ── Onboarding skip ──────────────────────────────────────
                 if !isDismissible, onComplete != nil {
                     Button("Maybe later") {

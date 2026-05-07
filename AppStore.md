@@ -6,7 +6,7 @@
 DoseToData
 
 ## Subtitle (30 chars max)
-Track Your Meds. Know Yourself.
+Track Meds. Know Yourself.
 
 ## Primary Category
 Health & Fitness
@@ -32,7 +32,9 @@ DoseToData links your daily scores to your medication schedule. You'll see wheth
 Starting a new medication? Changing a dose? Create a Test and DoseToData tracks that window as its own data set. When it's over, compare it directly to your baseline. Was the new dose better? By how much? Now you know.
 
 **Your schedule, your way**
-Add the medications you take, set the times and days that match your actual routine, and get reminders when it's time. Tap "Took it" right from the lock screen — no need to open the app.
+Add every medication you take — brand name, dose, and the exact time(s) you take it each day. DoseToData builds a visual timeline showing when each medication kicks in, peaks, and wears off based on its pharmacokinetic profile. You'll see at a glance how your meds overlap throughout the day.
+
+Set custom reminders for each medication and get a notification when it's time to take it. Tap "Took it" or "Skip today" right from the lock screen — no need to open the app. Your adherence is logged automatically.
 
 **Insights that actually mean something**
 Clean charts show your trends week by week, month by month, or across a full year. A single overall score gives you the big picture at a glance, while per-question graphs let you drill into exactly what's shifting.
@@ -42,10 +44,13 @@ Your data lives on your device. Sign in optionally to back up and sync across de
 
 DoseToData is not a medical device and does not provide medical advice. Always work with your doctor when making changes to your medications.
 
+Privacy Policy: https://ducks123.github.io/dosetodata/privacy-policy.html
+Terms of Use (EULA): https://ducks123.github.io/dosetodata/terms.html
+
 ---
 
 ## Keywords (100 chars max)
-medication,mood tracker,ADHD,anxiety,mental health,pill reminder,symptom log,dose,check-in,habits
+medication,mood tracker,ADHD,anxiety,pill reminder,med schedule,symptom log,dose,check-in,wellness
 
 ---
 
