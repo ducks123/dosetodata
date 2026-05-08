@@ -292,31 +292,47 @@ struct PaywallView: View {
     // MARK: - CTA
 
     private var ctaButton: some View {
-        Button {
-            let pkg = selectedPlan == .monthly ? monthlyPackage : annualPackage
-            guard let pkg else { return }
-            Task {
-                do {
-                    try await sub.purchase(package: pkg)
-                    if let onComplete { onComplete() } else { dismiss() }
-                } catch {
-                    sub.errorMessage = error.localizedDescription
+        let pkg = selectedPlan == .monthly ? monthlyPackage : annualPackage
+        let packagesLoaded = pkg != nil
+
+        return Button {
+            if let pkg {
+                Task {
+                    do {
+                        try await sub.purchase(package: pkg)
+                        if let onComplete { onComplete() } else { dismiss() }
+                    } catch {
+                        sub.errorMessage = error.localizedDescription
+                    }
                 }
+            } else {
+                // Offerings not loaded yet — refresh and let the user try again.
+                Task { await sub.refresh() }
             }
         } label: {
-            Text(selectedPlan == .annual ? "Start 7-Day Free Trial" : "Try Free for 7 Days")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(
-                    LinearGradient(
-                        colors: [Theme.Palette.primary, Color(red: 0.35, green: 0.20, blue: 0.80)],
-                        startPoint: .leading, endPoint: .trailing
-                    )
+            Group {
+                if packagesLoaded {
+                    Text(selectedPlan == .annual ? "Start 7-Day Free Trial" : "Try Free for 7 Days")
+                        .font(.system(size: 16, weight: .bold))
+                } else {
+                    HStack(spacing: 10) {
+                        ProgressView().tint(.white).scaleEffect(0.85)
+                        Text("Loading…")
+                            .font(.system(size: 16, weight: .bold))
+                    }
+                }
+            }
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .background(
+                LinearGradient(
+                    colors: [Theme.Palette.primary, Color(red: 0.35, green: 0.20, blue: 0.80)],
+                    startPoint: .leading, endPoint: .trailing
                 )
-                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .shadow(color: Theme.Palette.primary.opacity(0.35), radius: 8, y: 4)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .shadow(color: Theme.Palette.primary.opacity(0.35), radius: 8, y: 4)
         }
     }
 }
