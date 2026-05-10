@@ -49,6 +49,7 @@ final class SubscriptionService {
     var status: SubscriptionStatus = .loading
     var offerings: Offerings? = nil
     var isLoading = false
+    var isRefreshing = false
     var errorMessage: String? = nil
 
     // MARK: - Configure
@@ -69,16 +70,43 @@ final class SubscriptionService {
             status = .expired
             return
         }
+        isRefreshing = true
+        defer { isRefreshing = false }
+
+        // 10-second timeout on customerInfo so we never hang indefinitely.
         do {
-            let customerInfo = try await Purchases.shared.customerInfo()
+            let customerInfo = try await withTimeout(seconds: 10) {
+                try await Purchases.shared.customerInfo()
+            }
             apply(customerInfo: customerInfo)
         } catch {
             if status == .loading { status = .expired }
         }
+        // 10-second timeout on offerings — non-fatal, paywall uses fallback prices.
         do {
-            offerings = try await Purchases.shared.offerings()
+            offerings = try await withTimeout(seconds: 10) {
+                try await Purchases.shared.offerings()
+            }
         } catch {
             // Non-fatal — paywall will show fallback prices.
+        }
+    }
+
+    // MARK: - Timeout helper
+
+    private func withTimeout<T: Sendable>(
+        seconds: Double,
+        operation: @Sendable @escaping () async throws -> T
+    ) async throws -> T {
+        try await withThrowingTaskGroup(of: T.self) { group in
+            group.addTask { try await operation() }
+            group.addTask {
+                try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+                throw CancellationError()
+            }
+            let result = try await group.next()!
+            group.cancelAll()
+            return result
         }
     }
 

@@ -293,7 +293,6 @@ struct PaywallView: View {
 
     private var ctaButton: some View {
         let pkg = selectedPlan == .monthly ? monthlyPackage : annualPackage
-        let packagesLoaded = pkg != nil
 
         return Button {
             if let pkg {
@@ -306,20 +305,28 @@ struct PaywallView: View {
                     }
                 }
             } else {
-                // Offerings not loaded yet — refresh and let the user try again.
+                // Offerings not loaded — retry.
                 Task { await sub.refresh() }
             }
         } label: {
             Group {
-                if packagesLoaded {
-                    Text(selectedPlan == .annual ? "Start 7-Day Free Trial" : "Try Free for 7 Days")
-                        .font(.system(size: 16, weight: .bold))
-                } else {
+                if sub.isLoading {
+                    // Purchase in flight.
+                    ProgressView().tint(.white).scaleEffect(0.85)
+                } else if sub.isRefreshing {
+                    // Offerings still loading.
                     HStack(spacing: 10) {
                         ProgressView().tint(.white).scaleEffect(0.85)
                         Text("Loading…")
                             .font(.system(size: 16, weight: .bold))
                     }
+                } else if pkg == nil {
+                    // Load finished but offerings unavailable — show retry.
+                    Text("Tap to Retry")
+                        .font(.system(size: 16, weight: .bold))
+                } else {
+                    Text(selectedPlan == .annual ? "Start 7-Day Free Trial" : "Try Free for 7 Days")
+                        .font(.system(size: 16, weight: .bold))
                 }
             }
             .foregroundStyle(.white)
@@ -334,6 +341,7 @@ struct PaywallView: View {
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             .shadow(color: Theme.Palette.primary.opacity(0.35), radius: 8, y: 4)
         }
+        .disabled(sub.isLoading)
     }
 }
 
