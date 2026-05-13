@@ -51,6 +51,13 @@ final class SubscriptionService {
     var isLoading = false
     var isRefreshing = false
     var errorMessage: String? = nil
+    /// For trials this is when the free trial ends (and the user is first
+    /// charged). For paid subscriptions this is the next renewal date. Nil
+    /// for grandfathered / local-fallback users with no real RC entitlement.
+    var expirationDate: Date? = nil
+    /// Whether auto-renewal is currently on. False after the user has
+    /// cancelled (still active until expiration, but won't renew).
+    var willRenew: Bool = false
 
     // MARK: - Configure
 
@@ -223,10 +230,15 @@ final class SubscriptionService {
 
     /// Applies status based solely on the local trial / grandfather state.
     private func applyLocalStatus() {
+        // No RC entitlement, so no real expiration / renewal data.
+        willRenew = false
         if let daysLeft = Self.localTrialDaysLeft() {
             status = daysLeft > 0 ? .trial(daysLeft: daysLeft) : .expired
+            // Reflect the local trial's expiry so Settings can still show a date.
+            expirationDate = UserDefaults.standard.object(forKey: Self.trialExpiryKey) as? Date
         } else {
             status = .active // permanently grandfathered existing user
+            expirationDate = nil
         }
     }
 
@@ -237,6 +249,9 @@ final class SubscriptionService {
             applyLocalStatus()
             return
         }
+
+        expirationDate = entitlement.expirationDate
+        willRenew = entitlement.willRenew
 
         // RevenueCat reports an App Store introductory free trial as `.intro`,
         // not `.trial`. Treat both as "in trial" so the banner + days-left UI

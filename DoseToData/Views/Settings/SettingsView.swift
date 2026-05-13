@@ -73,6 +73,19 @@ struct SettingsView: View {
                             .font(.system(size: 14, weight: .medium))
                     }
 
+                    // Trial → "Free trial ends [date]" so users know when
+                    // they'll first be charged.
+                    // Active → "Renews [date]" (or "Expires [date]" if cancelled).
+                    if let dateLine = subscriptionDateLine {
+                        HStack {
+                            Text(dateLine.label)
+                            Spacer()
+                            Text(dateLine.value)
+                                .foregroundStyle(Theme.Palette.textSecondary)
+                                .font(.system(size: 14))
+                        }
+                    }
+
                     switch sub.status {
                     case .expired:
                         Button("Upgrade to Premium") {
@@ -192,6 +205,23 @@ struct SettingsView: View {
         }
         if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
             await UIApplication.shared.open(url)
+        }
+    }
+
+    /// Pretty label/value pair to show under the Status row, e.g.
+    /// ("Free trial ends", "May 20, 2026") or ("Renews", "Jun 13, 2026").
+    /// Nil for states where there's no date to show (loading, grandfathered
+    /// active with no RC entitlement, expired).
+    private var subscriptionDateLine: (label: String, value: String)? {
+        guard let expDate = sub.expirationDate else { return nil }
+        let formatted = expDate.formatted(date: .abbreviated, time: .omitted)
+        switch sub.status {
+        case .trial:
+            return ("Free trial ends", formatted)
+        case .active:
+            return (sub.willRenew ? "Renews" : "Expires", formatted)
+        case .loading, .expired:
+            return nil
         }
     }
 

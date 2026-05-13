@@ -31,6 +31,11 @@ struct DateScrollStrip: View {
 
     private var dates: [Date] {
         let todayStart = calendar.startOfDay(for: today)
+        // Always show at least 180 days of history. If the user has older
+        // check-ins than that, extend further back to include them — but
+        // never shrink below 180. Without this floor, the strip collapses
+        // to start at the user's earliest check-in (often today on a fresh
+        // install), making it impossible to scroll back and log past days.
         let daysBack: Int
         if let earliest = earliestDate {
             let computed = calendar.dateComponents(
@@ -38,7 +43,7 @@ struct DateScrollStrip: View {
                 from: calendar.startOfDay(for: earliest),
                 to: todayStart
             ).day ?? 180
-            daysBack = max(computed, 0)
+            daysBack = max(computed, 180)
         } else {
             daysBack = 180
         }
