@@ -91,8 +91,8 @@ private struct ScrollDayCell: View {
     var body: some View {
         VStack(spacing: 3) {
             Circle()
-                .fill(isToday ? Theme.Palette.textSecondary.opacity(0.5) : Color.clear)
-                .frame(width: 4, height: 4)
+                .fill(isToday ? Theme.Palette.primary : Color.clear)
+                .frame(width: 6, height: 6)
 
             Text(String(date.formatted(.dateTime.weekday(.abbreviated)).prefix(3)))
                 .font(.system(size: 11, weight: isSelected ? .bold : .semibold))
@@ -234,8 +234,8 @@ private struct DayCell: View {
         VStack(spacing: 2) {
             // Small dot above the label — visible only for today
             Circle()
-                .fill(day.isToday ? Theme.Palette.textSecondary.opacity(0.45) : Color.clear)
-                .frame(width: 4, height: 4)
+                .fill(day.isToday ? Theme.Palette.primary : Color.clear)
+                .frame(width: 6, height: 6)
 
             Text(day.weekdayShort.prefix(3).uppercased())
                 .font(.system(size: 11, weight: day.isSelected ? .bold : .semibold))
