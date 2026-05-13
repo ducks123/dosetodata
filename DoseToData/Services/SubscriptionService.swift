@@ -123,6 +123,12 @@ final class SubscriptionService {
         /// silently completed without a real purchase. The entitlement is now
         /// active but no money/trial was started right now.
         case silentRestore
+        /// The user dismissed Apple's purchase sheet without confirming.
+        /// RevenueCat v5 reports this via `result.userCancelled` rather than
+        /// throwing, so we MUST surface it explicitly — otherwise callers
+        /// treat a cancellation as a successful purchase and bypass the
+        /// paywall.
+        case userCancelled
     }
 
     @MainActor
@@ -137,6 +143,14 @@ final class SubscriptionService {
         let beforeDate = beforeInfo?.entitlements[Self.entitlementID]?.latestPurchaseDate
 
         let result = try await Purchases.shared.purchase(package: package)
+
+        // RC 5.x: cancellation returns userCancelled=true instead of throwing.
+        // Catching this BEFORE apply() is the load-bearing check that
+        // prevents a cancelled purchase from being treated as success.
+        if result.userCancelled {
+            return .userCancelled
+        }
+
         apply(customerInfo: result.customerInfo)
 
         let afterDate = result.customerInfo.entitlements[Self.entitlementID]?.latestPurchaseDate

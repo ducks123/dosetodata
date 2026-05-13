@@ -456,6 +456,10 @@ Any unused portion of a free trial will be forfeited upon purchase of a subscrip
                         // already owns the product. Don't slip into the app;
                         // make the user explicitly acknowledge.
                         showSilentRestoreAlert = true
+                    case .userCancelled:
+                        // User dismissed Apple's payment sheet. Stay on the
+                        // paywall. No alert, no advance.
+                        break
                     }
                 } catch {
                     // If the user cancelled the Apple payment sheet, stay on the
