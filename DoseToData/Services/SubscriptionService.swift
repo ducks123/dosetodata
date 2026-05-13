@@ -194,7 +194,12 @@ final class SubscriptionService {
             return
         }
 
-        if entitlement.periodType == .trial {
+        // RevenueCat reports an App Store introductory free trial as `.intro`,
+        // not `.trial`. Treat both as "in trial" so the banner + days-left UI
+        // works for users in either kind of introductory period.
+        let isInTrialPeriod = entitlement.periodType == .trial
+            || entitlement.periodType == .intro
+        if isInTrialPeriod {
             // Compute days left from the entitlement's expiration date.
             if let expDate = entitlement.expirationDate {
                 let days = Calendar.current.dateComponents(

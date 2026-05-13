@@ -194,7 +194,7 @@ struct TodayView: View {
                         .font(Theme.Font.heroLabel)
                         .foregroundStyle(Theme.Palette.textSecondary)
                 }
-                Text(selectedDate.formatted(.dateTime.weekday(.wide).month().day()))
+                Text(selectedDate.formatted(.dateTime.weekday(.wide).month().day().year()))
                     .font(Theme.Font.sectionTitle)
             }
             Spacer()

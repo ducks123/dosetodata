@@ -179,6 +179,18 @@ struct PaywallView: View {
         .task {
             sub.errorMessage = nil  // clear any stale error before presenting
             await sub.refresh()
+            // In onboarding (non-dismissible), if the user already has an active
+            // entitlement (e.g., a cancelled-but-still-valid prior subscription),
+            // skip the paywall entirely — no reason to show it to someone who's
+            // already entitled.
+            if !isDismissible {
+                switch sub.status {
+                case .active, .trial:
+                    finish()
+                default:
+                    break
+                }
+            }
         }
     }
 
