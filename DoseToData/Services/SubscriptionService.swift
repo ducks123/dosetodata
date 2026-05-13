@@ -115,14 +115,44 @@ final class SubscriptionService {
 
     // MARK: - Purchase
 
+    /// The outcome of a `purchase(package:)` call.
+    enum PurchaseOutcome {
+        /// A brand-new transaction was created — the user actually subscribed.
+        case newPurchase
+        /// The user's Apple ID already owned this product, so StoreKit
+        /// silently completed without a real purchase. The entitlement is now
+        /// active but no money/trial was started right now.
+        case silentRestore
+    }
+
     @MainActor
-    func purchase(package: Package) async throws {
+    func purchase(package: Package) async throws -> PurchaseOutcome {
         isLoading = true
         errorMessage = nil
         defer { isLoading = false }
 
+        // Snapshot the latest purchase date BEFORE attempting to buy, so we
+        // can tell whether this call actually created a new transaction.
+        let beforeInfo = try? await Purchases.shared.customerInfo()
+        let beforeDate = beforeInfo?.entitlements[Self.entitlementID]?.latestPurchaseDate
+
         let result = try await Purchases.shared.purchase(package: package)
         apply(customerInfo: result.customerInfo)
+
+        let afterDate = result.customerInfo.entitlements[Self.entitlementID]?.latestPurchaseDate
+        // If the latestPurchaseDate didn't change, no fresh transaction
+        // happened — StoreKit just acknowledged the existing entitlement.
+        if let afterDate, beforeDate == afterDate {
+            return .silentRestore
+        }
+        // Also catch the case where the entitlement was active before AND
+        // after but the date moved within the last few seconds (rare, but
+        // possible during fast sandbox resubscribe). Anything older than 30s
+        // is a restore.
+        if let afterDate, Date().timeIntervalSince(afterDate) > 30 {
+            return .silentRestore
+        }
+        return .newPurchase
     }
 
     // MARK: - Restore

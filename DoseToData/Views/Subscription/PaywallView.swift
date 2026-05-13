@@ -15,6 +15,7 @@ struct PaywallView: View {
 
     @State private var selectedPlan: Plan = .trialAnnual
     @State private var showError = false
+    @State private var showSilentRestoreAlert = false
 
     enum Plan: Equatable {
         case annual
@@ -171,6 +172,12 @@ struct PaywallView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(sub.errorMessage ?? "Please try again.")
+        }
+        .alert("You're already subscribed", isPresented: $showSilentRestoreAlert) {
+            Button("Enter app") { finish() }
+            Button("Stay here", role: .cancel) {}
+        } message: {
+            Text("This Apple ID already has an active DoseToData subscription, so no new charge was made. Tap Enter app to continue.")
         }
         .onChange(of: sub.errorMessage) { _, msg in
             if msg != nil { showError = true }
@@ -439,13 +446,23 @@ Any unused portion of a free trial will be forfeited upon purchase of a subscrip
             guard let pkg = selectedPackage else { return }
             Task {
                 do {
-                    try await sub.purchase(package: pkg)
-                    finish()
+                    let outcome = try await sub.purchase(package: pkg)
+                    switch outcome {
+                    case .newPurchase:
+                        // Real, fresh transaction — advance into the app.
+                        finish()
+                    case .silentRestore:
+                        // Apple silently completed because this Apple ID
+                        // already owns the product. Don't slip into the app;
+                        // make the user explicitly acknowledge.
+                        showSilentRestoreAlert = true
+                    }
                 } catch {
                     // If the user cancelled the Apple payment sheet, stay on the
                     // paywall silently — no alert, no dismiss.
                     let nsError = error as NSError
-                    let isCancelled = nsError.code == 2        // SKError.paymentCancelled
+                    let isCancelled = nsError.code == 1        // RevenueCat purchaseCancelled
+                        || nsError.code == 2                   // SKError.paymentCancelled
                         || nsError.code == 9                   // SKError.overlayTimeout
                         || nsError.localizedDescription.lowercased().contains("cancel")
                     guard !isCancelled else { return }
