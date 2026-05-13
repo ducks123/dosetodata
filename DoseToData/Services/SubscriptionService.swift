@@ -80,7 +80,10 @@ final class SubscriptionService {
             }
             apply(customerInfo: customerInfo)
         } catch {
-            if status == .loading { status = .expired }
+            if status == .loading {
+                // RevenueCat unreachable — fall back to local trial / grandfather status.
+                applyLocalStatus()
+            }
         }
         // 10-second timeout on offerings — non-fatal, paywall uses fallback prices.
         do {
@@ -134,12 +137,60 @@ final class SubscriptionService {
         apply(customerInfo: customerInfo)
     }
 
+    // MARK: - Local trial
+
+    /// Stores the date when the local trial expires (new users only).
+    private static let trialExpiryKey = "com.stewartsherpa.dosetodata.trialExpiry"
+    /// UserDefaults key written by UserPreferences when onboarding completes.
+    private static let onboardingCompletedKey = "dosetodata.onboarding.completed"
+    /// Persisted flag so grandfathered status survives across launches.
+    private static let grandfatheredKey = "com.stewartsherpa.dosetodata.grandfathered"
+
+    /// Returns the number of trial days remaining, or `nil` if the user is permanently grandfathered.
+    ///
+    /// - Existing users (had the app before this build): grandfathered → returns `nil` → maps to `.active`.
+    /// - New users: 7-day trial → returns days remaining → 0 maps to `.expired`.
+    static func localTrialDaysLeft() -> Int? {
+        let defaults = UserDefaults.standard
+
+        // Already marked grandfathered on a previous launch — fast path.
+        if defaults.bool(forKey: grandfatheredKey) { return nil }
+
+        if let expiry = defaults.object(forKey: trialExpiryKey) as? Date {
+            let days = Calendar.current.dateComponents([.day], from: Date(), to: expiry).day ?? 0
+            return max(0, days)
+        } else {
+            // First time this code runs on this device.
+            let isExistingUser = defaults.bool(forKey: onboardingCompletedKey)
+            if isExistingUser {
+                // Had the app before — grandfather them in permanently.
+                defaults.set(true, forKey: grandfatheredKey)
+                return nil
+            } else {
+                // Brand-new user — start the 7-day trial clock.
+                let expiry = Calendar.current.date(byAdding: .day, value: trialDays, to: Date())!
+                defaults.set(expiry, forKey: trialExpiryKey)
+                return trialDays
+            }
+        }
+    }
+
     // MARK: - Private helpers
+
+    /// Applies status based solely on the local trial / grandfather state.
+    private func applyLocalStatus() {
+        if let daysLeft = Self.localTrialDaysLeft() {
+            status = daysLeft > 0 ? .trial(daysLeft: daysLeft) : .expired
+        } else {
+            status = .active // permanently grandfathered existing user
+        }
+    }
 
     private func apply(customerInfo: CustomerInfo) {
         guard let entitlement = customerInfo.entitlements[Self.entitlementID],
               entitlement.isActive else {
-            status = .expired
+            // No active RevenueCat entitlement — fall back to local trial / grandfather status.
+            applyLocalStatus()
             return
         }
 

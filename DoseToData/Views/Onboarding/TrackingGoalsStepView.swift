@@ -2,13 +2,27 @@ import SwiftUI
 
 struct TrackingGoalsStepView: View {
     @Environment(UserPreferences.self) private var prefs
+    @Environment(AuthService.self) private var auth
     @State private var selected: Set<TrackingGoal> = []
+    @State private var showSignIn = false
 
     let onContinue: () -> Void
     let onSkip: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            // ── Sign in link (top right) ───────────────────────────
+            HStack {
+                Spacer()
+                Button("Sign in") {
+                    showSignIn = true
+                }
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(Theme.Palette.primary)
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 16)
+
             VStack(alignment: .leading, spacing: 10) {
                 Text("Welcome")
                     .font(Theme.Font.heroLabel)
@@ -22,7 +36,7 @@ struct TrackingGoalsStepView: View {
                     .padding(.top, 4)
             }
             .padding(.horizontal, 24)
-            .padding(.top, 32)
+            .padding(.top, 12)
 
             ScrollView {
                 VStack(spacing: 12) {
@@ -58,6 +72,10 @@ struct TrackingGoalsStepView: View {
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 32)
+        }
+        .sheet(isPresented: $showSignIn) {
+            AuthSheet()
+                .environment(auth)
         }
     }
 

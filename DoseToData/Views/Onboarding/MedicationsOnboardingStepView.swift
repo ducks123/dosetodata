@@ -8,6 +8,7 @@ struct MedicationsOnboardingStepView: View {
 
     @State private var searchText: String = ""
     @State private var showingAddSheet: Medication?
+    @State private var showingCustomForm = false
 
     let onContinue: () -> Void
     let onSkip: () -> Void
@@ -63,6 +64,11 @@ struct MedicationsOnboardingStepView: View {
                         }
                         .padding(.top, 12)
                     }
+
+                    AddCustomMedRow {
+                        showingCustomForm = true
+                    }
+                    .padding(.top, 12)
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 12)
@@ -97,6 +103,14 @@ struct MedicationsOnboardingStepView: View {
                 showingAddSheet = nil
             }
             .presentationDetents([.medium])
+        }
+        .sheet(isPresented: $showingCustomForm) {
+            CustomMedicationForm { newMed in
+                modelContext.insert(newMed)
+                try? modelContext.save()
+                // Immediately prompt for dose & start date.
+                showingAddSheet = newMed
+            }
         }
     }
 
@@ -136,6 +150,45 @@ struct MedicationsOnboardingStepView: View {
             RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
                 .stroke(Theme.Palette.divider, lineWidth: 1)
         )
+    }
+}
+
+private struct AddCustomMedRow: View {
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(Theme.Palette.primary.opacity(0.12))
+                        .frame(width: 40, height: 40)
+                    Image(systemName: "plus")
+                        .foregroundStyle(Theme.Palette.primary)
+                        .font(.system(size: 16, weight: .semibold))
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Can't find it?")
+                        .font(Theme.Font.bodyEmphasis)
+                        .foregroundStyle(Theme.Palette.textPrimary)
+                    Text("Add your own medication")
+                        .font(Theme.Font.caption)
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.textSecondary)
+            }
+            .padding(12)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
+                    .stroke(Theme.Palette.primary.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
 

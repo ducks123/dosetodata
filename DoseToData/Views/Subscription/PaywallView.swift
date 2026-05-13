@@ -13,12 +13,25 @@ struct PaywallView: View {
     /// skips during onboarding. Used when PaywallView is embedded in the onboarding flow.
     var onComplete: (() -> Void)? = nil
 
-    @State private var selectedPlan: Plan = .annual
+    @State private var selectedPlan: Plan = .trialAnnual
     @State private var showError = false
 
-    enum Plan { case monthly, annual }
+    enum Plan: Equatable {
+        case annual
+        case monthly
+        case trialAnnual
+        case trialMonthly
 
-    // MARK: - Prices (shown while real prices load)
+        var isTrial: Bool {
+            self == .trialAnnual || self == .trialMonthly
+        }
+
+        var isAnnual: Bool {
+            self == .annual || self == .trialAnnual
+        }
+    }
+
+    // MARK: - Packages
 
     private var monthlyPackage: Package? {
         sub.offerings?.current?.availablePackages
@@ -30,28 +43,39 @@ struct PaywallView: View {
             .first { $0.storeProduct.productIdentifier == SubscriptionService.annualProductID }
     }
 
+    private var selectedPackage: Package? {
+        switch selectedPlan {
+        case .annual, .trialAnnual:   return annualPackage
+        case .monthly, .trialMonthly: return monthlyPackage
+        }
+    }
+
+    // MARK: - Price strings
+
+    private var packagesLoaded: Bool {
+        monthlyPackage != nil || annualPackage != nil
+    }
+
     private var monthlyPriceString: String {
-        monthlyPackage?.storeProduct.localizedPriceString ?? "$4.99"
+        monthlyPackage?.storeProduct.localizedPriceString ?? "—"
     }
 
     private var annualPriceString: String {
-        annualPackage?.storeProduct.localizedPriceString ?? "$39.99"
+        annualPackage?.storeProduct.localizedPriceString ?? "—"
     }
 
-    /// Monthly cost when billed annually (for the "save X%" badge).
     private var annualPerMonthString: String {
-        guard let pkg = annualPackage else { return "$3.33" }
+        guard let pkg = annualPackage else { return "—" }
         let price = pkg.storeProduct.price
         let perMonth = price / 12
-        let formatted = pkg.storeProduct.priceFormatter?.string(from: perMonth as NSDecimalNumber) ?? "$3.33"
-        return formatted
+        return pkg.storeProduct.priceFormatter?.string(from: perMonth as NSDecimalNumber) ?? "—"
     }
 
     private var savingsPercent: Int {
-        guard let monthly = monthlyPackage, let annual = annualPackage else { return 33 }
+        guard let monthly = monthlyPackage, let annual = annualPackage else { return 0 }
         let monthlyCost = monthly.storeProduct.price * 12
         let annualCost  = annual.storeProduct.price
-        guard monthlyCost > 0 else { return 33 }
+        guard monthlyCost > 0 else { return 0 }
         let savings = ((monthlyCost - annualCost) / monthlyCost * 100) as NSDecimalNumber
         return Int(truncating: savings)
     }
@@ -74,24 +98,32 @@ struct PaywallView: View {
                 planPicker
                     .padding(.top, 28)
 
+                // ── Retry link when offerings fail to load ───────────────
+                if !packagesLoaded && !sub.isRefreshing {
+                    Button {
+                        Task { await sub.refresh() }
+                    } label: {
+                        Label("Could not load prices — tap to retry", systemImage: "arrow.clockwise")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Theme.Palette.negative)
+                    }
+                    .padding(.top, 12)
+                }
+
                 // ── CTA ─────────────────────────────────────────────────
                 ctaButton
                     .padding(.top, 20)
                     .padding(.horizontal, 24)
 
-                // ── Trial note ──────────────────────────────────────────
-                Group {
-                    if case .trial(let days) = sub.status {
-                        Text("\(days) day\(days == 1 ? "" : "s") left in your free trial. Then \(selectedPlan == .monthly ? monthlyPriceString + "/mo" : annualPriceString + "/yr"). Cancel any time.")
-                    } else {
-                        Text("7 days free, then \(selectedPlan == .monthly ? monthlyPriceString + "/mo" : annualPriceString + "/yr"). Cancel before trial ends and you won't be charged.")
-                    }
-                }
-                .font(.system(size: 12))
-                .foregroundStyle(Theme.Palette.textSecondary)
-                .multilineTextAlignment(.center)
-                .padding(.top, 10)
-                .padding(.horizontal, 32)
+                // ── Fine print ──────────────────────────────────────────
+                trialNote
+                    .padding(.top, 10)
+                    .padding(.horizontal, 32)
+
+                // ── Apple-required subscription disclosure ───────────────
+                legalDisclosure
+                    .padding(.top, 8)
+                    .padding(.horizontal, 24)
 
                 // ── Restore ─────────────────────────────────────────────
                 Button("Restore purchases") {
@@ -99,7 +131,7 @@ struct PaywallView: View {
                 }
                 .font(.system(size: 13))
                 .foregroundStyle(Theme.Palette.textSecondary)
-                .padding(.top, 14)
+                .padding(.top, 8)
 
                 // ── Legal links ──────────────────────────────────────────
                 HStack(spacing: 4) {
@@ -111,25 +143,13 @@ struct PaywallView: View {
                 .foregroundStyle(Theme.Palette.textSecondary)
                 .padding(.top, 8)
 
-                // ── Onboarding skip ──────────────────────────────────────
-                if !isDismissible, onComplete != nil {
-                    Button("Maybe later") {
-                        onComplete?()
-                    }
-                    .font(.system(size: 13))
-                    .foregroundStyle(Theme.Palette.textSecondary.opacity(0.6))
-                    .padding(.top, 8)
-                }
-
                 Spacer().frame(height: 40)
             }
             .padding(.horizontal, 24)
         }
         .overlay(alignment: .topTrailing) {
             if isDismissible {
-                Button {
-                    dismiss()
-                } label: {
+                Button { dismiss() } label: {
                     Image(systemName: "xmark.circle.fill")
                         .font(.system(size: 28))
                         .symbolRenderingMode(.hierarchical)
@@ -143,9 +163,7 @@ struct PaywallView: View {
             if sub.isLoading {
                 ZStack {
                     Color.black.opacity(0.15).ignoresSafeArea()
-                    ProgressView()
-                        .scaleEffect(1.4)
-                        .tint(.white)
+                    ProgressView().scaleEffect(1.4).tint(.white)
                 }
             }
         }
@@ -158,7 +176,10 @@ struct PaywallView: View {
             if msg != nil { showError = true }
         }
         .background(Color(UIColor.systemGroupedBackground).ignoresSafeArea())
-        .task { await sub.refresh() }
+        .task {
+            sub.errorMessage = nil  // clear any stale error before presenting
+            await sub.refresh()
+        }
     }
 
     // MARK: - Header
@@ -173,11 +194,9 @@ struct PaywallView: View {
                         startPoint: .topLeading, endPoint: .bottomTrailing
                     )
                 )
-
             Text("DoseToData Premium")
                 .font(.system(size: 26, weight: .bold))
                 .foregroundStyle(Theme.Palette.textPrimary)
-
             Text("Track your health, understand your data.")
                 .font(.system(size: 15))
                 .foregroundStyle(Theme.Palette.textSecondary)
@@ -188,11 +207,11 @@ struct PaywallView: View {
     // MARK: - Feature list
 
     private let features: [(String, String)] = [
-        ("Unlimited daily check-ins",      "checkmark.circle.fill"),
-        ("Track medications & adherence",  "pill.fill"),
-        ("Insights & trend charts",        "chart.xyaxis.line"),
-        ("Run custom tracking tests",      "flask.fill"),
-        ("iCloud backup & sync",           "icloud.fill"),
+        ("Unlimited daily check-ins",       "checkmark.circle.fill"),
+        ("Track medications & adherence",   "pill.fill"),
+        ("Insights & trend charts",         "chart.xyaxis.line"),
+        ("Run custom tracking tests",       "flask.fill"),
+        ("Medication timeline & reminders", "bell.fill"),
     ]
 
     private var featureList: some View {
@@ -220,39 +239,34 @@ struct PaywallView: View {
 
     private var planPicker: some View {
         VStack(spacing: 10) {
+
+            // ── Annual ──────────────────────────────────────────────────
             planRow(
                 plan: .annual,
                 title: "Annual",
                 subtitle: "\(annualPerMonthString)/mo — billed \(annualPriceString)/yr",
-                badge: "SAVE \(savingsPercent)%"
+                badge: savingsPercent > 0 ? "SAVE \(savingsPercent)%" : nil
             )
+
+            // ── Monthly ─────────────────────────────────────────────────
             planRow(
                 plan: .monthly,
                 title: "Monthly",
                 subtitle: "\(monthlyPriceString)/month",
                 badge: nil
             )
+
+            // ── Free trial ──────────────────────────────────────────────
+            trialRow
         }
     }
 
+    /// A tappable row for Annual or Monthly direct plans.
     private func planRow(plan: Plan, title: String, subtitle: String, badge: String?) -> some View {
         let isSelected = selectedPlan == plan
-        return Button {
-            selectedPlan = plan
-        } label: {
+        return Button { selectedPlan = plan } label: {
             HStack(spacing: 14) {
-                // Radio circle
-                ZStack {
-                    Circle()
-                        .stroke(isSelected ? Theme.Palette.primary : Theme.Palette.divider, lineWidth: 2)
-                        .frame(width: 22, height: 22)
-                    if isSelected {
-                        Circle()
-                            .fill(Theme.Palette.primary)
-                            .frame(width: 12, height: 12)
-                    }
-                }
-
+                radioCircle(selected: isSelected)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(.system(size: 15, weight: .semibold))
@@ -261,9 +275,7 @@ struct PaywallView: View {
                         .font(.system(size: 13))
                         .foregroundStyle(Theme.Palette.textSecondary)
                 }
-
                 Spacer()
-
                 if let badge {
                     Text(badge)
                         .font(.system(size: 11, weight: .bold))
@@ -278,10 +290,7 @@ struct PaywallView: View {
             .background(Color.white)
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(
-                        isSelected ? Theme.Palette.primary : Color.clear,
-                        lineWidth: 2
-                    )
+                    .stroke(isSelected ? Theme.Palette.primary : Color.clear, lineWidth: 2)
             )
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
@@ -289,43 +298,169 @@ struct PaywallView: View {
         .buttonStyle(.plain)
     }
 
+    /// The "7-Day Free Trial" row, which expands to show Annual/Monthly sub-options when selected.
+    private var trialRow: some View {
+        let isTrialSelected = selectedPlan.isTrial
+        return VStack(spacing: 0) {
+            Button { selectedPlan = .trialAnnual } label: {
+                HStack(spacing: 14) {
+                    radioCircle(selected: isTrialSelected)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("7-Day Free Trial")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(Theme.Palette.textPrimary)
+                        Text("Try free, then choose your plan")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Theme.Palette.textSecondary)
+                    }
+                    Spacer()
+                    Image(systemName: "gift.fill")
+                        .font(.system(size: 15))
+                        .foregroundStyle(Theme.Palette.primary)
+                }
+                .padding(16)
+            }
+            .buttonStyle(.plain)
+
+            // Sub-options — only visible when trial is selected
+            if isTrialSelected {
+                Divider().padding(.horizontal, 16)
+
+                HStack(spacing: 0) {
+                    trialSubOption(
+                        plan: .trialAnnual,
+                        label: "Then Annual",
+                        detail: "\(annualPerMonthString)/mo",
+                        badge: savingsPercent > 0 ? "SAVE \(savingsPercent)%" : nil
+                    )
+                    Divider().frame(height: 56)
+                    trialSubOption(
+                        plan: .trialMonthly,
+                        label: "Then Monthly",
+                        detail: "\(monthlyPriceString)/mo",
+                        badge: nil
+                    )
+                }
+                .padding(.vertical, 4)
+            }
+        }
+        .background(Color.white)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(isTrialSelected ? Theme.Palette.primary : Color.clear, lineWidth: 2)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
+        .animation(.easeInOut(duration: 0.18), value: isTrialSelected)
+    }
+
+    private func trialSubOption(plan: Plan, label: String, detail: String, badge: String?) -> some View {
+        let isSelected = selectedPlan == plan
+        return Button { selectedPlan = plan } label: {
+            VStack(spacing: 4) {
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(isSelected ? Theme.Palette.primary : Color.clear)
+                        .overlay(Circle().stroke(isSelected ? Theme.Palette.primary : Theme.Palette.divider, lineWidth: 1.5))
+                        .frame(width: 14, height: 14)
+                    Text(label)
+                        .font(.system(size: 13, weight: isSelected ? .semibold : .regular))
+                        .foregroundStyle(Theme.Palette.textPrimary)
+                }
+                Text(detail)
+                    .font(.system(size: 12))
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                if let badge {
+                    Text(badge)
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Theme.Palette.success)
+                        .clipShape(Capsule())
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func radioCircle(selected: Bool) -> some View {
+        ZStack {
+            Circle()
+                .stroke(selected ? Theme.Palette.primary : Theme.Palette.divider, lineWidth: 2)
+                .frame(width: 22, height: 22)
+            if selected {
+                Circle()
+                    .fill(Theme.Palette.primary)
+                    .frame(width: 12, height: 12)
+            }
+        }
+    }
+
+    // MARK: - Trial note
+
+    private var trialNote: some View {
+        Group {
+            if case .trial(let days) = sub.status {
+                Text("\(days) day\(days == 1 ? "" : "s") left in your free trial. Cancel any time.")
+            } else if selectedPlan.isTrial {
+                Text("7 days free, then \(selectedPlan == .trialAnnual ? annualPriceString + "/yr" : monthlyPriceString + "/mo"). Cancel before trial ends and you won't be charged.")
+            } else {
+                Text(selectedPlan == .annual ? "\(annualPriceString)/yr billed annually. Cancel any time." : "\(monthlyPriceString)/mo. Cancel any time.")
+            }
+        }
+        .font(.system(size: 12))
+        .foregroundStyle(Theme.Palette.textSecondary)
+        .multilineTextAlignment(.center)
+    }
+
+    // MARK: - Legal disclosure (Apple Guideline 3.1.2)
+
+    private var legalDisclosure: some View {
+        Text("""
+Payment will be charged to your Apple ID account at confirmation of purchase. \
+Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. \
+Your account will be charged for renewal within 24 hours prior to the end of the current period. \
+You can manage and cancel your subscriptions in your App Store account settings. \
+Any unused portion of a free trial will be forfeited upon purchase of a subscription.
+""")
+        .font(.system(size: 11))
+        .foregroundStyle(Theme.Palette.textSecondary.opacity(0.8))
+        .multilineTextAlignment(.center)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
     // MARK: - CTA
 
     private var ctaButton: some View {
-        let pkg = selectedPlan == .monthly ? monthlyPackage : annualPackage
-
-        return Button {
-            if let pkg {
-                Task {
-                    do {
-                        try await sub.purchase(package: pkg)
-                        if let onComplete { onComplete() } else { dismiss() }
-                    } catch {
-                        sub.errorMessage = error.localizedDescription
-                    }
+        Button {
+            guard let pkg = selectedPackage else { return }
+            Task {
+                do {
+                    try await sub.purchase(package: pkg)
+                    finish()
+                } catch {
+                    // If the user cancelled the Apple payment sheet, stay on the
+                    // paywall silently — no alert, no dismiss.
+                    let nsError = error as NSError
+                    let isCancelled = nsError.code == 2        // SKError.paymentCancelled
+                        || nsError.code == 9                   // SKError.overlayTimeout
+                        || nsError.localizedDescription.lowercased().contains("cancel")
+                    guard !isCancelled else { return }
+                    sub.errorMessage = error.localizedDescription
                 }
-            } else {
-                // Offerings not loaded — retry.
-                Task { await sub.refresh() }
             }
         } label: {
             Group {
-                if sub.isLoading {
-                    // Purchase in flight.
-                    ProgressView().tint(.white).scaleEffect(0.85)
-                } else if sub.isRefreshing {
-                    // Offerings still loading.
+                if sub.isLoading || sub.isRefreshing {
                     HStack(spacing: 10) {
                         ProgressView().tint(.white).scaleEffect(0.85)
-                        Text("Loading…")
-                            .font(.system(size: 16, weight: .bold))
+                        Text("Loading…").font(.system(size: 16, weight: .bold))
                     }
-                } else if pkg == nil {
-                    // Load finished but offerings unavailable — show retry.
-                    Text("Tap to Retry")
-                        .font(.system(size: 16, weight: .bold))
                 } else {
-                    Text(selectedPlan == .annual ? "Start 7-Day Free Trial" : "Try Free for 7 Days")
+                    Text(ctaLabel)
                         .font(.system(size: 16, weight: .bold))
                 }
             }
@@ -334,14 +469,29 @@ struct PaywallView: View {
             .padding(.vertical, 16)
             .background(
                 LinearGradient(
-                    colors: [Theme.Palette.primary, Color(red: 0.35, green: 0.20, blue: 0.80)],
+                    colors: packagesLoaded
+                        ? [Theme.Palette.primary, Color(red: 0.35, green: 0.20, blue: 0.80)]
+                        : [Color.gray, Color.gray.opacity(0.8)],
                     startPoint: .leading, endPoint: .trailing
                 )
             )
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .shadow(color: Theme.Palette.primary.opacity(0.35), radius: 8, y: 4)
+            .shadow(color: Theme.Palette.primary.opacity(packagesLoaded ? 0.35 : 0), radius: 8, y: 4)
         }
-        .disabled(sub.isLoading)
+        .disabled(sub.isLoading || sub.isRefreshing || !packagesLoaded)
+    }
+
+    private var ctaLabel: String {
+        guard packagesLoaded else { return "Loading prices…" }
+        switch selectedPlan {
+        case .trialAnnual, .trialMonthly: return "Start 7-Day Free Trial"
+        case .annual:                      return "Subscribe Annually"
+        case .monthly:                     return "Subscribe Monthly"
+        }
+    }
+
+    private func finish() {
+        if let onComplete { onComplete() } else { dismiss() }
     }
 }
 
@@ -382,14 +532,21 @@ struct TrialBanner: View {
 
     var body: some View {
         if case .trial(let days) = sub.status {
+            let totalDays = SubscriptionService.trialDays
+            let dayNumber = max(1, totalDays - days + 1)
             Button {
                 showPaywall = true
             } label: {
                 HStack(spacing: 8) {
                     Image(systemName: "sparkles")
                         .font(.system(size: 13, weight: .semibold))
-                    Text(days == 1 ? "Last day of free trial" : "\(days) days left in free trial")
-                        .font(.system(size: 13, weight: .semibold))
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(days == 1 ? "Last day of your free trial" : "Day \(dayNumber) of \(totalDays) — free trial")
+                            .font(.system(size: 13, weight: .semibold))
+                        Text(days == 1 ? "Upgrade today to keep access" : "\(days) days remaining")
+                            .font(.system(size: 11))
+                            .opacity(0.8)
+                    }
                     Spacer()
                     Text("Upgrade →")
                         .font(.system(size: 12, weight: .bold))

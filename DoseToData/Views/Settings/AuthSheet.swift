@@ -61,34 +61,41 @@ struct AuthSheet: View {
     private var emailPane: some View {
         Form {
             Section {
-                // Apple is required per App Store Guideline 4.8 whenever
-                // any third-party sign-in is offered. It renders with
-                // native styling — we don't wrap it in PrimaryButtonStyle.
-                SignInWithAppleButton(.continue) { request in
-                    auth.prepareAppleSignInRequest(request)
-                } onCompletion: { result in
-                    Task { await auth.completeSignInWithApple(result: result) }
-                }
-                .signInWithAppleButtonStyle(.black)
-                .frame(height: 48)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
-                .disabled(auth.isBusy)
-
-                Button {
-                    Task { await auth.signInWithGoogle() }
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "globe")
-                        Text("Continue with Google")
+                VStack(spacing: 12) {
+                    // Apple is required per App Store Guideline 4.8 whenever
+                    // any third-party sign-in is offered. It renders with
+                    // native styling — we don't wrap it in PrimaryButtonStyle.
+                    SignInWithAppleButton(.continue) { request in
+                        auth.prepareAppleSignInRequest(request)
+                    } onCompletion: { result in
+                        Task { await auth.completeSignInWithApple(result: result) }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
+                    .signInWithAppleButtonStyle(.black)
+                    .frame(maxWidth: .infinity, minHeight: 50)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .disabled(auth.isBusy)
+
+                    Button {
+                        Task { await auth.signInWithGoogle() }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "globe")
+                            Text("Continue with Google")
+                                .fontWeight(.medium)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(minHeight: 50)
+                        .background(Color(UIColor.secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color(UIColor.separator), lineWidth: 0.5)
+                        )
+                    }
+                    .foregroundStyle(Theme.Palette.textPrimary)
+                    .disabled(auth.isBusy)
                 }
-                .buttonStyle(.bordered)
-                .tint(Theme.Palette.textPrimary)
-                .disabled(auth.isBusy)
+                .padding(.vertical, 8)
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
             }
@@ -147,12 +154,12 @@ struct AuthSheet: View {
 
             Section {
                 VStack(alignment: .leading, spacing: 8) {
-                    Label("What gets backed up", systemImage: "icloud.and.arrow.up")
+                    Label("About your account", systemImage: "person.circle")
                         .font(Theme.Font.bodyEmphasis)
-                    Text("Your check-ins, medication logs, and notes — encrypted in transit and at rest.")
+                    Text("Signing in links your account to this device. Your data is stored locally — deleting the app will erase your history.")
                         .font(Theme.Font.caption)
                         .foregroundStyle(Theme.Palette.textSecondary)
-                    Text("You can delete your account and data any time.")
+                    Text("You can delete your account any time from Settings.")
                         .font(Theme.Font.caption)
                         .foregroundStyle(Theme.Palette.textSecondary)
                 }

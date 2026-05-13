@@ -24,7 +24,6 @@ struct OnboardingContainerView: View {
                     .transition(.opacity)
             default:
                 PaywallView(isDismissible: false, onComplete: finish)
-                    .environment(sub)
                     .transition(.opacity)
             }
         }

@@ -1,5 +1,6 @@
 import SwiftUI
 import RevenueCat
+import StoreKit
 
 struct SettingsView: View {
     @Environment(AuthService.self) private var auth
@@ -15,6 +16,18 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
+                // MARK: - Data notice
+                Section {
+                    Label {
+                        Text("Your data is stored on this device only. **Deleting the app permanently erases all your history.**")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Theme.Palette.textSecondary)
+                    } icon: {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundStyle(Theme.Palette.attention)
+                    }
+                }
+
                 // MARK: - Account
                 Section("Account") {
                     switch auth.state {
@@ -73,6 +86,21 @@ struct SettingsView: View {
                         .foregroundStyle(Theme.Palette.primary)
                     case .active:
                         EmptyView()
+                    }
+
+                    // Apple requires "Manage Subscription" to deep-link to the
+                    // iOS subscription sheet — users can cancel a trial there
+                    // before they're charged.
+                    if case .trial = sub.status {
+                        Button("Cancel free trial") {
+                            Task { await openManageSubscriptions() }
+                        }
+                        .foregroundStyle(Theme.Palette.negative)
+                    } else if case .active = sub.status {
+                        Button("Manage subscription") {
+                            Task { await openManageSubscriptions() }
+                        }
+                        .foregroundStyle(Theme.Palette.primary)
                     }
 
                     Button("Restore purchases") {
@@ -141,6 +169,29 @@ struct SettingsView: View {
                 }
                 if case .signedIn = newState { wasSignedIn = true }
             }
+        }
+    }
+
+    /// Opens iOS's native Manage Subscription sheet so the user can cancel.
+    /// Falls back to the App Store subscriptions URL if the scene is unavailable.
+    @MainActor
+    private func openManageSubscriptions() async {
+        if let scene = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive })
+            ?? UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first {
+            do {
+                try await AppStore.showManageSubscriptions(in: scene)
+                await sub.refresh()
+                return
+            } catch {
+                // Fall through to URL fallback.
+            }
+        }
+        if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
+            await UIApplication.shared.open(url)
         }
     }
 
