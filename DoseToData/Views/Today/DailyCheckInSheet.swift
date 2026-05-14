@@ -482,24 +482,24 @@ struct DailyCheckInSheet: View {
             return
         }
 
-        // Only celebrate when the user is logging *today*. Editing a past day shouldn't fire confetti.
-        if isToday {
-            // Dismiss the sheet FIRST so the confetti is actually visible to the
-            // user on the underlying TodayView. Trigger the burst after a short
-            // delay so the dismiss animation has played out.
-            let appStateRef = appState
-            let datesForStreak = allCheckIns.map { $0.date } + [Date()]
-            dismiss()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                UINotificationFeedbackGenerator().notificationOccurred(.success)
-                appStateRef.confettiTrigger = UUID()
+        // Celebrate every successful log, past / today / future. Dismiss
+        // the sheet first so the confetti is visible on TodayView, then
+        // trigger the burst after the dismiss animation. Streak milestone
+        // notifications only fire for today's logs (currentStreak only
+        // counts streaks anchored at today/yesterday anyway).
+        let appStateRef = appState
+        let datesForStreak = allCheckIns.map { $0.date } + [Date()]
+        let wasToday = isToday
+        dismiss()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            appStateRef.confettiTrigger = UUID()
+            if wasToday {
                 let streak = AppState.currentStreak(from: datesForStreak)
                 Task {
                     await ReminderManager.shared.fireMilestoneNotificationIfNeeded(streak: streak)
                 }
             }
-        } else {
-            dismiss()
         }
     }
 }
