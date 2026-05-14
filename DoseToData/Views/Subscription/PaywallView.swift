@@ -111,14 +111,23 @@ struct PaywallView: View {
                     .padding(.top, 12)
                 }
 
-                // ── CTA ─────────────────────────────────────────────────
-                ctaButton
-                    .padding(.top, 20)
+                // ── Billed-amount summary ───────────────────────────────
+                // Apple Guideline 3.1.2(c): the billed total must be clearly
+                // and conspicuously displayed in the purchase flow. Putting it
+                // directly above the CTA in a slightly heavier weight so it
+                // can't be missed.
+                billedAmountSummary
+                    .padding(.top, 18)
                     .padding(.horizontal, 24)
 
-                // ── Fine print ──────────────────────────────────────────
+                // ── CTA ─────────────────────────────────────────────────
+                ctaButton
+                    .padding(.top, 8)
+                    .padding(.horizontal, 24)
+
+                // ── Cancel-anytime fine print ───────────────────────────
                 trialNote
-                    .padding(.top, 10)
+                    .padding(.top, 8)
                     .padding(.horizontal, 32)
 
                 // ── Apple-required subscription disclosure ───────────────
@@ -248,10 +257,14 @@ struct PaywallView: View {
         VStack(spacing: 10) {
 
             // ── Annual ──────────────────────────────────────────────────
+            // App Store Guideline 3.1.2(c): the BILLED amount must be the
+            // most prominent pricing element. We show $39.99/yr large and
+            // the calculated $3.33/mo equivalent small and subordinate.
             planRow(
                 plan: .annual,
                 title: "Annual",
-                subtitle: "\(annualPerMonthString)/mo — billed \(annualPriceString)/yr",
+                billed: "\(annualPriceString)/year",
+                secondary: "Just \(annualPerMonthString)/mo equivalent",
                 badge: savingsPercent > 0 ? "SAVE \(savingsPercent)%" : nil
             )
 
@@ -259,7 +272,8 @@ struct PaywallView: View {
             planRow(
                 plan: .monthly,
                 title: "Monthly",
-                subtitle: "\(monthlyPriceString)/month",
+                billed: "\(monthlyPriceString)/month",
+                secondary: nil,
                 badge: nil
             )
 
@@ -269,18 +283,25 @@ struct PaywallView: View {
     }
 
     /// A tappable row for Annual or Monthly direct plans.
-    private func planRow(plan: Plan, title: String, subtitle: String, badge: String?) -> some View {
+    /// `billed` is the total billed amount and is the largest text; `secondary`
+    /// (e.g. "$3.33/mo equivalent") is rendered small and muted underneath.
+    private func planRow(plan: Plan, title: String, billed: String, secondary: String?, badge: String?) -> some View {
         let isSelected = selectedPlan == plan
         return Button { selectedPlan = plan } label: {
             HStack(spacing: 14) {
                 radioCircle(selected: isSelected)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(Theme.Palette.textPrimary)
-                    Text(subtitle)
                         .font(.system(size: 13))
                         .foregroundStyle(Theme.Palette.textSecondary)
+                    Text(billed)
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundStyle(Theme.Palette.textPrimary)
+                    if let secondary {
+                        Text(secondary)
+                            .font(.system(size: 11))
+                            .foregroundStyle(Theme.Palette.textSecondary)
+                    }
                 }
                 Spacer()
                 if let badge {
@@ -306,6 +327,9 @@ struct PaywallView: View {
     }
 
     /// The "7-Day Free Trial" row, which expands to show Annual/Monthly sub-options when selected.
+    /// Sub-options lead with the BILLED amount (e.g., $39.99/year, $4.99/month)
+    /// per App Store Guideline 3.1.2(c) — the trial framing is subordinate to
+    /// the price the user will actually be charged after the trial.
     private var trialRow: some View {
         let isTrialSelected = selectedPlan.isTrial
         return VStack(spacing: 0) {
@@ -313,11 +337,14 @@ struct PaywallView: View {
                 HStack(spacing: 14) {
                     radioCircle(selected: isTrialSelected)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("7-Day Free Trial")
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(Theme.Palette.textPrimary)
-                        Text("Try free, then choose your plan")
+                        Text("Try it first")
                             .font(.system(size: 13))
+                            .foregroundStyle(Theme.Palette.textSecondary)
+                        Text("Free for 7 days")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(Theme.Palette.textPrimary)
+                        Text("Then your selected plan price below")
+                            .font(.system(size: 11))
                             .foregroundStyle(Theme.Palette.textSecondary)
                     }
                     Spacer()
@@ -336,19 +363,21 @@ struct PaywallView: View {
                 HStack(spacing: 0) {
                     trialSubOption(
                         plan: .trialAnnual,
-                        label: "Then Annual",
-                        detail: "\(annualPerMonthString)/mo",
+                        label: "Then",
+                        billed: "\(annualPriceString)/yr",
+                        secondary: "\(annualPerMonthString)/mo equivalent",
                         badge: savingsPercent > 0 ? "SAVE \(savingsPercent)%" : nil
                     )
-                    Divider().frame(height: 56)
+                    Divider().frame(height: 72)
                     trialSubOption(
                         plan: .trialMonthly,
-                        label: "Then Monthly",
-                        detail: "\(monthlyPriceString)/mo",
+                        label: "Then",
+                        billed: "\(monthlyPriceString)/mo",
+                        secondary: nil,
                         badge: nil
                     )
                 }
-                .padding(.vertical, 4)
+                .padding(.vertical, 6)
             }
         }
         .background(Color.white)
@@ -361,25 +390,35 @@ struct PaywallView: View {
         .animation(.easeInOut(duration: 0.18), value: isTrialSelected)
     }
 
-    private func trialSubOption(plan: Plan, label: String, detail: String, badge: String?) -> some View {
+    private func trialSubOption(plan: Plan, label: String, billed: String, secondary: String?, badge: String?) -> some View {
         let isSelected = selectedPlan == plan
         return Button { selectedPlan = plan } label: {
-            VStack(spacing: 4) {
+            VStack(spacing: 3) {
                 HStack(spacing: 6) {
                     Circle()
                         .fill(isSelected ? Theme.Palette.primary : Color.clear)
                         .overlay(Circle().stroke(isSelected ? Theme.Palette.primary : Theme.Palette.divider, lineWidth: 1.5))
                         .frame(width: 14, height: 14)
                     Text(label)
-                        .font(.system(size: 13, weight: isSelected ? .semibold : .regular))
-                        .foregroundStyle(Theme.Palette.textPrimary)
+                        .font(.system(size: 11))
+                        .foregroundStyle(Theme.Palette.textSecondary)
                 }
-                Text(detail)
-                    .font(.system(size: 12))
-                    .foregroundStyle(Theme.Palette.textSecondary)
+                Text(billed)
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(Theme.Palette.textPrimary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                if let secondary {
+                    Text(secondary)
+                        .font(.system(size: 10))
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                }
                 if let badge {
                     Text(badge)
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.system(size: 9, weight: .bold))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
@@ -388,7 +427,8 @@ struct PaywallView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
+            .padding(.vertical, 8)
+            .padding(.horizontal, 6)
         }
         .buttonStyle(.plain)
     }
@@ -406,19 +446,48 @@ struct PaywallView: View {
         }
     }
 
-    // MARK: - Trial note
+    // MARK: - Billed-amount summary
+    //
+    // Apple Guideline 3.1.2(c) compliance: this is the load-bearing line
+    // that states the total billed amount in a clear, prominent way. Any
+    // free-trial / introductory framing lives in `trialNote` below, in a
+    // smaller, subordinate position relative to this.
+
+    private var billedAmountSummary: some View {
+        let text: String
+        switch selectedPlan {
+        case .annual:
+            text = "You will be billed \(annualPriceString) per year."
+        case .monthly:
+            text = "You will be billed \(monthlyPriceString) per month."
+        case .trialAnnual:
+            text = "After your 7-day free trial: \(annualPriceString) per year."
+        case .trialMonthly:
+            text = "After your 7-day free trial: \(monthlyPriceString) per month."
+        }
+        return Text(text)
+            .font(.system(size: 15, weight: .semibold))
+            .foregroundStyle(Theme.Palette.textPrimary)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Trial / cancel-anytime fine print
+    //
+    // Intentionally smaller and lighter than `billedAmountSummary` above so
+    // the billed amount stays the most prominent pricing element.
 
     private var trialNote: some View {
         Group {
             if case .trial(let days) = sub.status {
                 Text("\(days) day\(days == 1 ? "" : "s") left in your free trial. Cancel any time.")
             } else if selectedPlan.isTrial {
-                Text("7 days free, then \(selectedPlan == .trialAnnual ? annualPriceString + "/yr" : monthlyPriceString + "/mo"). Cancel before trial ends and you won't be charged.")
+                Text("Cancel before the trial ends and you won't be charged.")
             } else {
-                Text(selectedPlan == .annual ? "\(annualPriceString)/yr billed annually. Cancel any time." : "\(monthlyPriceString)/mo. Cancel any time.")
+                Text("Cancel any time in iOS Settings.")
             }
         }
-        .font(.system(size: 12))
+        .font(.system(size: 11))
         .foregroundStyle(Theme.Palette.textSecondary)
         .multilineTextAlignment(.center)
     }

@@ -299,7 +299,10 @@ private struct OnboardingMedDetailsSheet: View {
          onCommit: @escaping (_ dose: String, _ addToSchedule: Bool, _ scheduledTimes: [String]) -> Void) {
         self.medication = medication
         self.onCommit = onCommit
-        _dose = State(initialValue: medication.commonDoses.first ?? "")
+        // Start with an empty dose so the user types in their prescribed dose
+        // themselves. Pre-filling from `commonDoses` looked like a dose
+        // recommendation to Apple's review (Guideline 1.4.2).
+        _dose = State(initialValue: "")
     }
 
     private static func defaultTime() -> Date {

@@ -229,7 +229,7 @@ struct AddMedicationFlow: View {
                 modelContext.insert(newMed)
                 try? modelContext.save()
                 selectedMed = newMed
-                dose = newMed.commonDoses.first ?? ""
+                dose = ""  // user types their prescribed dose (Apple 1.4.2)
             }
         }
     }
@@ -252,7 +252,7 @@ struct AddMedicationFlow: View {
             ForEach(filteredLibrary.prefix(searchText.isEmpty ? 8 : 20)) { med in
                 Button {
                     selectedMed = med
-                    dose = med.commonDoses.first ?? ""
+                    dose = ""  // user types their prescribed dose (Apple 1.4.2)
                 } label: {
                     HStack(spacing: 12) {
                         ZStack {
@@ -406,27 +406,12 @@ struct MedDoseAndTimesPicker: View {
                 Text("Dose")
                     .font(Theme.Font.caption)
                     .foregroundStyle(Theme.Palette.textSecondary)
-                if !commonDoses.isEmpty {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(commonDoses, id: \.self) { d in
-                                Button {
-                                    dose = d
-                                } label: {
-                                    Text(d)
-                                        .font(Theme.Font.bodyEmphasis)
-                                        .padding(.vertical, 8)
-                                        .padding(.horizontal, 14)
-                                        .background(dose == d ? Theme.Palette.primary : Color.white)
-                                        .foregroundStyle(dose == d ? Color.white : Theme.Palette.textPrimary)
-                                        .clipShape(Capsule())
-                                        .overlay(Capsule().stroke(Theme.Palette.divider, lineWidth: dose == d ? 0 : 1))
-                                }
-                            }
-                        }
-                    }
-                }
-                TextField("e.g. 10mg, 1 tablet", text: $dose)
+                // Preset dose chips were removed to comply with App Store
+                // Guideline 1.4.2 — Apple reads suggested doses as a "dosage
+                // calculator," which is restricted to manufacturer / hospital
+                // accounts. Users type whatever their prescriber has them on.
+                // `commonDoses` stays on the Medication model for future use.
+                TextField("Enter your prescribed dose (e.g. 10mg, 1 tablet)", text: $dose)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                     .padding(.horizontal, 14)
