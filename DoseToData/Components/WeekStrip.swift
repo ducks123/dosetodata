@@ -165,20 +165,18 @@ private struct ScrollDayCell: View {
 
 struct DateStripLegend: View {
     var body: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 18) {
             legendItem(swatch: completeSwatch, label: "Logged")
-            legendItem(swatch: medsTakenSwatch, label: "Meds taken")
             legendItem(swatch: medsMissedSwatch, label: "Meds missed")
-            legendItem(swatch: emptySwatch, label: "No entry")
         }
-        .font(.system(size: 10))
+        .font(.system(size: 11))
         .foregroundStyle(Theme.Palette.textSecondary)
         .frame(maxWidth: .infinity, alignment: .center)
         .padding(.vertical, 2)
     }
 
     private func legendItem<S: View>(swatch: S, label: String) -> some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 5) {
             swatch
             Text(label)
         }
@@ -193,13 +191,6 @@ struct DateStripLegend: View {
         }
     }
 
-    private var medsTakenSwatch: some View {
-        Circle()
-            .fill(Color.white)
-            .overlay(Circle().stroke(Theme.Palette.success, lineWidth: 2))
-            .frame(width: 14, height: 14)
-    }
-
     private var medsMissedSwatch: some View {
         ZStack {
             Circle()
@@ -210,13 +201,6 @@ struct DateStripLegend: View {
                 .font(.system(size: 7, weight: .bold))
                 .foregroundStyle(Theme.Palette.attention)
         }
-    }
-
-    private var emptySwatch: some View {
-        Circle()
-            .fill(Color.white)
-            .overlay(Circle().stroke(Theme.Palette.divider, lineWidth: 1))
-            .frame(width: 14, height: 14)
     }
 }
 
