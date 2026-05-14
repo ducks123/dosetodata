@@ -158,6 +158,68 @@ private struct ScrollDayCell: View {
     }
 }
 
+// MARK: - DateStripLegend
+//
+// A small, unobtrusive key explaining what the four cell styles in the
+// date strip mean. Designed to sit directly below the strip in TodayView.
+
+struct DateStripLegend: View {
+    var body: some View {
+        HStack(spacing: 14) {
+            legendItem(swatch: completeSwatch, label: "Logged")
+            legendItem(swatch: medsTakenSwatch, label: "Meds taken")
+            legendItem(swatch: medsMissedSwatch, label: "Meds missed")
+            legendItem(swatch: emptySwatch, label: "No entry")
+        }
+        .font(.system(size: 10))
+        .foregroundStyle(Theme.Palette.textSecondary)
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.vertical, 2)
+    }
+
+    private func legendItem<S: View>(swatch: S, label: String) -> some View {
+        HStack(spacing: 4) {
+            swatch
+            Text(label)
+        }
+    }
+
+    private var completeSwatch: some View {
+        ZStack {
+            Circle().fill(Theme.Palette.success).frame(width: 14, height: 14)
+            Image(systemName: "checkmark")
+                .font(.system(size: 7, weight: .bold))
+                .foregroundStyle(.white)
+        }
+    }
+
+    private var medsTakenSwatch: some View {
+        Circle()
+            .fill(Color.white)
+            .overlay(Circle().stroke(Theme.Palette.success, lineWidth: 2))
+            .frame(width: 14, height: 14)
+    }
+
+    private var medsMissedSwatch: some View {
+        ZStack {
+            Circle()
+                .fill(Color.white)
+                .overlay(Circle().stroke(Theme.Palette.attention, lineWidth: 2))
+                .frame(width: 14, height: 14)
+            Image(systemName: "checkmark")
+                .font(.system(size: 7, weight: .bold))
+                .foregroundStyle(Theme.Palette.attention)
+        }
+    }
+
+    private var emptySwatch: some View {
+        Circle()
+            .fill(Color.white)
+            .overlay(Circle().stroke(Theme.Palette.divider, lineWidth: 1))
+            .frame(width: 14, height: 14)
+    }
+}
+
 // MARK: - WeekStrip (kept for any legacy usage)
 
 struct WeekStrip: View {

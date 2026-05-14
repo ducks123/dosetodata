@@ -59,11 +59,15 @@ struct TodayView: View {
             daysBack = 180
         }
         guard let startDate = cal.date(byAdding: .day, value: -daysBack, to: today) else { return [:] }
+        // Include any future-dated check-ins so the user can simulate ahead
+        // and still see green checkmarks on those days in the date strip.
+        let latestCheckIn = checkIns.map { cal.startOfDay(for: $0.date) }.max() ?? today
+        let endDate = max(today, latestCheckIn)
         var result: [Date: WeekDayState] = [:]
         var current = startDate
-        while current <= today {
+        while current <= endDate {
             result[current] = dayState(for: current, using: cal)
-            current = cal.date(byAdding: .day, value: 1, to: current) ?? today
+            current = cal.date(byAdding: .day, value: 1, to: current) ?? endDate
         }
         return result
     }
@@ -127,6 +131,7 @@ struct TodayView: View {
                 ) { date in
                     selectedDate = date
                 }
+                DateStripLegend()
                 checkInCard(for: selectedDate)
                 if let activeTest, let startEvent = activeTest.startEvent {
                     currentTestsSection(test: activeTest, startEvent: startEvent)

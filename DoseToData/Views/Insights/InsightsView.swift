@@ -370,7 +370,7 @@ struct InsightsView: View {
 
     private var overallCard: some View {
         let points = overallSeries
-        let showAmber = range == .day || range == .week
+        let showAmber = range == .day
         let missedPoints = showAmber ? points.filter { missedMedBuckets.contains($0.date) } : []
         let key = "overall"
         let selPoint = nearestChartPoint(in: points, forKey: key)
@@ -535,7 +535,7 @@ struct InsightsView: View {
             if points.isEmpty {
                 emptyChartPlaceholder(text: "No entries in this window yet.")
             } else {
-                let showAmber = range == .day || range == .week
+                let showAmber = range == .day
                 let missedPoints = showAmber ? points.filter { missedMedBuckets.contains($0.date) } : []
                 Chart {
                     ForEach(points) { point in
