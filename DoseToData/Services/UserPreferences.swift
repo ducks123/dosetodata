@@ -41,6 +41,7 @@ final class UserPreferences {
         static let dailyCheckInReminderEnabled = "dosetodata.reminders.dailyCheckIn.enabled"
         static let dailyCheckInReminderTime = "dosetodata.reminders.dailyCheckIn.time"
         static let checkInReminderTimes = "dosetodata.reminders.checkIn.times"
+        static let hiddenStandardQuestionKeys = "dosetodata.checkIn.hiddenStandardKeys"
     }
 
     /// Default time for the end-of-day check-in reminder.
@@ -97,6 +98,17 @@ final class UserPreferences {
         didSet { defaults.set(checkInReminderTimes, forKey: Keys.checkInReminderTimes) }
     }
 
+    /// rawValues of standard check-in questions the user has hidden from the
+    /// daily check-in form. Hidden questions don't appear in the check-in
+    /// sheet or Insights charts, but historical data with these keys is
+    /// preserved and still rendered in past check-in detail views. The user
+    /// can restore a hidden question from the "Add question" sheet.
+    var hiddenStandardQuestionKeys: Set<String> {
+        didSet {
+            defaults.set(Array(hiddenStandardQuestionKeys), forKey: Keys.hiddenStandardQuestionKeys)
+        }
+    }
+
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         self.hasCompletedOnboarding = defaults.bool(forKey: Keys.hasCompletedOnboarding)
@@ -116,5 +128,7 @@ final class UserPreferences {
         // Multi-reminder times — default 5 PM for new installs
         self.checkInReminderTimes = (defaults.array(forKey: Keys.checkInReminderTimes) as? [String])
             ?? Self.defaultCheckInReminderTimes
+        let rawHidden = defaults.array(forKey: Keys.hiddenStandardQuestionKeys) as? [String] ?? []
+        self.hiddenStandardQuestionKeys = Set(rawHidden)
     }
 }

@@ -32,39 +32,39 @@ struct CheckInQuestionConfig: Identifiable, Hashable {
 }
 
 enum StandardCheckInQuestion: String, CaseIterable, Identifiable {
-    // Order here drives the order shown in the daily check-in sheet.
-    case anxiety
-    case mood
+    // Active cases — shown in the daily check-in form and Insights charts.
     case focus
     case easeToStart
+    case mood
+    case energy
+    case sleep
+    // Retired cases — kept so existing DailyCheckIn records with these keys
+    // still resolve to a label / config when rendered in historical views
+    // (CheckInDetailView, past Insights data points). Not surfaced in the
+    // daily check-in form anymore (see `activeCases` below).
+    case anxiety
     case irritability
 
     var id: String { rawValue }
+
+    /// The standard questions shown in the daily check-in form (and in
+    /// Insights' default chart list). Defined as an explicit array so its
+    /// order is the source of truth — independent of enum declaration order
+    /// or the retired cases.
+    static let activeCases: [StandardCheckInQuestion] = [
+        .focus, .easeToStart, .mood, .energy, .sleep
+    ]
+
+    var isActive: Bool { Self.activeCases.contains(self) }
 
     /// Single source of truth for every standard question's prompt + anchor labels.
     /// Convention: 1 = harder / more symptomatic (leftAnchor), 5 = easier / better (rightAnchor).
     var config: CheckInQuestionConfig {
         switch self {
-        case .anxiety:
-            return CheckInQuestionConfig(
-                id: rawValue,
-                question: "How is your anxiety?",
-                leftAnchor: "High",
-                rightAnchor: "Low",
-                min: 1, max: 5
-            )
-        case .mood:
-            return CheckInQuestionConfig(
-                id: rawValue,
-                question: "How is your overall mood?",
-                leftAnchor: "Low",
-                rightAnchor: "Good",
-                min: 1, max: 5
-            )
         case .focus:
             return CheckInQuestionConfig(
                 id: rawValue,
-                question: "How is your ability to focus?",
+                question: "How focused did you feel today?",
                 leftAnchor: "Scattered",
                 rightAnchor: "Focused",
                 min: 1, max: 5
@@ -72,9 +72,42 @@ enum StandardCheckInQuestion: String, CaseIterable, Identifiable {
         case .easeToStart:
             return CheckInQuestionConfig(
                 id: rawValue,
-                question: "How easy is it to get started?",
+                question: "How easy was it to start things?",
                 leftAnchor: "Hard",
                 rightAnchor: "Easy",
+                min: 1, max: 5
+            )
+        case .mood:
+            return CheckInQuestionConfig(
+                id: rawValue,
+                question: "How were you feeling emotionally?",
+                leftAnchor: "Difficult",
+                rightAnchor: "Settled",
+                min: 1, max: 5
+            )
+        case .energy:
+            return CheckInQuestionConfig(
+                id: rawValue,
+                question: "How energized did you feel?",
+                leftAnchor: "Drained",
+                rightAnchor: "Energized",
+                min: 1, max: 5
+            )
+        case .sleep:
+            return CheckInQuestionConfig(
+                id: rawValue,
+                question: "How well did you sleep last night?",
+                leftAnchor: "Poor",
+                rightAnchor: "Restful",
+                min: 1, max: 5
+            )
+        // Retired — kept for historical data rendering only.
+        case .anxiety:
+            return CheckInQuestionConfig(
+                id: rawValue,
+                question: "How is your anxiety?",
+                leftAnchor: "High",
+                rightAnchor: "Low",
                 min: 1, max: 5
             )
         case .irritability:
@@ -92,10 +125,12 @@ enum StandardCheckInQuestion: String, CaseIterable, Identifiable {
 
     var shortLabel: String {
         switch self {
-        case .anxiety:      return "Anxiety"
-        case .mood:         return "Mood"
         case .focus:        return "Focus"
         case .easeToStart:  return "Ease to start"
+        case .mood:         return "Mood"
+        case .energy:       return "Energy"
+        case .sleep:        return "Sleep"
+        case .anxiety:      return "Anxiety"
         case .irritability: return "Irritability"
         }
     }

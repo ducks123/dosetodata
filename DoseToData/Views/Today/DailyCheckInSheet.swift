@@ -5,6 +5,7 @@ struct DailyCheckInSheet: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Environment(AppState.self) private var appState
+    @Environment(UserPreferences.self) private var prefs
 
     @Query(sort: \UserMedication.startDate, order: .reverse) private var userMedications: [UserMedication]
     @Query(sort: \CustomCheckInQuestion.createdAt) private var customQuestions: [CustomCheckInQuestion]
@@ -96,16 +97,24 @@ struct DailyCheckInSheet: View {
             Text(saveError ?? "")
         }
         .sheet(isPresented: $showingAddQuestion) {
-            AddCustomQuestionSheet { prompt, kind, leftAnchor, rightAnchor in
-                let q = CustomCheckInQuestion(
-                    prompt: prompt,
-                    kind: kind,
-                    leftAnchor: leftAnchor,
-                    rightAnchor: rightAnchor
-                )
-                modelContext.insert(q)
-                try? modelContext.save()
-            }
+            AddCustomQuestionSheet(
+                onAdd: { prompt, kind, leftAnchor, rightAnchor in
+                    let q = CustomCheckInQuestion(
+                        prompt: prompt,
+                        kind: kind,
+                        leftAnchor: leftAnchor,
+                        rightAnchor: rightAnchor
+                    )
+                    modelContext.insert(q)
+                    try? modelContext.save()
+                },
+                hiddenStandardQuestions: StandardCheckInQuestion.activeCases.filter {
+                    prefs.hiddenStandardQuestionKeys.contains($0.rawValue)
+                },
+                onRestoreStandard: { q in
+                    prefs.hiddenStandardQuestionKeys.remove(q.rawValue)
+                }
+            )
             .presentationDetents([.large])
         }
         .onAppear {
@@ -268,14 +277,29 @@ struct DailyCheckInSheet: View {
         }
     }
 
+    /// Standard questions the user hasn't hidden, in `activeCases` order.
+    private var visibleStandardQuestions: [StandardCheckInQuestion] {
+        StandardCheckInQuestion.activeCases.filter {
+            !prefs.hiddenStandardQuestionKeys.contains($0.rawValue)
+        }
+    }
+
     private var standardQuestionsSection: some View {
         VStack(spacing: 12) {
-            ForEach(StandardCheckInQuestion.allCases) { question in
+            ForEach(visibleStandardQuestions) { question in
                 QuestionCard(
                     prompt: question.config.question,
                     leftAnchor: question.config.leftAnchor,
                     rightAnchor: question.config.rightAnchor,
-                    selected: answers[question.rawValue]
+                    selected: answers[question.rawValue],
+                    onDelete: {
+                        // Hiding the standard question doesn't delete any
+                        // historical answers — past check-ins still render
+                        // this question's data in CheckInDetailView. The
+                        // user can restore it from the "Add question" sheet.
+                        answers.removeValue(forKey: question.rawValue)
+                        prefs.hiddenStandardQuestionKeys.insert(question.rawValue)
+                    }
                 ) { level in
                     answers[question.rawValue] = level
                 }
@@ -754,6 +778,13 @@ struct AddCustomQuestionSheet: View {
     /// For text-kind questions both anchors are nil.
     let onAdd: (_ prompt: String, _ kind: CheckInQuestionKind, _ leftAnchor: String?, _ rightAnchor: String?) -> Void
 
+    /// Standard questions the user has hidden — when non-empty, rendered as
+    /// a "Restore" section at the top of this sheet so the user can bring
+    /// them back without leaving the add-question flow.
+    var hiddenStandardQuestions: [StandardCheckInQuestion] = []
+    /// Called when the user taps "Restore" on a hidden standard question.
+    var onRestoreStandard: ((StandardCheckInQuestion) -> Void)? = nil
+
     private var trimmedPrompt: String { prompt.trimmingCharacters(in: .whitespacesAndNewlines) }
     private var trimmedLeft: String { leftAnchor.trimmingCharacters(in: .whitespacesAndNewlines) }
     private var trimmedRight: String { rightAnchor.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -777,6 +808,9 @@ struct AddCustomQuestionSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
+                    if !hiddenStandardQuestions.isEmpty {
+                        restoreSection
+                    }
                     answerTypePicker
                     questionField
 
@@ -817,6 +851,39 @@ struct AddCustomQuestionSheet: View {
     }
 
     // MARK: Sections
+
+    private var restoreSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Restore a removed question")
+                .font(Theme.Font.caption)
+                .foregroundStyle(Theme.Palette.textSecondary)
+                .padding(.leading, 4)
+            VStack(spacing: 8) {
+                ForEach(hiddenStandardQuestions) { q in
+                    HStack(spacing: 12) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(q.shortLabel)
+                                .font(Theme.Font.bodyEmphasis)
+                                .foregroundStyle(Theme.Palette.textPrimary)
+                            Text(q.config.question)
+                                .font(Theme.Font.caption)
+                                .foregroundStyle(Theme.Palette.textSecondary)
+                                .lineLimit(1)
+                        }
+                        Spacer()
+                        Button("Restore") {
+                            onRestoreStandard?(q)
+                        }
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Theme.Palette.primary)
+                    }
+                    .padding(12)
+                    .background(Color.white)
+                    .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
+                }
+            }
+        }
+    }
 
     private var answerTypePicker: some View {
         VStack(alignment: .leading, spacing: 6) {

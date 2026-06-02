@@ -31,7 +31,7 @@ struct InsightsView: View {
     @State private var range: InsightsRange = .day
     @State private var windowOffset: Int = 0        // 0 → [Day,Week,Month]  1 → [Week,Month,Year]
     @State private var selectedTestID: UUID? = nil
-    @State private var enabledStandardKeys: Set<String> = Set(StandardCheckInQuestion.allCases.map { $0.rawValue })
+    @State private var enabledStandardKeys: Set<String> = Set(StandardCheckInQuestion.activeCases.map { $0.rawValue })
     @State private var enabledCustomKeys: Set<String> = []
     @State private var showingAddGraph = false
     @State private var editingTest: Test? = nil
@@ -493,7 +493,7 @@ struct InsightsView: View {
 
             overallCard
 
-            ForEach(StandardCheckInQuestion.allCases) { q in
+            ForEach(StandardCheckInQuestion.activeCases) { q in
                 if enabledStandardKeys.contains(q.rawValue) {
                     questionCard(
                         title: q.shortLabel,
@@ -954,7 +954,7 @@ struct AddGraphSheet: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     sectionHeader("Standard questions")
-                    ForEach(StandardCheckInQuestion.allCases) { q in
+                    ForEach(StandardCheckInQuestion.activeCases) { q in
                         toggleRow(
                             title: q.shortLabel,
                             subtitle: q.prompt,

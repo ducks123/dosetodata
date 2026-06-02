@@ -165,9 +165,10 @@ private struct ScrollDayCell: View {
 
 struct DateStripLegend: View {
     var body: some View {
-        HStack(spacing: 18) {
-            legendItem(swatch: completeSwatch, label: "Logged")
+        HStack(spacing: 14) {
+            legendItem(swatch: completeSwatch, label: "Meds taken and logged")
             legendItem(swatch: medsMissedSwatch, label: "Meds missed")
+            legendItem(swatch: emptySwatch, label: "Not logged")
         }
         .font(.system(size: 11))
         .foregroundStyle(Theme.Palette.textSecondary)
@@ -201,6 +202,13 @@ struct DateStripLegend: View {
                 .font(.system(size: 7, weight: .bold))
                 .foregroundStyle(Theme.Palette.attention)
         }
+    }
+
+    private var emptySwatch: some View {
+        Circle()
+            .fill(Color.white)
+            .overlay(Circle().stroke(Theme.Palette.divider, lineWidth: 1))
+            .frame(width: 14, height: 14)
     }
 }
 
