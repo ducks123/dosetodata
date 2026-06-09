@@ -51,6 +51,51 @@ struct PaywallView: View {
         }
     }
 
+    // MARK: - Trial detection
+    //
+    // We NEVER hardcode "free trial" copy or the trial duration. Both must
+    // come from the package's `introductoryDiscount` at runtime. If Apple's
+    // intro offer isn't configured / approved / available in this country,
+    // `introductoryDiscount` will be nil and the trial UI disappears
+    // entirely — so the app can't accidentally advertise a trial that
+    // doesn't exist. This is the load-bearing defense against the Amanda
+    // bug (charged full price after tapping "Start Free Trial" because the
+    // intro offer wasn't really configured).
+
+    /// True if the package has a free-trial introductory offer attached.
+    private func packageHasTrial(_ pkg: Package?) -> Bool {
+        guard let intro = pkg?.storeProduct.introductoryDiscount else { return false }
+        return intro.paymentMode == .freeTrial
+    }
+
+    private var monthlyHasTrial: Bool { packageHasTrial(monthlyPackage) }
+    private var annualHasTrial:  Bool { packageHasTrial(annualPackage) }
+    private var anyTrialAvailable: Bool { monthlyHasTrial || annualHasTrial }
+
+    /// Trial duration in days for a given package. Pulled from Apple's
+    /// `subscriptionPeriod` so it auto-syncs with whatever's configured in
+    /// App Store Connect — no manual updating when you change the offer.
+    private func trialDays(for pkg: Package?) -> Int? {
+        guard let intro = pkg?.storeProduct.introductoryDiscount,
+              intro.paymentMode == .freeTrial else { return nil }
+        let unit = intro.subscriptionPeriod.unit
+        let value = intro.subscriptionPeriod.value
+        switch unit {
+        case .day:   return value
+        case .week:  return value * 7
+        case .month: return value * 30
+        case .year:  return value * 365
+        @unknown default: return nil
+        }
+    }
+
+    /// Days for the currently-selected plan's package. Used in CTA copy,
+    /// billed-amount summary, and fine print. Nil if the selected plan
+    /// doesn't have a trial attached.
+    private var selectedTrialDays: Int? {
+        trialDays(for: selectedPackage)
+    }
+
     // MARK: - Price strings
 
     private var packagesLoaded: Bool {
@@ -195,6 +240,16 @@ struct PaywallView: View {
         .task {
             sub.errorMessage = nil  // clear any stale error before presenting
             await sub.refresh()
+            // After packages load, fall back to a non-trial plan if no trial
+            // is actually attached to either package. Otherwise the user
+            // would land on a hidden/invalid trial selection.
+            if !anyTrialAvailable && selectedPlan.isTrial {
+                selectedPlan = annualPackage != nil ? .annual : .monthly
+            } else if !annualHasTrial && selectedPlan == .trialAnnual && monthlyHasTrial {
+                selectedPlan = .trialMonthly
+            } else if !monthlyHasTrial && selectedPlan == .trialMonthly && annualHasTrial {
+                selectedPlan = .trialAnnual
+            }
         }
     }
 
@@ -278,7 +333,13 @@ struct PaywallView: View {
             )
 
             // ── Free trial ──────────────────────────────────────────────
-            trialRow
+            // ONLY shown if at least one package has an actual intro offer
+            // attached. If Apple's offer isn't configured / approved / in
+            // the right country, this row disappears and the user simply
+            // sees the direct subscribe options. No misleading copy.
+            if anyTrialAvailable {
+                trialRow
+            }
         }
     }
 
@@ -326,7 +387,19 @@ struct PaywallView: View {
         .buttonStyle(.plain)
     }
 
-    /// The "7-Day Free Trial" row, which expands to show Annual/Monthly sub-options when selected.
+    /// Dynamic trial headline — pulls duration from whichever package has
+    /// a trial attached (preferring annual since that's the default selection).
+    /// Falls back gracefully if neither package has a trial, though the row
+    /// itself is hidden in that case.
+    private var trialHeadlineText: String {
+        let days = trialDays(for: annualPackage) ?? trialDays(for: monthlyPackage)
+        if let days {
+            return "Free for \(days) days"
+        }
+        return "Free trial"
+    }
+
+    /// The trial row, which expands to show Annual/Monthly sub-options when selected.
     /// Sub-options lead with the BILLED amount (e.g., $39.99/year, $4.99/month)
     /// per App Store Guideline 3.1.2(c) — the trial framing is subordinate to
     /// the price the user will actually be charged after the trial.
@@ -340,7 +413,7 @@ struct PaywallView: View {
                         Text("Try it first")
                             .font(.system(size: 13))
                             .foregroundStyle(Theme.Palette.textSecondary)
-                        Text("Free for 7 days")
+                        Text(trialHeadlineText)
                             .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(Theme.Palette.textPrimary)
                         Text("Then your selected plan price below")
@@ -356,26 +429,38 @@ struct PaywallView: View {
             }
             .buttonStyle(.plain)
 
-            // Sub-options — only visible when trial is selected
+            // Sub-options — only visible when trial is selected. Each
+            // sub-option is gated on whether THAT specific package has a
+            // trial offer attached. If only annual has a trial (or only
+            // monthly), the user can only pick the one that actually
+            // offers a trial. This prevents "I picked monthly trial but
+            // got charged immediately" — the same Amanda bug at a more
+            // granular level.
             if isTrialSelected {
                 Divider().padding(.horizontal, 16)
 
                 HStack(spacing: 0) {
-                    trialSubOption(
-                        plan: .trialAnnual,
-                        label: "Then",
-                        billed: "\(annualPriceString)/yr",
-                        secondary: "\(annualPerMonthString)/mo equivalent",
-                        badge: savingsPercent > 0 ? "SAVE \(savingsPercent)%" : nil
-                    )
-                    Divider().frame(height: 72)
-                    trialSubOption(
-                        plan: .trialMonthly,
-                        label: "Then",
-                        billed: "\(monthlyPriceString)/mo",
-                        secondary: nil,
-                        badge: nil
-                    )
+                    if annualHasTrial {
+                        trialSubOption(
+                            plan: .trialAnnual,
+                            label: "Then",
+                            billed: "\(annualPriceString)/yr",
+                            secondary: "\(annualPerMonthString)/mo equivalent",
+                            badge: savingsPercent > 0 ? "SAVE \(savingsPercent)%" : nil
+                        )
+                    }
+                    if annualHasTrial && monthlyHasTrial {
+                        Divider().frame(height: 72)
+                    }
+                    if monthlyHasTrial {
+                        trialSubOption(
+                            plan: .trialMonthly,
+                            label: "Then",
+                            billed: "\(monthlyPriceString)/mo",
+                            secondary: nil,
+                            badge: nil
+                        )
+                    }
                 }
                 .padding(.vertical, 6)
             }
@@ -461,9 +546,19 @@ struct PaywallView: View {
         case .monthly:
             text = "You will be billed \(monthlyPriceString) per month."
         case .trialAnnual:
-            text = "After your 7-day free trial: \(annualPriceString) per year."
+            // Trial duration pulled from the package — if no trial is
+            // actually attached, this falls back to a no-trial message.
+            if let days = selectedTrialDays {
+                text = "After your \(days)-day free trial: \(annualPriceString) per year."
+            } else {
+                text = "You will be billed \(annualPriceString) per year."
+            }
         case .trialMonthly:
-            text = "After your 7-day free trial: \(monthlyPriceString) per month."
+            if let days = selectedTrialDays {
+                text = "After your \(days)-day free trial: \(monthlyPriceString) per month."
+            } else {
+                text = "You will be billed \(monthlyPriceString) per month."
+            }
         }
         return Text(text)
             .font(.system(size: 15, weight: .semibold))
@@ -574,7 +669,15 @@ Any unused portion of a free trial will be forfeited upon purchase of a subscrip
     private var ctaLabel: String {
         guard packagesLoaded else { return "Loading prices…" }
         switch selectedPlan {
-        case .trialAnnual, .trialMonthly: return "Start 7-Day Free Trial"
+        case .trialAnnual, .trialMonthly:
+            // Pull duration from the package so the CTA always matches the
+            // actual offer Apple will apply. If no trial is attached, fall
+            // back to plain subscribe copy — the trial row would already
+            // be hidden, so this is a belt-and-suspenders default.
+            if let days = selectedTrialDays {
+                return "Start \(days)-Day Free Trial"
+            }
+            return selectedPlan.isAnnual ? "Subscribe Annually" : "Subscribe Monthly"
         case .annual:                      return "Subscribe Annually"
         case .monthly:                     return "Subscribe Monthly"
         }
