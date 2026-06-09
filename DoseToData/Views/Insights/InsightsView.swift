@@ -27,6 +27,55 @@ struct InsightsView: View {
     @Query(sort: \Test.startDate, order: .reverse) private var tests: [Test]
     @Query(sort: \CustomCheckInQuestion.createdAt) private var customQuestions: [CustomCheckInQuestion]
     @Query private var adherenceLogs: [MedAdherenceLog]
+    @Query(sort: \MedChangeEvent.date, order: .reverse) private var medChangeEvents: [MedChangeEvent]
+
+    /// Event currently shown in the marker detail sheet (tap target). Nil
+    /// when no marker is selected.
+    @State private var selectedMedChangeEvent: MedChangeEvent? = nil
+
+    /// Returns medication-change markers (date + event reference) for any
+    /// event in the visible date range of a chart. Iterated by Chart's
+    /// `RuleMark` block to draw vertical dashed lines.
+    private func medChangeMarkers(in dateRange: ClosedRange<Date>?) -> [MedChangeEvent] {
+        guard let range = dateRange else { return medChangeEvents }
+        return medChangeEvents.filter { range.contains($0.date) }
+    }
+
+    /// Horizontal scrollable row of medication-change marker chips rendered
+    /// below each chart. The chart shows a dashed vertical line at each
+    /// `MedChangeEvent.date`; the chip row provides the tap target (Swift
+    /// Charts' `RuleMark` annotations aren't reliably tappable inside the
+    /// existing drag-selection gesture). Hidden when the user has no
+    /// events. Tapping a chip opens the marker detail sheet.
+    @ViewBuilder
+    private var medChangeMarkerChips: some View {
+        if !medChangeEvents.isEmpty {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(medChangeEvents) { event in
+                        Button {
+                            selectedMedChangeEvent = event
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "pill.fill")
+                                    .font(.system(size: 10))
+                                Text(event.date.formatted(date: .abbreviated, time: .omitted))
+                                    .font(.system(size: 11, weight: .semibold))
+                            }
+                            .foregroundStyle(Theme.Palette.primary)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(Theme.Palette.primary.opacity(0.10))
+                            .clipShape(Capsule())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 2)
+                .padding(.vertical, 2)
+            }
+        }
+    }
 
     @State private var range: InsightsRange = .day
     @State private var windowOffset: Int = 0        // 0 → [Day,Week,Month]  1 → [Week,Month,Year]
@@ -88,6 +137,14 @@ struct InsightsView: View {
         }
         .sheet(item: $viewingCheckInFromChart) { ci in
             CheckInDetailView(checkIn: ci)
+        }
+        .sheet(item: $selectedMedChangeEvent) { event in
+            MedChangeMarkerDetailSheet(
+                event: event,
+                allEvents: medChangeEvents,
+                allCheckIns: allCheckIns
+            )
+            .presentationDetents([.medium, .large])
         }
         .onAppear {
             consumePendingTest()
@@ -434,6 +491,18 @@ struct InsightsView: View {
                         .foregroundStyle(Theme.Palette.attention)
                         .symbolSize(110)
                     }
+                    // Vertical dashed markers at every MedChangeEvent date.
+                    // Drawn last so they stay on top.
+                    ForEach(medChangeEvents) { event in
+                        RuleMark(x: .value("Med change", event.date, unit: bucketUnit))
+                            .foregroundStyle(Theme.Palette.textSecondary.opacity(0.55))
+                            .lineStyle(StrokeStyle(lineWidth: 1.2, dash: [3, 3]))
+                            .annotation(position: .top, alignment: .center, spacing: 2) {
+                                Image(systemName: "pill.fill")
+                                    .font(.system(size: 9))
+                                    .foregroundStyle(Theme.Palette.textSecondary)
+                            }
+                    }
                 }
                 .chartYScale(domain: 0...5)
                 .chartYAxis {
@@ -473,6 +542,8 @@ struct InsightsView: View {
                             .foregroundStyle(Theme.Palette.textSecondary)
                     }
                 }
+
+                medChangeMarkerChips
 
                 if let sel = selPoint {
                     chartCallout(for: sel)
@@ -586,6 +657,17 @@ struct InsightsView: View {
                         .foregroundStyle(Theme.Palette.attention)
                         .symbolSize(110)
                     }
+                    // Vertical dashed markers at every MedChangeEvent date.
+                    ForEach(medChangeEvents) { event in
+                        RuleMark(x: .value("Med change", event.date, unit: bucketUnit))
+                            .foregroundStyle(Theme.Palette.textSecondary.opacity(0.55))
+                            .lineStyle(StrokeStyle(lineWidth: 1.2, dash: [3, 3]))
+                            .annotation(position: .top, alignment: .center, spacing: 2) {
+                                Image(systemName: "pill.fill")
+                                    .font(.system(size: 9))
+                                    .foregroundStyle(Theme.Palette.textSecondary)
+                            }
+                    }
                 }
                 .chartYScale(domain: 0...5)
                 .chartYAxis {
@@ -625,6 +707,8 @@ struct InsightsView: View {
                             .foregroundStyle(Theme.Palette.textSecondary)
                     }
                 }
+
+                medChangeMarkerChips
 
                 if let sel = selPoint {
                     chartCallout(for: sel)
