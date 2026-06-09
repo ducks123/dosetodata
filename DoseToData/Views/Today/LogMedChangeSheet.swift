@@ -120,12 +120,21 @@ struct LogMedChangeSheet: View {
     @ViewBuilder
     private func actionCard(draft: Binding<ActionDraft>) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Med picker trigger
+            // Med picker trigger.
+            //
+            // Two visual states:
+            // - **No medication selected** → renders as a prominent filled
+            //   primary-color CTA button. Earlier flat-link styling was
+            //   getting skipped over by users so this state needs to read
+            //   unambiguously as "tap me."
+            // - **Medication selected** → renders as a quieter row showing
+            //   the picked med with a chevron, so the row makes room for
+            //   the kind picker and dose fields below.
             Button {
                 showingMedPickerForDraftID = draft.wrappedValue.id
             } label: {
-                HStack(spacing: 10) {
-                    if let med = draft.wrappedValue.medication {
+                if let med = draft.wrappedValue.medication {
+                    HStack(spacing: 10) {
                         ZStack {
                             Circle()
                                 .fill(med.category.pastelColor)
@@ -142,17 +151,23 @@ struct LogMedChangeSheet: View {
                                 .font(Theme.Font.caption)
                                 .foregroundStyle(Theme.Palette.textSecondary)
                         }
-                    } else {
-                        Image(systemName: "plus.circle")
-                            .foregroundStyle(Theme.Palette.primary)
-                        Text("Choose a medication")
-                            .font(Theme.Font.bodyEmphasis)
-                            .foregroundStyle(Theme.Palette.primary)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(Theme.Palette.textSecondary)
                     }
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Theme.Palette.textSecondary)
+                } else {
+                    HStack(spacing: 8) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 18))
+                        Text("Choose a medication")
+                            .font(.system(size: 15, weight: .semibold))
+                    }
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Theme.Palette.primary)
+                    .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
                 }
             }
             .buttonStyle(.plain)

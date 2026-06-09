@@ -80,9 +80,9 @@ enum StandardCheckInQuestion: String, CaseIterable, Identifiable {
         case .mood:
             return CheckInQuestionConfig(
                 id: rawValue,
-                question: "How were you feeling emotionally?",
-                leftAnchor: "Difficult",
-                rightAnchor: "Settled",
+                question: "How was your emotional state today?",
+                leftAnchor: "Struggling",
+                rightAnchor: "Steady",
                 min: 1, max: 5
             )
         case .energy:

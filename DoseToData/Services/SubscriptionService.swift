@@ -42,7 +42,7 @@ final class SubscriptionService {
     static let entitlementID = "premium"
     static let monthlyProductID = "com.stewartsherpa.dosetodata.monthly"
     static let annualProductID  = "com.stewartsherpa.dosetodata.annual"
-    static let trialDays = 7
+    static let trialDays = 14
 
     // MARK: - Observed state
 

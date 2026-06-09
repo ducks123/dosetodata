@@ -139,12 +139,8 @@ struct InsightsView: View {
             CheckInDetailView(checkIn: ci)
         }
         .sheet(item: $selectedMedChangeEvent) { event in
-            MedChangeMarkerDetailSheet(
-                event: event,
-                allEvents: medChangeEvents,
-                allCheckIns: allCheckIns
-            )
-            .presentationDetents([.medium, .large])
+            MedChangeMarkerDetailSheet(event: event)
+                .presentationDetents([.medium, .large])
         }
         .onAppear {
             consumePendingTest()
