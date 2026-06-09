@@ -12,10 +12,20 @@ struct LogMedChangeSheet: View {
     @Query(sort: \Medication.brandName) private var libraryMeds: [Medication]
     @Query(sort: \UserMedication.startDate, order: .reverse) private var userMedications: [UserMedication]
 
+    /// When non-nil, this sheet edits the given event in place instead of
+    /// inserting a new one. The user's date / actions / "watching for"
+    /// note are hydrated from the event on first appear.
+    var editing: MedChangeEvent? = nil
+
     @State private var date: Date = Date()
     @State private var actionDrafts: [ActionDraft] = [ActionDraft()]
     @State private var watchingFor: String = ""
     @State private var showingMedPickerForDraftID: UUID? = nil
+    /// One-time hydration guard so swapping date/text fields doesn't
+    /// overwrite user edits when the view re-renders.
+    @State private var didHydrateFromEditingEvent = false
+
+    private var isEditing: Bool { editing != nil }
 
     /// Mutable working copy of a MedAction while the sheet is open. Converted
     /// into a real MedAction on save. Keeps the SwiftData model out of
@@ -51,8 +61,11 @@ struct LogMedChangeSheet: View {
                 .padding(.bottom, 80)
             }
             .background(Theme.Palette.background)
-            .navigationTitle("Log medication change")
+            .navigationTitle(isEditing ? "Edit medication change" : "Log medication change")
             .navigationBarTitleDisplayMode(.inline)
+            .task {
+                hydrateFromEditingEventIfNeeded()
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { dismiss() }
@@ -62,7 +75,7 @@ struct LogMedChangeSheet: View {
                 Button {
                     save()
                 } label: {
-                    Text("Save medication change")
+                    Text(isEditing ? "Save changes" : "Save medication change")
                 }
                 .buttonStyle(PrimaryButtonStyle())
                 .disabled(!canSave)
@@ -321,13 +334,29 @@ struct LogMedChangeSheet: View {
     // MARK: - Save
 
     private func save() {
-        let event = MedChangeEvent(
-            date: date,
-            watchingFor: watchingFor.trimmingCharacters(in: .whitespaces).isEmpty
-                ? nil
-                : watchingFor.trimmingCharacters(in: .whitespaces)
-        )
-        modelContext.insert(event)
+        let trimmedWatchingFor = watchingFor.trimmingCharacters(in: .whitespaces).isEmpty
+            ? nil
+            : watchingFor.trimmingCharacters(in: .whitespaces)
+
+        let event: MedChangeEvent
+        if let existing = editing {
+            // EDIT mode — mutate fields in place and replace all child
+            // actions. We deliberately DON'T re-run applyToUserMedication
+            // for edits: it'd double-apply (e.g. a second "Start" would
+            // create a duplicate UserMedication row) and there's no clean
+            // undo for the prior application. If the user changes the kind
+            // or dose of an existing action they can manually fix their
+            // med list afterward.
+            existing.date = date
+            existing.watchingFor = trimmedWatchingFor
+            for old in existing.actions {
+                modelContext.delete(old)
+            }
+            event = existing
+        } else {
+            event = MedChangeEvent(date: date, watchingFor: trimmedWatchingFor)
+            modelContext.insert(event)
+        }
 
         for draft in actionDrafts {
             guard let med = draft.medication else { continue }
@@ -340,9 +369,11 @@ struct LogMedChangeSheet: View {
             action.event = event
             modelContext.insert(action)
 
-            // Auto-update underlying UserMedication so the med list reflects
-            // reality. Same behavior the legacy CreateTestSheet had.
-            applyToUserMedication(med: med, draft: draft, eventDate: date)
+            // Auto-update underlying UserMedication only when CREATING a
+            // new event (see comment above for the edit-mode rationale).
+            if !isEditing {
+                applyToUserMedication(med: med, draft: draft, eventDate: date)
+            }
         }
 
         do {
@@ -353,6 +384,28 @@ struct LogMedChangeSheet: View {
         }
 
         dismiss()
+    }
+
+    /// Hydrate the draft state from `editing` once per sheet presentation.
+    /// Called from a `.task` so it runs after init but before the user
+    /// starts interacting with fields.
+    private func hydrateFromEditingEventIfNeeded() {
+        guard let event = editing, !didHydrateFromEditingEvent else { return }
+        didHydrateFromEditingEvent = true
+        date = event.date
+        watchingFor = event.watchingFor ?? ""
+        let drafts: [ActionDraft] = event.actions.map { action in
+            ActionDraft(
+                medication: action.medication,
+                kind: action.kind,
+                dose: action.dose ?? "",
+                previousDose: action.previousDose ?? ""
+            )
+        }
+        // Always show at least one row so the user has something to edit
+        // if the event happened to have no actions (shouldn't happen, but
+        // defensive).
+        actionDrafts = drafts.isEmpty ? [ActionDraft()] : drafts
     }
 
     private func applyToUserMedication(med: Medication, draft: ActionDraft, eventDate: Date) {

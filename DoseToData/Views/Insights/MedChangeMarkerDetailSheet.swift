@@ -13,6 +13,7 @@ struct MedChangeMarkerDetailSheet: View {
     let event: MedChangeEvent
 
     @State private var showingDeleteConfirm = false
+    @State private var showingEditSheet = false
 
     var body: some View {
         NavigationStack {
@@ -37,6 +38,11 @@ struct MedChangeMarkerDetailSheet: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
+                        Button {
+                            showingEditSheet = true
+                        } label: {
+                            Label("Edit this change", systemImage: "pencil")
+                        }
                         Button(role: .destructive) {
                             showingDeleteConfirm = true
                         } label: {
@@ -46,6 +52,9 @@ struct MedChangeMarkerDetailSheet: View {
                         Image(systemName: "ellipsis.circle")
                     }
                 }
+            }
+            .sheet(isPresented: $showingEditSheet) {
+                LogMedChangeSheet(editing: event)
             }
             .confirmationDialog(
                 "Delete this medication change?",

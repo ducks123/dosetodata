@@ -488,16 +488,17 @@ struct InsightsView: View {
                         .symbolSize(110)
                     }
                     // Vertical dashed markers at every MedChangeEvent date.
-                    // Drawn last so they stay on top.
+                    // Drawn last so they stay on top of the area gradient.
+                    // No annotation: annotations at `.top` get clipped on
+                    // the scrollable Day-range chart (works on Week/Month/
+                    // Year where the chart isn't scrollable, but breaks
+                    // visibility on the most common view). The chip row
+                    // beneath the chart provides the date label / tap
+                    // target instead.
                     ForEach(medChangeEvents) { event in
                         RuleMark(x: .value("Med change", event.date, unit: bucketUnit))
-                            .foregroundStyle(Theme.Palette.textSecondary.opacity(0.55))
-                            .lineStyle(StrokeStyle(lineWidth: 1.2, dash: [3, 3]))
-                            .annotation(position: .top, alignment: .center, spacing: 2) {
-                                Image(systemName: "pill.fill")
-                                    .font(.system(size: 9))
-                                    .foregroundStyle(Theme.Palette.textSecondary)
-                            }
+                            .foregroundStyle(Theme.Palette.primary.opacity(0.75))
+                            .lineStyle(StrokeStyle(lineWidth: 2, dash: [4, 3]))
                     }
                 }
                 .chartYScale(domain: 0...5)
