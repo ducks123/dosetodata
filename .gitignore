@@ -51,3 +51,6 @@ fastlane/test_output
 
 ## xcodegen — regenerated from project.yml
 DoseToData.xcodeproj/
+
+# Local Claude session worktrees — never commit
+.claude/worktrees/
