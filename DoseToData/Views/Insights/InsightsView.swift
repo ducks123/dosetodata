@@ -489,16 +489,18 @@ struct InsightsView: View {
                     }
                     // Vertical dashed markers at every MedChangeEvent date.
                     // Drawn last so they stay on top of the area gradient.
-                    // No annotation: annotations at `.top` get clipped on
-                    // the scrollable Day-range chart (works on Week/Month/
-                    // Year where the chart isn't scrollable, but breaks
-                    // visibility on the most common view). The chip row
-                    // beneath the chart provides the date label / tap
-                    // target instead.
+                    // Now that the Day chart isn't scrollable, the `.top`
+                    // annotation renders cleanly across all four ranges, so
+                    // the pill icon is back at the top of each marker.
                     ForEach(medChangeEvents) { event in
                         RuleMark(x: .value("Med change", event.date, unit: bucketUnit))
-                            .foregroundStyle(Theme.Palette.primary.opacity(0.75))
-                            .lineStyle(StrokeStyle(lineWidth: 2, dash: [4, 3]))
+                            .foregroundStyle(Theme.Palette.textSecondary.opacity(0.55))
+                            .lineStyle(StrokeStyle(lineWidth: 1.2, dash: [3, 3]))
+                            .annotation(position: .top, alignment: .center, spacing: 2) {
+                                Image(systemName: "pill.fill")
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(Theme.Palette.textSecondary)
+                            }
                     }
                 }
                 .chartYScale(domain: 0...5)
@@ -511,20 +513,11 @@ struct InsightsView: View {
                     }
                 }
                 .chartXAxis { xAxisMarks }
-                .if(range == .day) { chart in
-                    chart
-                        .chartScrollableAxes(.horizontal)
-                        .chartXVisibleDomain(length: 14 * 24 * 3600)
-                        // Anchor the initial scroll so the visible window ends
-                        // at today — previously the chart auto-positioned at
-                        // the oldest data, making latest check-ins / med-change
-                        // markers invisible unless the user scrolled right.
-                        .chartScrollPosition(initialX: Calendar.current.date(
-                            byAdding: .day,
-                            value: -13,
-                            to: Calendar.current.startOfDay(for: Date())
-                        ) ?? Date())
-                }
+                // (No scrollable-axes / visible-domain modifiers anymore — the
+                // 7-day window for Day fits inside the chart card and the
+                // other ranges fit by design too. Scrolling Charts caused
+                // the marker pill annotations to clip and the auto-scroll
+                // position to be wrong on first render.)
                 .frame(height: 150)
                 .chartOverlay { proxy in
                     GeometryReader { geo in
@@ -685,20 +678,11 @@ struct InsightsView: View {
                     }
                 }
                 .chartXAxis { xAxisMarks }
-                .if(range == .day) { chart in
-                    chart
-                        .chartScrollableAxes(.horizontal)
-                        .chartXVisibleDomain(length: 14 * 24 * 3600)
-                        // Anchor the initial scroll so the visible window ends
-                        // at today — previously the chart auto-positioned at
-                        // the oldest data, making latest check-ins / med-change
-                        // markers invisible unless the user scrolled right.
-                        .chartScrollPosition(initialX: Calendar.current.date(
-                            byAdding: .day,
-                            value: -13,
-                            to: Calendar.current.startOfDay(for: Date())
-                        ) ?? Date())
-                }
+                // (No scrollable-axes / visible-domain modifiers anymore — the
+                // 7-day window for Day fits inside the chart card and the
+                // other ranges fit by design too. Scrolling Charts caused
+                // the marker pill annotations to clip and the auto-scroll
+                // position to be wrong on first render.)
                 .frame(height: 150)
                 .chartOverlay { proxy in
                     GeometryReader { geo in
@@ -803,7 +787,9 @@ struct InsightsView: View {
         case .day:   return .day
         case .week:  return .weekOfYear
         case .month: return .month
-        case .year:  return .year
+        // Year now buckets by month so we get 12 monthly dots across a year
+        // (matches the agreed UX), not 5 yearly dots across 5 years.
+        case .year:  return .month
         }
     }
 
@@ -815,28 +801,30 @@ struct InsightsView: View {
         let end   = Date()
         let today = calendar.startOfDay(for: end)
         let start: Date
+        // Fixed windows per agreed UX (no chart scrolling needed):
+        //   Day   = last 7 days        (1 week)
+        //   Week  = last 4 weeks       (1 month)
+        //   Month = last 3 months      (1 quarter)
+        //   Year  = last 12 months     (1 year)
+        // Anchored at "today" — windows roll forward as time passes.
         switch range {
         case .day:
-            // Last 60 days so the chart has plenty of history to scroll through
-            start = calendar.date(byAdding: .day, value: -59, to: today) ?? today
+            start = calendar.date(byAdding: .day, value: -6, to: today) ?? today
         case .week:
-            // 8 weekly dots: start of the week that was 7 weeks ago
             let currentWeekStart = calendar.date(
                 from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today)
             ) ?? today
-            start = calendar.date(byAdding: .weekOfYear, value: -7, to: currentWeekStart) ?? today
+            start = calendar.date(byAdding: .weekOfYear, value: -3, to: currentWeekStart) ?? today
         case .month:
-            // 12 monthly dots: start of the month 11 months ago
+            let currentMonthStart = calendar.date(
+                from: calendar.dateComponents([.year, .month], from: today)
+            ) ?? today
+            start = calendar.date(byAdding: .month, value: -2, to: currentMonthStart) ?? today
+        case .year:
             let currentMonthStart = calendar.date(
                 from: calendar.dateComponents([.year, .month], from: today)
             ) ?? today
             start = calendar.date(byAdding: .month, value: -11, to: currentMonthStart) ?? today
-        case .year:
-            // 5 yearly dots: start of the year 4 years ago
-            let currentYearStart = calendar.date(
-                from: calendar.dateComponents([.year], from: today)
-            ) ?? today
-            start = calendar.date(byAdding: .year, value: -4, to: currentYearStart) ?? today
         }
         return (start, end)
     }
@@ -909,28 +897,29 @@ struct InsightsView: View {
     private var xAxisMarks: some AxisContent {
         switch range {
         case .day:
-            // Show every-other-day labels in "M/d" form (e.g. "5/27", "5/29")
-            // so the user can actually tell what dates they're looking at.
-            // Previously this was the weekday narrow letter ("M","T","W") which
-            // was uninformative — easy to misread which dates were visible.
-            AxisMarks(values: .stride(by: .day, count: 2)) { _ in
+            // 7 daily dots → label every day with weekday short + day-of-month
+            // ("Wed 28"). Fits on screen, plenty informative.
+            AxisMarks(values: .stride(by: .day)) { _ in
+                AxisGridLine()
+                AxisValueLabel(format: .dateTime.weekday(.abbreviated).day())
+            }
+        case .week:
+            // 4 weekly dots → label each week's start in "M/d" form.
+            AxisMarks(values: .stride(by: .weekOfYear)) { _ in
                 AxisGridLine()
                 AxisValueLabel(format: .dateTime.month(.defaultDigits).day())
             }
-        case .week:
-            AxisMarks(values: .stride(by: .weekOfYear)) { _ in
-                AxisGridLine()
-                AxisValueLabel(format: .dateTime.month(.abbreviated).day())
-            }
         case .month:
+            // 3 monthly dots → label each as abbreviated month name.
             AxisMarks(values: .stride(by: .month)) { _ in
                 AxisGridLine()
-                AxisValueLabel(format: .dateTime.month(.narrow))
+                AxisValueLabel(format: .dateTime.month(.abbreviated))
             }
         case .year:
-            AxisMarks(values: .stride(by: .year)) { _ in
+            // 12 monthly dots — label every other month to avoid clutter.
+            AxisMarks(values: .stride(by: .month, count: 2)) { _ in
                 AxisGridLine()
-                AxisValueLabel(format: .dateTime.year())
+                AxisValueLabel(format: .dateTime.month(.narrow))
             }
         }
     }
