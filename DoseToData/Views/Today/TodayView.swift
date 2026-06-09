@@ -135,9 +135,12 @@ struct TodayView: View {
                 }
                 DateStripLegend()
                 checkInCard(for: selectedDate)
-                if let activeTest, let startEvent = activeTest.startEvent {
-                    currentTestsSection(test: activeTest, startEvent: startEvent)
-                }
+                // Legacy "Current tests" section removed in Build 81 as part
+                // of the cutover to MedChangeEvent. Existing Test records are
+                // auto-ended via TestRetirementMigration on first launch of
+                // this build (see DoseToDataApp.swift), so no active tests
+                // exist to render after that point. The records themselves
+                // are preserved for historical chart markers on Insights.
                 changesSection
             }
             .padding(20)

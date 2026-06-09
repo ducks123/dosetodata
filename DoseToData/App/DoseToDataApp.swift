@@ -77,6 +77,15 @@ struct DoseToDataApp: App {
                 .task {
                     await subscriptionService.refresh()
                     MedicationSeeder.seedIfNeeded(context: sharedModelContainer.mainContext)
+                    // One-shot migration to retire the legacy Test feature:
+                    // any test still marked active gets ended as of today.
+                    // Guarded by a UserDefaults flag so it only runs once
+                    // ever per device. Test records and history are kept —
+                    // they still render as historical chart markers on
+                    // Insights — but they no longer count as "active."
+                    TestRetirementMigration.runIfNeeded(
+                        context: sharedModelContainer.mainContext
+                    )
                     // Register notification quick-action category and set the delegate
                     // so "Took it" / "Skip today" actions are handled immediately.
                     NotificationDelegate.shared.modelContainer = sharedModelContainer
