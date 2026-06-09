@@ -14,6 +14,8 @@ struct TodayView: View {
 
     @State private var showingCheckIn = false
     @State private var showingCreateTest = false
+    @State private var showingLogMedChange = false
+    @Query(sort: \MedChangeEvent.date, order: .reverse) private var medChangeEvents: [MedChangeEvent]
     @State private var showingEditMeds = false
     @State private var showingCheckInSetup = false
     @State private var showingSettings = false
@@ -151,6 +153,9 @@ struct TodayView: View {
         }
         .sheet(isPresented: $showingCreateTest) {
             CreateTestSheet()
+        }
+        .sheet(isPresented: $showingLogMedChange) {
+            LogMedChangeSheet()
         }
         .sheet(isPresented: $showingEditMeds) {
             EditMedicationsSheet()
@@ -467,31 +472,87 @@ struct TodayView: View {
 
     private var changesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Medication changes")
+            Text("Recent changes")
                 .font(Theme.Font.caption)
                 .foregroundStyle(Theme.Palette.textSecondary)
                 .padding(.leading, 4)
 
-            ActionRow(
-                icon: "flask.fill",
-                iconColor: Theme.Palette.primary,
-                title: "Create a test",
-                subtitle: "Add or change a med for a set period, then compare that window to your baseline."
-            ) {
-                guard requireSubscription() else { return }
-                showingCreateTest = true
+            // Latest 2 medication change events inline. Tapping a row will
+            // jump to the marker detail (Insights chart marker) in a later
+            // build; for now it just opens an empty placeholder via a
+            // pending-todo (no-op) so users see their history.
+            if medChangeEvents.isEmpty {
+                emptyRecentChangesCard
+            } else {
+                ForEach(medChangeEvents.prefix(2)) { event in
+                    recentChangeRow(event)
+                }
             }
 
-            ActionRow(
-                icon: "pills.fill",
-                iconColor: Theme.Palette.success,
-                title: "Edit medications",
-                subtitle: "Add or remove meds from your current schedule. Set doses, times, and reminders."
-            ) {
+            Button {
+                guard requireSubscription() else { return }
+                showingLogMedChange = true
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "plus.circle.fill")
+                    Text("Log a medication change")
+                }
+            }
+            .buttonStyle(PrimaryButtonStyle())
+
+            // "Edit medications" survives as a quieter secondary link — for
+            // when the user wants to just manage their med list without
+            // marking it as a change event (e.g. adding a vitamin).
+            Button {
                 guard requireSubscription() else { return }
                 showingEditMeds = true
+            } label: {
+                HStack(spacing: 5) {
+                    Image(systemName: "pills")
+                    Text("Edit medications")
+                }
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Theme.Palette.textSecondary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var emptyRecentChangesCard: some View {
+        Text("Log your first medication change so your chart shows what's affecting your trends.")
+            .font(Theme.Font.caption)
+            .foregroundStyle(Theme.Palette.textSecondary)
+            .multilineTextAlignment(.leading)
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
+    }
+
+    private func recentChangeRow(_ event: MedChangeEvent) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(event.date.formatted(date: .abbreviated, time: .omitted))
+                    .font(Theme.Font.bodyEmphasis)
+                Text("·")
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                Text("\(event.actions.count) change\(event.actions.count == 1 ? "" : "s")")
+                    .font(Theme.Font.caption)
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                Spacer()
+            }
+            ForEach(event.actions) { action in
+                Text(action.summaryLine)
+                    .font(.system(size: 13))
+                    .foregroundStyle(Theme.Palette.textPrimary)
             }
         }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
     }
 }
 

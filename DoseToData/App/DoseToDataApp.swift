@@ -22,6 +22,8 @@ struct DoseToDataApp: App {
             DailyCheckIn.self,
             CustomCheckInQuestion.self,
             MedAdherenceLog.self,
+            MedChangeEvent.self,
+            MedAction.self,
         ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         do {
