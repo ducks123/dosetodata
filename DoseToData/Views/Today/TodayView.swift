@@ -15,6 +15,9 @@ struct TodayView: View {
     @State private var showingCheckIn = false
     @State private var showingCreateTest = false
     @State private var showingLogMedChange = false
+    /// When set, presents the MedChangeMarkerDetailSheet for that event so
+    /// the user can edit or delete from the Today screen.
+    @State private var selectedRecentChange: MedChangeEvent? = nil
     @Query(sort: \MedChangeEvent.date, order: .reverse) private var medChangeEvents: [MedChangeEvent]
     @State private var showingEditMeds = false
     @State private var showingCheckInSetup = false
@@ -156,6 +159,10 @@ struct TodayView: View {
         }
         .sheet(isPresented: $showingCreateTest) {
             CreateTestSheet()
+        }
+        .sheet(item: $selectedRecentChange) { event in
+            MedChangeMarkerDetailSheet(event: event)
+                .presentationDetents([.medium, .large])
         }
         .sheet(isPresented: $showingLogMedChange) {
             LogMedChangeSheet()
@@ -523,27 +530,39 @@ struct TodayView: View {
     }
 
     private func recentChangeRow(_ event: MedChangeEvent) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                Text(event.date.formatted(date: .abbreviated, time: .omitted))
-                    .font(Theme.Font.bodyEmphasis)
-                Text("·")
+        Button {
+            selectedRecentChange = event
+        } label: {
+            HStack(alignment: .top, spacing: 10) {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text(event.date.formatted(date: .abbreviated, time: .omitted))
+                            .font(Theme.Font.bodyEmphasis)
+                            .foregroundStyle(Theme.Palette.textPrimary)
+                        Text("·")
+                            .foregroundStyle(Theme.Palette.textSecondary)
+                        Text("\(event.actions.count) change\(event.actions.count == 1 ? "" : "s")")
+                            .font(Theme.Font.caption)
+                            .foregroundStyle(Theme.Palette.textSecondary)
+                        Spacer()
+                    }
+                    ForEach(event.actions) { action in
+                        Text(action.summaryLine)
+                            .font(.system(size: 13))
+                            .foregroundStyle(Theme.Palette.textPrimary)
+                    }
+                }
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(Theme.Palette.textSecondary)
-                Text("\(event.actions.count) change\(event.actions.count == 1 ? "" : "s")")
-                    .font(Theme.Font.caption)
-                    .foregroundStyle(Theme.Palette.textSecondary)
-                Spacer()
+                    .padding(.top, 2)
             }
-            ForEach(event.actions) { action in
-                Text(action.summaryLine)
-                    .font(.system(size: 13))
-                    .foregroundStyle(Theme.Palette.textPrimary)
-            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
         }
-        .padding(14)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
+        .buttonStyle(.plain)
     }
 }
 

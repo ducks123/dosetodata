@@ -515,6 +515,15 @@ struct InsightsView: View {
                     chart
                         .chartScrollableAxes(.horizontal)
                         .chartXVisibleDomain(length: 14 * 24 * 3600)
+                        // Anchor the initial scroll so the visible window ends
+                        // at today — previously the chart auto-positioned at
+                        // the oldest data, making latest check-ins / med-change
+                        // markers invisible unless the user scrolled right.
+                        .chartScrollPosition(initialX: Calendar.current.date(
+                            byAdding: .day,
+                            value: -13,
+                            to: Calendar.current.startOfDay(for: Date())
+                        ) ?? Date())
                 }
                 .frame(height: 150)
                 .chartOverlay { proxy in
@@ -680,6 +689,15 @@ struct InsightsView: View {
                     chart
                         .chartScrollableAxes(.horizontal)
                         .chartXVisibleDomain(length: 14 * 24 * 3600)
+                        // Anchor the initial scroll so the visible window ends
+                        // at today — previously the chart auto-positioned at
+                        // the oldest data, making latest check-ins / med-change
+                        // markers invisible unless the user scrolled right.
+                        .chartScrollPosition(initialX: Calendar.current.date(
+                            byAdding: .day,
+                            value: -13,
+                            to: Calendar.current.startOfDay(for: Date())
+                        ) ?? Date())
                 }
                 .frame(height: 150)
                 .chartOverlay { proxy in
@@ -891,9 +909,13 @@ struct InsightsView: View {
     private var xAxisMarks: some AxisContent {
         switch range {
         case .day:
-            AxisMarks(values: .stride(by: .day)) { _ in
+            // Show every-other-day labels in "M/d" form (e.g. "5/27", "5/29")
+            // so the user can actually tell what dates they're looking at.
+            // Previously this was the weekday narrow letter ("M","T","W") which
+            // was uninformative — easy to misread which dates were visible.
+            AxisMarks(values: .stride(by: .day, count: 2)) { _ in
                 AxisGridLine()
-                AxisValueLabel(format: .dateTime.weekday(.narrow))
+                AxisValueLabel(format: .dateTime.month(.defaultDigits).day())
             }
         case .week:
             AxisMarks(values: .stride(by: .weekOfYear)) { _ in
