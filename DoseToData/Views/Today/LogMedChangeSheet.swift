@@ -122,7 +122,7 @@ struct LogMedChangeSheet: View {
         VStack(alignment: .leading, spacing: 12) {
             // Med picker trigger
             Button {
-                showingMedPickerForDraftID = draft.id
+                showingMedPickerForDraftID = draft.wrappedValue.id
             } label: {
                 HStack(spacing: 10) {
                     if let med = draft.wrappedValue.medication {
@@ -191,7 +191,7 @@ struct LogMedChangeSheet: View {
             // Remove row button (only if more than one)
             if actionDrafts.count > 1 {
                 Button(role: .destructive) {
-                    if let idx = actionDrafts.firstIndex(where: { $0.id == draft.id }) {
+                    if let idx = actionDrafts.firstIndex(where: { $0.id == draft.wrappedValue.id }) {
                         actionDrafts.remove(at: idx)
                     }
                 } label: {

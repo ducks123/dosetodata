@@ -503,23 +503,11 @@ struct TodayView: View {
             }
             .buttonStyle(PrimaryButtonStyle())
 
-            // "Edit medications" survives as a quieter secondary link — for
-            // when the user wants to just manage their med list without
-            // marking it as a change event (e.g. adding a vitamin).
-            Button {
-                guard requireSubscription() else { return }
-                showingEditMeds = true
-            } label: {
-                HStack(spacing: 5) {
-                    Image(systemName: "pills")
-                    Text("Edit medications")
-                }
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(Theme.Palette.textSecondary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 10)
-            }
-            .buttonStyle(.plain)
+            // Note: the previous "Edit medications" secondary link was removed
+            // here per product feedback. Medication management is still
+            // reachable from inside LogMedChangeSheet (the med picker) and
+            // from Settings if we ever surface it there. The Today screen
+            // stays focused on the single "Log a medication change" action.
         }
     }
 
