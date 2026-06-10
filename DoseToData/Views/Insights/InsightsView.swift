@@ -486,11 +486,11 @@ struct InsightsView: View {
                     }
                 }
                 .chartXAxis { xAxisMarks }
-                // (No scrollable-axes / visible-domain modifiers anymore — the
-                // 7-day window for Day fits inside the chart card and the
-                // other ranges fit by design too. Scrolling Charts caused
-                // the marker pill annotations to clip and the auto-scroll
-                // position to be wrong on first render.)
+                // Clamp the chart's X domain to the scoped window so Swift
+                // Charts doesn't auto-pad with extra days on either side —
+                // that padding was producing 9 labels on the 7-day Day view
+                // (Wed 3 … Thu 11) instead of the intended 7.
+                .chartXScale(domain: chartXDomain)
                 .frame(height: 150)
                 .chartOverlay { proxy in
                     GeometryReader { geo in
@@ -651,11 +651,11 @@ struct InsightsView: View {
                     }
                 }
                 .chartXAxis { xAxisMarks }
-                // (No scrollable-axes / visible-domain modifiers anymore — the
-                // 7-day window for Day fits inside the chart card and the
-                // other ranges fit by design too. Scrolling Charts caused
-                // the marker pill annotations to clip and the auto-scroll
-                // position to be wrong on first render.)
+                // Clamp the chart's X domain to the scoped window so Swift
+                // Charts doesn't auto-pad with extra days on either side —
+                // that padding was producing 9 labels on the 7-day Day view
+                // (Wed 3 … Thu 11) instead of the intended 7.
+                .chartXScale(domain: chartXDomain)
                 .frame(height: 150)
                 .chartOverlay { proxy in
                     GeometryReader { geo in
@@ -753,6 +753,23 @@ struct InsightsView: View {
         let id = UUID()
         let date: Date
         let value: Double
+    }
+
+    /// Closed date range used for `.chartXScale(domain:)` so each chart's
+    /// X-axis is exactly the scoped window — no auto-padding before the
+    /// first bucket or after the last bucket. Both endpoints are aligned
+    /// to bucket boundaries so the axis labels land on real ticks.
+    private var chartXDomain: ClosedRange<Date> {
+        let (start, end) = scopedRange
+        let alignedStart = calendar.dateInterval(of: bucketUnit, for: start)?.start ?? start
+        let alignedEnd   = calendar.dateInterval(of: bucketUnit, for: end)?.start ?? end
+        // If start == end (rare), nudge end forward by one bucket so the
+        // domain is non-empty; otherwise SwiftUI's Chart can't lay out.
+        guard alignedStart < alignedEnd else {
+            let nudged = calendar.date(byAdding: bucketUnit, value: 1, to: alignedStart) ?? alignedStart
+            return alignedStart ... nudged
+        }
+        return alignedStart ... alignedEnd
     }
 
     private var bucketUnit: Calendar.Component {
