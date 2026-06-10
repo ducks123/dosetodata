@@ -281,40 +281,13 @@ struct InsightsView: View {
                 .disabled(windowOffset >= maxWindowOffset)
             }
 
-            if !tests.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        chip(label: "All data", isOn: selectedTestID == nil) {
-                            selectedTestID = nil
-                        }
-                        ForEach(tests) { test in
-                            chip(label: testChipLabel(test), isOn: selectedTestID == test.id) {
-                                selectedTestID = test.id
-                            }
-                        }
-                    }
-                }
-
-                if let selectedTestID, let test = tests.first(where: { $0.id == selectedTestID }) {
-                    Button {
-                        editingTest = test
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "pencil")
-                            Text("Edit test")
-                        }
-                        .font(Theme.Font.caption)
-                        .foregroundStyle(Theme.Palette.primary)
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 12)
-                        .background(Theme.Palette.primary.opacity(0.1))
-                        .clipShape(Capsule())
-                    }
-                    .buttonStyle(.plain)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 4)
-                }
-            }
+            // Legacy "Test filter" chips removed. Tests were retired in
+            // favor of MedChangeEvent; this UI was a vestige that scoped
+            // scopedRange to the legacy test's full duration, blowing past
+            // the new fixed Day/Week/Month/Year windows and causing the
+            // X-axis labels to overlap. The selectedTestID state remains
+            // so scopedRange's existing branch is harmless (always nil
+            // now); the deeper cleanup of the field can come later.
         }
     }
 

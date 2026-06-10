@@ -403,9 +403,23 @@ struct MedDoseAndTimesPicker: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Dose")
-                    .font(Theme.Font.caption)
-                    .foregroundStyle(Theme.Palette.textSecondary)
+                // Dose label + required indicator. Real user feedback from a
+                // brother of Stewart's: when adding a medication without a
+                // dose, the Add button stays disabled with no explanation,
+                // and it wasn't obvious WHICH field was the blocker. The
+                // red "Required" pill makes it unmissable.
+                HStack(spacing: 6) {
+                    Text("Dose")
+                        .font(Theme.Font.caption)
+                        .foregroundStyle(Theme.Palette.textSecondary)
+                    Text("Required")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(Theme.Palette.negative)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Theme.Palette.negative.opacity(0.12))
+                        .clipShape(Capsule())
+                }
                 // Preset dose chips were removed to comply with App Store
                 // Guideline 1.4.2 — Apple reads suggested doses as a "dosage
                 // calculator," which is restricted to manufacturer / hospital
@@ -418,7 +432,18 @@ struct MedDoseAndTimesPicker: View {
                     .padding(.vertical, 10)
                     .background(Color.white)
                     .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
-                    .overlay(RoundedRectangle(cornerRadius: Theme.Radius.button).stroke(Theme.Palette.divider, lineWidth: 1))
+                    .overlay(RoundedRectangle(cornerRadius: Theme.Radius.button).stroke(
+                        dose.trimmingCharacters(in: .whitespaces).isEmpty
+                            ? Theme.Palette.negative.opacity(0.5)
+                            : Theme.Palette.divider,
+                        lineWidth: 1
+                    ))
+                if dose.trimmingCharacters(in: .whitespaces).isEmpty {
+                    Text("Enter a dose to enable Add.")
+                        .font(.system(size: 11))
+                        .foregroundStyle(Theme.Palette.negative)
+                        .padding(.leading, 4)
+                }
             }
 
             Toggle(isOn: $addToSchedule) {
