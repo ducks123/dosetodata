@@ -113,11 +113,22 @@ struct MedicationsOnboardingStepView: View {
             }
         }
         .sheet(isPresented: $showingCustomForm) {
-            CustomMedicationForm { newMed in
+            CustomMedicationForm { newMed, dose, addToSchedule, scheduledTimes in
+                // Custom form captures dose + schedule itself now — commit the
+                // UserMedication directly instead of chaining into a second
+                // dose/time sheet.
                 modelContext.insert(newMed)
+                let userMed = UserMedication(
+                    medication: newMed,
+                    currentDose: dose,
+                    startDate: Date()
+                )
+                if addToSchedule { userMed.scheduledTimes = scheduledTimes }
+                modelContext.insert(userMed)
                 try? modelContext.save()
-                // Chain straight into dose/time setup for the new custom med.
-                pendingMed = newMed
+                if userMed.remindersEnabled && !userMed.scheduledTimes.isEmpty {
+                    Task { await ReminderManager.shared.scheduleReminders(for: userMed) }
+                }
             }
         }
     }

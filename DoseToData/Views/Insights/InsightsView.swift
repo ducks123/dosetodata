@@ -414,7 +414,7 @@ struct InsightsView: View {
                 Chart {
                     ForEach(points) { point in
                         AreaMark(
-                            x: .value("Day", point.date, unit: bucketUnit),
+                            x: .value("Day", point.date),
                             y: .value("Score", point.value)
                         )
                         .foregroundStyle(
@@ -426,7 +426,7 @@ struct InsightsView: View {
                         )
                         .interpolationMethod(.monotone)
                         LineMark(
-                            x: .value("Day", point.date, unit: bucketUnit),
+                            x: .value("Day", point.date),
                             y: .value("Score", point.value)
                         )
                         .foregroundStyle(Theme.Palette.primary)
@@ -435,11 +435,11 @@ struct InsightsView: View {
                     }
                     // Selection mark — drawn before amber dots so amber stays on top
                     if let sel = selPoint {
-                        RuleMark(x: .value("Day", sel.date, unit: bucketUnit))
+                        RuleMark(x: .value("Day", sel.date))
                             .foregroundStyle(Theme.Palette.primary.opacity(0.25))
                             .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
                         PointMark(
-                            x: .value("Day", sel.date, unit: bucketUnit),
+                            x: .value("Day", sel.date),
                             y: .value("Score", sel.value)
                         )
                         .foregroundStyle(missedPoints.contains(where: { $0.date == sel.date })
@@ -454,7 +454,7 @@ struct InsightsView: View {
                     // Amber dots rendered last so they always appear on top
                     ForEach(missedPoints) { point in
                         PointMark(
-                            x: .value("Day", point.date, unit: bucketUnit),
+                            x: .value("Day", point.date),
                             y: .value("Score", point.value)
                         )
                         .foregroundStyle(Theme.Palette.attention)
@@ -466,7 +466,7 @@ struct InsightsView: View {
                     // annotation renders cleanly across all four ranges, so
                     // the pill icon is back at the top of each marker.
                     ForEach(medChangeEvents) { event in
-                        RuleMark(x: .value("Med change", event.date, unit: bucketUnit))
+                        RuleMark(x: .value("Med change", event.date))
                             .foregroundStyle(Theme.Palette.textSecondary.opacity(0.55))
                             .lineStyle(StrokeStyle(lineWidth: 1.2, dash: [3, 3]))
                             .annotation(position: .top, alignment: .center, spacing: 2) {
@@ -583,7 +583,7 @@ struct InsightsView: View {
                 Chart {
                     ForEach(points) { point in
                         AreaMark(
-                            x: .value("Day", point.date, unit: bucketUnit),
+                            x: .value("Day", point.date),
                             y: .value("Level", point.value)
                         )
                         .foregroundStyle(
@@ -595,7 +595,7 @@ struct InsightsView: View {
                         )
                         .interpolationMethod(.monotone)
                         LineMark(
-                            x: .value("Day", point.date, unit: bucketUnit),
+                            x: .value("Day", point.date),
                             y: .value("Level", point.value)
                         )
                         .foregroundStyle(Theme.Palette.primary)
@@ -604,11 +604,11 @@ struct InsightsView: View {
                     }
                     // Selection mark — drawn before amber dots so amber stays on top
                     if let sel = selPoint {
-                        RuleMark(x: .value("Day", sel.date, unit: bucketUnit))
+                        RuleMark(x: .value("Day", sel.date))
                             .foregroundStyle(Theme.Palette.primary.opacity(0.25))
                             .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
                         PointMark(
-                            x: .value("Day", sel.date, unit: bucketUnit),
+                            x: .value("Day", sel.date),
                             y: .value("Level", sel.value)
                         )
                         .foregroundStyle(missedPoints.contains(where: { $0.date == sel.date })
@@ -623,7 +623,7 @@ struct InsightsView: View {
                     // Amber dots rendered last so they always appear on top
                     ForEach(missedPoints) { point in
                         PointMark(
-                            x: .value("Day", point.date, unit: bucketUnit),
+                            x: .value("Day", point.date),
                             y: .value("Level", point.value)
                         )
                         .foregroundStyle(Theme.Palette.attention)
@@ -631,7 +631,7 @@ struct InsightsView: View {
                     }
                     // Vertical dashed markers at every MedChangeEvent date.
                     ForEach(medChangeEvents) { event in
-                        RuleMark(x: .value("Med change", event.date, unit: bucketUnit))
+                        RuleMark(x: .value("Med change", event.date))
                             .foregroundStyle(Theme.Palette.textSecondary.opacity(0.55))
                             .lineStyle(StrokeStyle(lineWidth: 1.2, dash: [3, 3]))
                             .annotation(position: .top, alignment: .center, spacing: 2) {
@@ -878,7 +878,9 @@ struct InsightsView: View {
             let comps = calendar.dateComponents([.year, .month], from: date)
             return calendar.date(from: comps) ?? calendar.startOfDay(for: date)
         case .year:
-            let comps = calendar.dateComponents([.year], from: date)
+            // Year view shows 12 monthly buckets, so bucket by month (not
+            // year) — matches bucketUnit (.month) and the monthly X domain.
+            let comps = calendar.dateComponents([.year, .month], from: date)
             return calendar.date(from: comps) ?? calendar.startOfDay(for: date)
         }
     }

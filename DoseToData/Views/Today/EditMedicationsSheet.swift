@@ -225,11 +225,24 @@ struct AddMedicationFlow: View {
             }
         }
         .sheet(isPresented: $showingCustomForm) {
-            CustomMedicationForm { newMed in
+            CustomMedicationForm { newMed, dose, addToSchedule, scheduledTimes in
+                // Custom form now captures dose + schedule itself, so commit
+                // the UserMedication directly — no second detail screen.
+                // Mirrors the library-med commit() path: insert the new
+                // Medication here, build the UserMedication, and let the
+                // parent's onCommit do the insert + save.
                 modelContext.insert(newMed)
-                try? modelContext.save()
-                selectedMed = newMed
-                dose = ""  // user types their prescribed dose (Apple 1.4.2)
+                let userMed = UserMedication(
+                    medication: newMed,
+                    currentDose: dose,
+                    startDate: Date()
+                )
+                if addToSchedule { userMed.scheduledTimes = scheduledTimes }
+                onCommit(userMed)
+                if userMed.remindersEnabled && !userMed.scheduledTimes.isEmpty {
+                    Task { await ReminderManager.shared.scheduleReminders(for: userMed) }
+                }
+                dismiss()
             }
         }
     }
@@ -571,19 +584,31 @@ struct CustomMedicationForm: View {
     @State private var brandName: String = ""
     @State private var genericName: String = ""
     @State private var category: MedCategory = .other
-    @State private var commonDosesText: String = ""
+    // Dose + schedule are now captured HERE so the custom-med flow is a
+    // single screen — previously the user filled this form, then got a
+    // SECOND "Add medication" screen re-asking for dose + how-often. Now
+    // it's all one step.
+    @State private var dose: String = ""
+    @State private var addToSchedule: Bool = true
+    @State private var scheduledTimes: [String] = []
+    @State private var showingTimePicker = false
+    @State private var pendingTime: Date = Self.defaultTime()
 
-    let onSave: (Medication) -> Void
+    /// Delivers the fully-specified custom medication AND its dose/schedule
+    /// in one shot so the caller can create the UserMedication directly with
+    /// no follow-up sheet.
+    let onSave: (_ medication: Medication, _ dose: String, _ addToSchedule: Bool, _ scheduledTimes: [String]) -> Void
 
-    private var parsedDoses: [String] {
-        commonDosesText
-            .split(separator: ",")
-            .map { $0.trimmingCharacters(in: .whitespaces) }
-            .filter { !$0.isEmpty }
+    private static func defaultTime() -> Date {
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
+        components.hour = 8
+        components.minute = 0
+        return Calendar.current.date(from: components) ?? Date()
     }
 
     private var canSave: Bool {
         !brandName.trimmingCharacters(in: .whitespaces).isEmpty
+            && !dose.trimmingCharacters(in: .whitespaces).isEmpty
     }
 
     var body: some View {
@@ -627,13 +652,18 @@ struct CustomMedicationForm: View {
                         }
                     }
 
-                    field(
-                        title: "Doses (comma-separated, optional)",
-                        placeholder: "e.g. 10mg, 20mg, 30mg",
-                        text: $commonDosesText
+                    // Same dose + schedule UI used by the library-med flow,
+                    // so a custom med is fully set up on this one screen.
+                    MedDoseAndTimesPicker(
+                        commonDoses: [],
+                        dose: $dose,
+                        addToSchedule: $addToSchedule,
+                        scheduledTimes: $scheduledTimes,
+                        onAddTime: { showingTimePicker = true }
                     )
                 }
                 .padding(20)
+                .padding(.bottom, 80)
             }
             .background(Theme.Palette.background)
             .navigationTitle("Custom medication")
@@ -642,11 +672,27 @@ struct CustomMedicationForm: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { dismiss() }
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Save") {
-                        save()
+            }
+            .safeAreaInset(edge: .bottom) {
+                Button {
+                    save()
+                } label: {
+                    Text("Add to my medications")
+                }
+                .buttonStyle(PrimaryButtonStyle())
+                .disabled(!canSave)
+                .opacity(canSave ? 1 : 0.5)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+                .background(Theme.Palette.background.opacity(0.96))
+            }
+            .sheet(isPresented: $showingTimePicker) {
+                TimePickerSheet(initialTime: pendingTime) { time in
+                    let timeString = ScheduleTime.string(from: time)
+                    if !scheduledTimes.contains(timeString) {
+                        scheduledTimes.append(timeString)
+                        scheduledTimes.sort()
                     }
-                    .disabled(!canSave)
                 }
             }
         }
@@ -676,12 +722,17 @@ struct CustomMedicationForm: View {
             brandName: trimmedBrand,
             genericName: trimmedGeneric.isEmpty ? trimmedBrand : trimmedGeneric,
             medClass: "Custom",
-            commonDoses: parsedDoses,
+            commonDoses: [],
             commonSideEffects: [],
             isExtendedRelease: false,
             category: category
         )
-        onSave(med)
+        onSave(
+            med,
+            dose.trimmingCharacters(in: .whitespaces),
+            addToSchedule,
+            addToSchedule ? scheduledTimes : []
+        )
         dismiss()
     }
 }
