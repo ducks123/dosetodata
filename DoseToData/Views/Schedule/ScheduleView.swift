@@ -2,9 +2,18 @@ import SwiftUI
 import SwiftData
 
 struct ScheduleView: View {
+    @Environment(SubscriptionService.self) private var sub
     @Query(sort: \UserMedication.startDate, order: .forward) private var userMedications: [UserMedication]
 
     @State private var showingEditMeds = false
+    @State private var showingPaywall = false
+
+    /// Routes a write action through the subscription gate: runs it when the
+    /// user can write, otherwise presents the paywall. Expired users are
+    /// read-only (H1).
+    private func gatedWrite(_ action: () -> Void) {
+        if sub.canWrite { action() } else { showingPaywall = true }
+    }
 
     private let calendar = Calendar.current
 
@@ -28,6 +37,10 @@ struct ScheduleView: View {
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showingEditMeds) {
                 EditMedicationsSheet()
+            }
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView()
+                    .environment(sub)
             }
         }
     }
@@ -88,7 +101,7 @@ struct ScheduleView: View {
     /// Prominent pill-shaped "Edit list" button next to the section header.
     private var editListButton: some View {
         Button {
-            showingEditMeds = true
+            gatedWrite { showingEditMeds = true }
         } label: {
             HStack(spacing: 5) {
                 Image(systemName: "pencil")
@@ -108,7 +121,7 @@ struct ScheduleView: View {
     /// Dashed call-to-action card below the med list — the primary path for adding a new med.
     private var addMedicationCard: some View {
         Button {
-            showingEditMeds = true
+            gatedWrite { showingEditMeds = true }
         } label: {
             HStack(spacing: 12) {
                 ZStack {

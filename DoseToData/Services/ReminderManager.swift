@@ -65,7 +65,6 @@ final class ReminderManager {
         let granted = await requestAuthorizationIfNeeded()
         guard granted else { return }
 
-        let center = UNUserNotificationCenter.current()
         await clearReminders(for: userMed.id)
 
         let medName = userMed.medication.brandName
@@ -91,15 +90,26 @@ final class ReminderManager {
                 let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
                 let id = identifier(userMedID: userMed.id, timeString: timeString, weekday: weekday)
                 let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
-                try? await center.add(request)
+                await addNotification(request, operation: "schedule reminder")
             }
+        }
+    }
+
+    /// Adds a notification request, logging (not swallowing) failures so a
+    /// silently-missed reminder is at least diagnosable (M2). `operation` is a
+    /// short non-sensitive label — never the medication name.
+    private func addNotification(_ request: UNNotificationRequest, operation: String) async {
+        do {
+            try await UNUserNotificationCenter.current().add(request)
+        } catch {
+            AppLog.notificationFailure(operation, error)
         }
     }
 
     func clearReminders(for userMedID: UUID) async {
         let center = UNUserNotificationCenter.current()
         let pending = await center.pendingNotificationRequests()
-        let prefix = "userMed-\(userMedID.uuidString)"
+        let prefix = Self.reminderIdentifierPrefix(userMedID: userMedID)
         let ids = pending.map(\.identifier).filter { $0.hasPrefix(prefix) }
         if !ids.isEmpty {
             center.removePendingNotificationRequests(withIdentifiers: ids)
@@ -117,7 +127,6 @@ final class ReminderManager {
         await cancelAllCheckInReminders()   // awaited so cancel finishes before scheduling
         guard granted, !times.isEmpty else { return }
 
-        let center = UNUserNotificationCenter.current()
         for timeString in times {
             let parts = timeString.split(separator: ":")
             guard parts.count == 2,
@@ -137,7 +146,7 @@ final class ReminderManager {
             let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
             let id = Self.checkInReminderPrefix + timeString
             let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
-            try? await center.add(request)
+            await addNotification(request, operation: "schedule reminder")
         }
     }
 
@@ -167,7 +176,7 @@ final class ReminderManager {
         content.threadIdentifier = Self.dailyCheckInIdentifier
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
         let request = UNNotificationRequest(identifier: Self.dailyCheckInIdentifier, content: content, trigger: trigger)
-        try? await center.add(request)
+        await addNotification(request, operation: "schedule reminder")
     }
 
     func cancelDailyCheckInReminder() {
@@ -210,11 +219,23 @@ final class ReminderManager {
         // Fire after a short delay so it arrives after the app moves to background
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 3, repeats: false)
         let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
-        try? await center.add(request)
+        await addNotification(request, operation: "schedule reminder")
     }
 
     private func identifier(userMedID: UUID, timeString: String, weekday: Int) -> String {
-        "userMed-\(userMedID.uuidString)-\(timeString)-\(weekday)"
+        Self.reminderIdentifier(userMedID: userMedID, timeString: timeString, weekday: weekday)
+    }
+
+    /// Shared prefix for ALL of a medication's reminder request identifiers.
+    /// `clearReminders(for:)` removes exactly the requests with this prefix, so
+    /// scheduling and clearing must agree on it — these statics are the single
+    /// source of truth (and are unit-tested).
+    static func reminderIdentifierPrefix(userMedID: UUID) -> String {
+        "userMed-\(userMedID.uuidString)"
+    }
+
+    static func reminderIdentifier(userMedID: UUID, timeString: String, weekday: Int) -> String {
+        "\(reminderIdentifierPrefix(userMedID: userMedID))-\(timeString)-\(weekday)"
     }
 
     private func parse(_ timeString: String) -> (hour: Int, minute: Int)? {

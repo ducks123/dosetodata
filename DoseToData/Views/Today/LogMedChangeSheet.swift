@@ -51,6 +51,9 @@ struct LogMedChangeSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
+                    if isEditing {
+                        editScopeNote
+                    }
                     dateSection
                     changesSection
                     addAnotherButton
@@ -99,6 +102,26 @@ struct LogMedChangeSheet: View {
     }
 
     // MARK: - Sections
+
+    /// Shown only when editing an existing event. Edits update the timeline
+    /// marker but intentionally do NOT re-apply start/stop/dose actions to the
+    /// current medication list (avoids double-applying). Tell the user so the
+    /// timeline and med list don't silently diverge (M1).
+    private var editScopeNote: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "info.circle")
+                .foregroundStyle(Theme.Palette.textSecondary)
+                .font(.system(size: 14))
+            Text("Editing updates this timeline entry only. It won't change your current medication list — manage that in Schedule → Edit medications.")
+                .font(Theme.Font.caption)
+                .foregroundStyle(Theme.Palette.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Theme.Palette.heroAccent)
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
+    }
 
     private var dateSection: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -425,15 +448,24 @@ struct LogMedChangeSheet: View {
                 modelContext.insert(userMed)
             }
         case .stop:
-            // End the active UserMedication for this med, if any.
+            // End the active UserMedication for this med, if any, and stop its
+            // reminders so a stopped med doesn't keep notifying (H2).
             if let active = userMedications.first(where: { $0.medication.id == med.id && $0.endDate == nil }) {
                 active.endDate = eventDate
+                let stoppedID = active.id
+                Task { await ReminderManager.shared.clearReminders(for: stoppedID) }
             }
         case .doseChange:
             if let active = userMedications.first(where: { $0.medication.id == med.id && $0.endDate == nil }) {
                 let newDose = draft.dose.trimmingCharacters(in: .whitespaces)
                 if !newDose.isEmpty {
                     active.currentDose = newDose
+                    // Reschedule so the notification body shows the new dose,
+                    // not the old one (H2). scheduleReminders clears first.
+                    if active.remindersEnabled && !active.scheduledTimes.isEmpty {
+                        let updated = active
+                        Task { await ReminderManager.shared.scheduleReminders(for: updated) }
+                    }
                 }
             }
         }

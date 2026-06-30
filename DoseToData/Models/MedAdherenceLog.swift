@@ -16,7 +16,7 @@ final class MedAdherenceLog {
 
     init(date: Date) {
         self.id = UUID()
-        self.date = Calendar.current.startOfDay(for: date)
+        self.date = AppCalendar.current.startOfDay(for: date)
         self.takenMedIDs = []
         self.skippedMedIDs = []
     }

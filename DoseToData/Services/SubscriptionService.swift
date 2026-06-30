@@ -36,6 +36,34 @@ enum SubscriptionStatus: Equatable {
 @Observable
 final class SubscriptionService {
 
+    /// Persisted last-known write-access answer. Lets the brief `.loading`
+    /// window at cold start avoid failing open for expired users (H1) without
+    /// flashing a paywall at paying users.
+    private static let lastKnownCanWriteKey = "com.stewartsherpa.dosetodata.lastKnownCanWrite"
+
+    /// Effective write access for the current state. During `.loading` we
+    /// fall back to the last resolved answer (cached) instead of unconditionally
+    /// allowing writes; everything else defers to `status.canWrite`. Call sites
+    /// should use this, not `status.canWrite`, so the cold-start window is
+    /// handled consistently.
+    var canWrite: Bool {
+        Self.effectiveCanWrite(
+            status: status,
+            lastKnownCanWrite: UserDefaults.standard.object(forKey: Self.lastKnownCanWriteKey) as? Bool
+        )
+    }
+
+    /// Pure decision used by `canWrite` (extracted for testability). During
+    /// `.loading`, returns `lastKnownCanWrite` if we have one, else `true`
+    /// (fresh install mid-onboarding must not be blocked). Otherwise the
+    /// status's own `canWrite`.
+    static func effectiveCanWrite(status: SubscriptionStatus, lastKnownCanWrite: Bool?) -> Bool {
+        if case .loading = status {
+            return lastKnownCanWrite ?? true
+        }
+        return status.canWrite
+    }
+
     // MARK: - Constants
 
     static let apiKey = "appl_HgzNcfwmgesUTjULAJRtoOoELMg"
@@ -46,7 +74,16 @@ final class SubscriptionService {
 
     // MARK: - Observed state
 
-    var status: SubscriptionStatus = .loading
+    var status: SubscriptionStatus = .loading {
+        didSet {
+            // Cache the resolved write-access decision so the transient
+            // `.loading` window at cold start can fall back to the last real
+            // answer (see `canWrite`). Skip `.loading` itself — we only want
+            // to remember resolved states.
+            if case .loading = status { return }
+            UserDefaults.standard.set(status.canWrite, forKey: Self.lastKnownCanWriteKey)
+        }
+    }
     var offerings: Offerings? = nil
     var isLoading = false
     var isRefreshing = false
@@ -197,10 +234,21 @@ final class SubscriptionService {
     /// Persisted flag so grandfathered status survives across launches.
     private static let grandfatheredKey = "com.stewartsherpa.dosetodata.grandfathered"
 
+    /// Whole trial days remaining until `expiry`, computed from the exact
+    /// timestamp so the final partial day isn't lost. Returns 0 only once
+    /// `now` has reached/passed `expiry`; while any time remains it returns at
+    /// least 1. (Previously the caller floored `.day` components, so a trial
+    /// with under 24h left reported 0 and expired up to a day early — M6.)
+    static func trialDaysRemaining(expiry: Date, now: Date) -> Int {
+        guard now < expiry else { return 0 }
+        let seconds = expiry.timeIntervalSince(now)
+        return max(1, Int(ceil(seconds / 86_400)))
+    }
+
     /// Returns the number of trial days remaining, or `nil` if the user is permanently grandfathered.
     ///
     /// - Existing users (had the app before this build): grandfathered → returns `nil` → maps to `.active`.
-    /// - New users: 7-day trial → returns days remaining → 0 maps to `.expired`.
+    /// - New users: local fallback trial → days remaining → 0 maps to `.expired`.
     static func localTrialDaysLeft() -> Int? {
         let defaults = UserDefaults.standard
 
@@ -208,8 +256,8 @@ final class SubscriptionService {
         if defaults.bool(forKey: grandfatheredKey) { return nil }
 
         if let expiry = defaults.object(forKey: trialExpiryKey) as? Date {
-            let days = Calendar.current.dateComponents([.day], from: Date(), to: expiry).day ?? 0
-            return max(0, days)
+            // Gate on the exact expiry timestamp, not a floored day count.
+            return trialDaysRemaining(expiry: expiry, now: Date())
         } else {
             // First time this code runs on this device.
             let isExistingUser = defaults.bool(forKey: onboardingCompletedKey)
@@ -218,7 +266,7 @@ final class SubscriptionService {
                 defaults.set(true, forKey: grandfatheredKey)
                 return nil
             } else {
-                // Brand-new user — start the 7-day trial clock.
+                // Brand-new user — start the local fallback trial clock.
                 let expiry = Calendar.current.date(byAdding: .day, value: trialDays, to: Date())!
                 defaults.set(expiry, forKey: trialExpiryKey)
                 return trialDays

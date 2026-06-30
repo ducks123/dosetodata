@@ -701,7 +701,7 @@ struct LockedFeatureButton<Label: View>: View {
 
     var body: some View {
         Button {
-            if sub.status.canWrite {
+            if sub.canWrite {
                 action()
             } else {
                 showPaywall = true

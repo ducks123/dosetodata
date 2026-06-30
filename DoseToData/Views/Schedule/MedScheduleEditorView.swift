@@ -5,6 +5,7 @@ struct MedScheduleEditorView: View {
     @Bindable var userMed: UserMedication
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(SubscriptionService.self) private var sub
     @State private var showingTimePicker = false
     @State private var pendingTime: Date = defaultPendingTime()
 
@@ -28,10 +29,19 @@ struct MedScheduleEditorView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 headerCard
-                reminderToggleCard
-                timesSection
-                frequencySection
-                quickPresetsSection
+                // Expired users are read-only (H1): show the upgrade banner and
+                // disable every editing control below. headerCard stays
+                // interactive-free so viewing the med is still allowed.
+                if !sub.canWrite {
+                    ExpiredBanner()
+                }
+                Group {
+                    reminderToggleCard
+                    timesSection
+                    frequencySection
+                    quickPresetsSection
+                }
+                .disabled(!sub.canWrite)
             }
             .padding(20)
         }
@@ -72,7 +82,7 @@ struct MedScheduleEditorView: View {
             get: { userMed.remindersEnabled },
             set: { newValue in
                 userMed.remindersEnabled = newValue
-                try? modelContext.save()
+                modelContext.saveChanges("edit schedule")
                 Task {
                     if newValue {
                         await ReminderManager.shared.scheduleReminders(for: userMed)
@@ -240,7 +250,7 @@ struct MedScheduleEditorView: View {
             days.append(weekday)
         }
         userMed.scheduledDays = days
-        try? modelContext.save()
+        modelContext.saveChanges("edit schedule")
         if userMed.remindersEnabled {
             Task { await ReminderManager.shared.scheduleReminders(for: userMed) }
         }
@@ -311,7 +321,7 @@ struct MedScheduleEditorView: View {
     private func presetButton(title: String, times: [String]) -> some View {
         Button {
             userMed.scheduledTimes = times
-            try? modelContext.save()
+            modelContext.saveChanges("edit schedule")
         } label: {
             HStack {
                 Text(title)
@@ -343,12 +353,12 @@ struct MedScheduleEditorView: View {
         if !times.contains(timeString) {
             times.append(timeString)
             userMed.scheduledTimes = times.sorted()
-            try? modelContext.save()
+            modelContext.saveChanges("edit schedule")
         }
     }
 
     private func removeTime(_ timeString: String) {
         userMed.scheduledTimes.removeAll { $0 == timeString }
-        try? modelContext.save()
+        modelContext.saveChanges("edit schedule")
     }
 }

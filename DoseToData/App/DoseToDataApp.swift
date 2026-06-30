@@ -29,36 +29,40 @@ struct DoseToDataApp: App {
         do {
             return try ModelContainer(for: schema, configurations: [config])
         } catch {
-            // Migration failure — wipe every possible SwiftData store location and
-            // try again. SwiftData can place the store in Application Support or
-            // Documents depending on the iOS version; we sweep both. SQLite WAL/SHM
-            // journal files use a hyphen suffix (default.store-wal, default.store-shm),
-            // NOT a dotted extension, so we match by prefix.
+            // Store failed to open (migration bug, transient FS error, locked
+            // file, partial restore, SwiftData regression, …). The on-disk
+            // store is the user's ONLY copy of their health data, so we must
+            // NOT delete it. Instead QUARANTINE it: move the store files aside
+            // into a timestamped backup folder so they remain recoverable,
+            // then retry with a fresh store so the app still launches. (The
+            // earlier implementation hard-deleted the store, which could
+            // silently and permanently erase years of history — see C1.)
+            //
+            // SwiftData can place the store in Application Support or Documents
+            // depending on the iOS version; we check both.
             let fm = FileManager.default
-            let searchDirs: [URL] = [
-                fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first,
-                fm.urls(for: .documentDirectory, in: .userDomainMask).first,
-            ].compactMap { $0 }
+            let appSupport = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            let documents = fm.urls(for: .documentDirectory, in: .userDomainMask).first
+            let searchDirs: [URL] = [appSupport, documents].compactMap { $0 }
+            let quarantineRoot = appSupport
+                ?? documents
+                ?? fm.temporaryDirectory
+            let now = Date()
 
-            for dir in searchDirs {
-                guard let contents = try? fm.contentsOfDirectory(
-                    at: dir, includingPropertiesForKeys: nil
-                ) else { continue }
-                for url in contents where
-                    url.lastPathComponent.hasPrefix("default.store") ||
-                    url.lastPathComponent.hasSuffix(".sqlite") ||
-                    url.lastPathComponent.hasSuffix(".sqlite-wal") ||
-                    url.lastPathComponent.hasSuffix(".sqlite-shm") {
-                    try? fm.removeItem(at: url)
-                }
-            }
+            let quarantined = SwiftDataStoreRecovery.quarantineStoreFiles(
+                in: searchDirs,
+                quarantineRoot: quarantineRoot,
+                timestamp: now
+            )
+            SwiftDataStoreRecovery.recordQuarantine(quarantined, timestamp: now)
 
-            // Retry persistent store after cleanup.
+            // Retry persistent store after quarantine (fresh, empty store).
             if let container = try? ModelContainer(for: schema, configurations: [config]) {
                 return container
             }
-            // Last resort: in-memory store so the app always opens.
-            // Data won't persist this session but there's no crash.
+            // Last resort: in-memory store so the app always opens. Data won't
+            // persist this session, but the quarantined store on disk is
+            // untouched and recoverable.
             let memConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
             if let memContainer = try? ModelContainer(for: schema, configurations: [memConfig]) {
                 return memContainer

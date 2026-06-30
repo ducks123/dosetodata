@@ -33,12 +33,30 @@ struct InsightsView: View {
     /// when no marker is selected.
     @State private var selectedMedChangeEvent: MedChangeEvent? = nil
 
-    /// Returns medication-change markers (date + event reference) for any
-    /// event in the visible date range of a chart. Iterated by Chart's
-    /// `RuleMark` block to draw vertical dashed lines.
-    private func medChangeMarkers(in dateRange: ClosedRange<Date>?) -> [MedChangeEvent] {
-        guard let range = dateRange else { return medChangeEvents }
-        return medChangeEvents.filter { range.contains($0.date) }
+    /// Whether to render the medication-change markers + chips. Only on Day
+    /// and Week — at Month/Year granularity multiple changes collapse to the
+    /// same bucket position and stack up at the right edge, which looks
+    /// broken. Coarse ranges hide them entirely.
+    private var showMarkers: Bool {
+        range == .day || range == .week
+    }
+
+    /// Medication-change events that belong in the currently visible chart
+    /// window. Filtered to `scopedRange` so we don't render chips/markers for
+    /// events outside the window, and empty unless `showMarkers`. Both the
+    /// `RuleMark`s and the chip row use this (H3).
+    private var visibleMedChangeEvents: [MedChangeEvent] {
+        guard showMarkers else { return [] }
+        let (start, end) = scopedRange
+        return medChangeEvents.filter { $0.date >= start && $0.date <= end }
+    }
+
+    /// X position for a medication-change marker. Snaps the event date to the
+    /// same bucket the score series uses, so a change logged today (at a
+    /// non-midnight time) or mid-current-week lands inside the clamped chart
+    /// domain instead of falling off the right edge (H3).
+    private func markerX(for event: MedChangeEvent) -> Date {
+        bucketKey(for: event.date)
     }
 
     /// Horizontal scrollable row of medication-change marker chips rendered
@@ -49,10 +67,10 @@ struct InsightsView: View {
     /// events. Tapping a chip opens the marker detail sheet.
     @ViewBuilder
     private var medChangeMarkerChips: some View {
-        if !medChangeEvents.isEmpty {
+        if !visibleMedChangeEvents.isEmpty {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    ForEach(medChangeEvents) { event in
+                    ForEach(visibleMedChangeEvents) { event in
                         Button {
                             selectedMedChangeEvent = event
                         } label: {
@@ -83,12 +101,11 @@ struct InsightsView: View {
     @State private var enabledStandardKeys: Set<String> = Set(StandardCheckInQuestion.activeCases.map { $0.rawValue })
     @State private var enabledCustomKeys: Set<String> = []
     @State private var showingAddGraph = false
-    @State private var editingTest: Test? = nil
     @State private var chartSelectedKey: String? = nil
     @State private var chartSelectedDate: Date? = nil
     @State private var viewingCheckInFromChart: DailyCheckIn? = nil
 
-    private let calendar = Calendar.current
+    private let calendar = AppCalendar.current
 
     var body: some View {
         NavigationStack {
@@ -110,18 +127,11 @@ struct InsightsView: View {
             .background(Theme.Palette.background.ignoresSafeArea())
             .navigationTitle("Insights")
             .navigationBarTitleDisplayMode(.inline)
-            // Horizontal swipe on the vertical scroll area switches range.
-            // `simultaneousGesture` lets the scroll view keep its vertical pan
-            // while we intercept clearly-horizontal swipes for range switching.
-            .simultaneousGesture(
-                DragGesture(minimumDistance: 40)
-                    .onEnded { value in
-                        let h = value.translation.width
-                        let v = value.translation.height
-                        guard abs(h) > abs(v) * 1.5 else { return }
-                        if h < 0 { advanceRange() } else { retreatRange() }
-                    }
-            )
+            // NOTE: removed the global horizontal-swipe-to-switch-range
+            // gesture. It conflicted with the horizontal med-change chip
+            // scroll rows under each chart — swiping the chips accidentally
+            // changed the Day/Week/Month/Year range. The segmented control
+            // and < > arrows at the top remain the way to change range.
         }
         .sheet(isPresented: $showingAddGraph) {
             AddGraphSheet(
@@ -131,9 +141,6 @@ struct InsightsView: View {
                 tests: tests
             )
             .presentationDetents([.medium, .large])
-        }
-        .sheet(item: $editingTest) { test in
-            EditTestSheet(test: test)
         }
         .sheet(item: $viewingCheckInFromChart) { ci in
             CheckInDetailView(checkIn: ci)
@@ -465,8 +472,8 @@ struct InsightsView: View {
                     // Now that the Day chart isn't scrollable, the `.top`
                     // annotation renders cleanly across all four ranges, so
                     // the pill icon is back at the top of each marker.
-                    ForEach(medChangeEvents) { event in
-                        RuleMark(x: .value("Med change", event.date))
+                    ForEach(visibleMedChangeEvents) { event in
+                        RuleMark(x: .value("Med change", markerX(for: event)))
                             .foregroundStyle(Theme.Palette.textSecondary.opacity(0.55))
                             .lineStyle(StrokeStyle(lineWidth: 1.2, dash: [3, 3]))
                             .annotation(position: .top, alignment: .center, spacing: 2) {
@@ -478,7 +485,7 @@ struct InsightsView: View {
                 }
                 .chartYScale(domain: 0...5)
                 .chartYAxis {
-                    AxisMarks(values: [1, 2, 3, 4, 5]) { value in
+                    AxisMarks(position: .leading, values: [1, 2, 3, 4, 5]) { value in
                         AxisGridLine()
                         AxisValueLabel {
                             if let v = value.as(Int.self) { Text("\(v)") }
@@ -630,8 +637,8 @@ struct InsightsView: View {
                         .symbolSize(110)
                     }
                     // Vertical dashed markers at every MedChangeEvent date.
-                    ForEach(medChangeEvents) { event in
-                        RuleMark(x: .value("Med change", event.date))
+                    ForEach(visibleMedChangeEvents) { event in
+                        RuleMark(x: .value("Med change", markerX(for: event)))
                             .foregroundStyle(Theme.Palette.textSecondary.opacity(0.55))
                             .lineStyle(StrokeStyle(lineWidth: 1.2, dash: [3, 3]))
                             .annotation(position: .top, alignment: .center, spacing: 2) {
@@ -643,7 +650,7 @@ struct InsightsView: View {
                 }
                 .chartYScale(domain: 0...5)
                 .chartYAxis {
-                    AxisMarks(values: [1, 2, 3, 4, 5]) { value in
+                    AxisMarks(position: .leading, values: [1, 2, 3, 4, 5]) { value in
                         AxisGridLine()
                         AxisValueLabel {
                             if let v = value.as(Int.self) { Text("\(v)") }
@@ -820,10 +827,22 @@ struct InsightsView: View {
     }
 
     private func checkInsInScope() -> [DailyCheckIn] {
-        let (start, end) = scopedRange
-        return allCheckIns.filter { ci in
-            ci.date >= start && ci.date <= calendar.date(byAdding: .day, value: 1, to: end)!
+        let (start, _) = scopedRange
+        let now = Date()
+        return allCheckIns.filter {
+            Self.isCheckInInScope($0.date, start: start, now: now, calendar: calendar)
         }
+    }
+
+    /// Whether a check-in counts toward charts/trends for the current scope:
+    /// at/after `start`, and strictly before the start of tomorrow. The upper
+    /// bound excludes future-dated check-ins — the app lets users log ahead in
+    /// the Today strip, but a future point the chart domain clips off must not
+    /// still move the trend % (M5). (Extracted as a static for testability.)
+    static func isCheckInInScope(_ date: Date, start: Date, now: Date, calendar: Calendar) -> Bool {
+        let startOfTomorrow = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now))
+            ?? now
+        return date >= start && date < startOfTomorrow
     }
 
     /// % change for one question key: most recent bucket vs the one before it.
@@ -868,6 +887,15 @@ struct InsightsView: View {
     }
 
     private func bucketKey(for date: Date) -> Date {
+        Self.bucketKey(for: date, range: range, calendar: calendar)
+    }
+
+    /// Pure bucketing used by the score series AND the medication-change
+    /// markers (extracted for testability — see H3 bucket-boundary tests).
+    /// A date is collapsed to the start of its day/week/month bucket so a
+    /// marker logged at any time within a bucket aligns with that bucket's
+    /// data point and stays inside the clamped chart domain.
+    static func bucketKey(for date: Date, range: InsightsRange, calendar: Calendar) -> Date {
         switch range {
         case .day:
             return calendar.startOfDay(for: date)

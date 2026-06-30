@@ -55,8 +55,12 @@ struct MedicationsOnboardingStepView: View {
                                 .foregroundStyle(Theme.Palette.textSecondary)
                             ForEach(userMedications) { userMed in
                                 AddedMedRow(userMed: userMed) {
+                                    // Clear pending reminders for the med being
+                                    // removed so notifications don't outlive it (H2).
+                                    let removedID = userMed.id
                                     modelContext.delete(userMed)
-                                    try? modelContext.save()
+                                    modelContext.saveChanges("onboarding medication")
+                                    Task { await ReminderManager.shared.clearReminders(for: removedID) }
                                 }
                             }
                         }
@@ -98,22 +102,25 @@ struct MedicationsOnboardingStepView: View {
             .padding(.bottom, 28)
         }
         .sheet(item: $pendingMed) { med in
-            OnboardingMedDetailsSheet(medication: med) { dose, addToSchedule, scheduledTimes in
+            OnboardingMedDetailsSheet(medication: med) { dose, addToSchedule, scheduledTimes, scheduledDays in
                 let userMed = UserMedication(
                     medication: med,
                     currentDose: dose,
                     startDate: Date()
                 )
-                if addToSchedule { userMed.scheduledTimes = scheduledTimes }
+                if addToSchedule {
+                    userMed.scheduledTimes = scheduledTimes
+                    userMed.scheduledDays = scheduledDays
+                }
                 modelContext.insert(userMed)
-                try? modelContext.save()
+                modelContext.saveChanges("onboarding medication")
                 if userMed.remindersEnabled && !userMed.scheduledTimes.isEmpty {
                     Task { await ReminderManager.shared.scheduleReminders(for: userMed) }
                 }
             }
         }
         .sheet(isPresented: $showingCustomForm) {
-            CustomMedicationForm { newMed, dose, addToSchedule, scheduledTimes in
+            CustomMedicationForm { newMed, dose, addToSchedule, scheduledTimes, scheduledDays in
                 // Custom form captures dose + schedule itself now — commit the
                 // UserMedication directly instead of chaining into a second
                 // dose/time sheet.
@@ -123,9 +130,12 @@ struct MedicationsOnboardingStepView: View {
                     currentDose: dose,
                     startDate: Date()
                 )
-                if addToSchedule { userMed.scheduledTimes = scheduledTimes }
+                if addToSchedule {
+                    userMed.scheduledTimes = scheduledTimes
+                    userMed.scheduledDays = scheduledDays
+                }
                 modelContext.insert(userMed)
-                try? modelContext.save()
+                modelContext.saveChanges("onboarding medication")
                 if userMed.remindersEnabled && !userMed.scheduledTimes.isEmpty {
                     Task { await ReminderManager.shared.scheduleReminders(for: userMed) }
                 }
@@ -296,18 +306,19 @@ private struct AddedMedRow: View {
 
 private struct OnboardingMedDetailsSheet: View {
     let medication: Medication
-    let onCommit: (_ dose: String, _ addToSchedule: Bool, _ scheduledTimes: [String]) -> Void
+    let onCommit: (_ dose: String, _ addToSchedule: Bool, _ scheduledTimes: [String], _ scheduledDays: [Int]) -> Void
 
     @State private var dose: String
     @State private var addToSchedule: Bool = true
     @State private var scheduledTimes: [String] = []
+    @State private var scheduledDays: [Int] = [1, 2, 3, 4, 5, 6, 7]
     @State private var showingTimePicker = false
     @State private var pendingTime: Date = OnboardingMedDetailsSheet.defaultTime()
 
     @Environment(\.dismiss) private var dismiss
 
     init(medication: Medication,
-         onCommit: @escaping (_ dose: String, _ addToSchedule: Bool, _ scheduledTimes: [String]) -> Void) {
+         onCommit: @escaping (_ dose: String, _ addToSchedule: Bool, _ scheduledTimes: [String], _ scheduledDays: [Int]) -> Void) {
         self.medication = medication
         self.onCommit = onCommit
         // Start with an empty dose so the user types in their prescribed dose
@@ -354,6 +365,7 @@ private struct OnboardingMedDetailsSheet: View {
                         dose: $dose,
                         addToSchedule: $addToSchedule,
                         scheduledTimes: $scheduledTimes,
+                        scheduledDays: $scheduledDays,
                         onAddTime: {
                             pendingTime = OnboardingMedDetailsSheet.defaultTime()
                             showingTimePicker = true
@@ -373,7 +385,7 @@ private struct OnboardingMedDetailsSheet: View {
             }
             .safeAreaInset(edge: .bottom) {
                 Button {
-                    onCommit(dose, addToSchedule, scheduledTimes)
+                    onCommit(dose, addToSchedule, scheduledTimes, scheduledDays)
                     dismiss()
                 } label: {
                     Text("Add to my medications")

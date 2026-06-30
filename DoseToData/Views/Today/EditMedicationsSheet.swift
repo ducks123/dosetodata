@@ -46,7 +46,7 @@ struct EditMedicationsSheet: View {
         .sheet(isPresented: $showingAdd) {
             AddMedicationFlow { userMed in
                 modelContext.insert(userMed)
-                try? modelContext.save()
+                modelContext.saveChanges("edit medications")
             }
         }
         .confirmationDialog(
@@ -150,7 +150,11 @@ struct EditMedicationsSheet: View {
             newDose: nil
         )
         modelContext.insert(event)
-        try? modelContext.save()
+        modelContext.saveChanges("edit medications")
+        // A stopped medication must stop reminding (H2). Clear its pending
+        // notifications after the save commits.
+        let stoppedID = userMed.id
+        Task { await ReminderManager.shared.clearReminders(for: stoppedID) }
         medToStop = nil
     }
 }
@@ -165,6 +169,7 @@ struct AddMedicationFlow: View {
     @State private var dose: String = ""
     @State private var addToSchedule: Bool = true
     @State private var scheduledTimes: [String] = []
+    @State private var scheduledDays: [Int] = [1, 2, 3, 4, 5, 6, 7]
     @State private var showingTimePicker = false
     @State private var pendingTime: Date = Self.defaultTime()
     @State private var showingCustomForm = false
@@ -225,7 +230,7 @@ struct AddMedicationFlow: View {
             }
         }
         .sheet(isPresented: $showingCustomForm) {
-            CustomMedicationForm { newMed, dose, addToSchedule, scheduledTimes in
+            CustomMedicationForm { newMed, dose, addToSchedule, scheduledTimes, scheduledDays in
                 // Custom form now captures dose + schedule itself, so commit
                 // the UserMedication directly — no second detail screen.
                 // Mirrors the library-med commit() path: insert the new
@@ -237,7 +242,10 @@ struct AddMedicationFlow: View {
                     currentDose: dose,
                     startDate: Date()
                 )
-                if addToSchedule { userMed.scheduledTimes = scheduledTimes }
+                if addToSchedule {
+                    userMed.scheduledTimes = scheduledTimes
+                    userMed.scheduledDays = scheduledDays
+                }
                 onCommit(userMed)
                 if userMed.remindersEnabled && !userMed.scheduledTimes.isEmpty {
                     Task { await ReminderManager.shared.scheduleReminders(for: userMed) }
@@ -363,6 +371,7 @@ struct AddMedicationFlow: View {
                     dose: $dose,
                     addToSchedule: $addToSchedule,
                     scheduledTimes: $scheduledTimes,
+                    scheduledDays: $scheduledDays,
                     onAddTime: {
                         pendingTime = Self.defaultTime()
                         showingTimePicker = true
@@ -395,6 +404,7 @@ struct AddMedicationFlow: View {
         // editor, the editor's onChange(of: scheduledTimes) picks it up automatically.
         if addToSchedule {
             userMed.scheduledTimes = scheduledTimes
+            userMed.scheduledDays = scheduledDays.isEmpty ? [1, 2, 3, 4, 5, 6, 7] : scheduledDays
         }
         onCommit(userMed)
         if userMed.remindersEnabled && !userMed.scheduledTimes.isEmpty {
@@ -411,7 +421,30 @@ struct MedDoseAndTimesPicker: View {
     @Binding var dose: String
     @Binding var addToSchedule: Bool
     @Binding var scheduledTimes: [String]
+    /// Weekdays the med is taken (Calendar.weekday convention: 1=Sun … 7=Sat).
+    @Binding var scheduledDays: [Int]
     let onAddTime: () -> Void
+
+    /// Mon-first display order for the weekday picker.
+    private let orderedDays: [(weekday: Int, label: String)] = [
+        (2, "M"), (3, "Tu"), (4, "W"), (5, "Th"), (6, "F"), (7, "Sa"), (1, "Su")
+    ]
+
+    private var activeDays: [Int] {
+        scheduledDays.isEmpty ? [1, 2, 3, 4, 5, 6, 7] : scheduledDays
+    }
+
+    private func toggleDay(_ weekday: Int) {
+        var days = Set(activeDays)
+        if days.contains(weekday) {
+            // Don't allow removing the last day — a med taken zero days
+            // makes no sense; keep at least one selected.
+            if days.count > 1 { days.remove(weekday) }
+        } else {
+            days.insert(weekday)
+        }
+        scheduledDays = days.sorted()
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -486,6 +519,43 @@ struct MedDoseAndTimesPicker: View {
                     presetRow(title: "With meals · 8am, 12pm, 6pm", times: ["08:00", "12:00", "18:00"])
                     presetRow(title: "At bedtime · 10pm", times: ["22:00"])
                     addCustomTimeRow
+
+                    // Which days of the week the med is taken. Defaults to
+                    // every day; the user can deselect days here at add time
+                    // instead of having to open the Schedule editor later.
+                    HStack {
+                        Text("Which days")
+                            .font(Theme.Font.caption)
+                            .foregroundStyle(Theme.Palette.textSecondary)
+                        Spacer()
+                        Text(activeDays.count == 7 ? "Every day" : "\(activeDays.count) days/week")
+                            .font(Theme.Font.caption)
+                            .foregroundStyle(Theme.Palette.primary)
+                    }
+                    .padding(.horizontal, 4)
+                    .padding(.top, 4)
+
+                    HStack(spacing: 6) {
+                        ForEach(orderedDays, id: \.weekday) { item in
+                            let isOn = activeDays.contains(item.weekday)
+                            Button {
+                                toggleDay(item.weekday)
+                            } label: {
+                                Text(item.label)
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 10)
+                                    .background(isOn ? Theme.Palette.primary : Color.white)
+                                    .foregroundStyle(isOn ? Color.white : Theme.Palette.textSecondary)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                            .stroke(isOn ? Theme.Palette.primary : Theme.Palette.divider, lineWidth: 1)
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
 
                     if !scheduledTimes.isEmpty {
                         Divider().padding(.vertical, 4)
@@ -591,13 +661,14 @@ struct CustomMedicationForm: View {
     @State private var dose: String = ""
     @State private var addToSchedule: Bool = true
     @State private var scheduledTimes: [String] = []
+    @State private var scheduledDays: [Int] = [1, 2, 3, 4, 5, 6, 7]
     @State private var showingTimePicker = false
     @State private var pendingTime: Date = Self.defaultTime()
 
     /// Delivers the fully-specified custom medication AND its dose/schedule
     /// in one shot so the caller can create the UserMedication directly with
     /// no follow-up sheet.
-    let onSave: (_ medication: Medication, _ dose: String, _ addToSchedule: Bool, _ scheduledTimes: [String]) -> Void
+    let onSave: (_ medication: Medication, _ dose: String, _ addToSchedule: Bool, _ scheduledTimes: [String], _ scheduledDays: [Int]) -> Void
 
     private static func defaultTime() -> Date {
         var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
@@ -659,6 +730,7 @@ struct CustomMedicationForm: View {
                         dose: $dose,
                         addToSchedule: $addToSchedule,
                         scheduledTimes: $scheduledTimes,
+                        scheduledDays: $scheduledDays,
                         onAddTime: { showingTimePicker = true }
                     )
                 }
@@ -731,7 +803,8 @@ struct CustomMedicationForm: View {
             med,
             dose.trimmingCharacters(in: .whitespaces),
             addToSchedule,
-            addToSchedule ? scheduledTimes : []
+            addToSchedule ? scheduledTimes : [],
+            addToSchedule ? (scheduledDays.isEmpty ? [1, 2, 3, 4, 5, 6, 7] : scheduledDays) : [1, 2, 3, 4, 5, 6, 7]
         )
         dismiss()
     }

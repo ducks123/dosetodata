@@ -5,6 +5,7 @@ import SwiftData
 struct CheckInDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(AppState.self) private var appState
+    @Environment(SubscriptionService.self) private var sub
     @Query(sort: \CustomCheckInQuestion.createdAt) private var customQuestions: [CustomCheckInQuestion]
     @Query(sort: \SideEffectEntry.date) private var allSideEffects: [SideEffectEntry]
     @Query private var adherenceLogs: [MedAdherenceLog]
@@ -16,6 +17,7 @@ struct CheckInDetailView: View {
     var onEdit: (() -> Void)? = nil
 
     @State private var showingEditSheet = false
+    @State private var showingPaywall = false
 
     private let calendar = Calendar.current
 
@@ -113,6 +115,10 @@ struct CheckInDetailView: View {
             }
             .sheet(isPresented: $showingEditSheet) {
                 DailyCheckInSheet(targetDate: checkIn.date)
+            }
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView()
+                    .environment(sub)
             }
         }
     }
@@ -399,6 +405,12 @@ struct CheckInDetailView: View {
 
     private var editButton: some View {
         Button {
+            // Editing an existing check-in is a write — gate it for expired
+            // users (H1). canWrite handles the cold-start window via cache.
+            guard sub.canWrite else {
+                showingPaywall = true
+                return
+            }
             if let onEdit {
                 dismiss()
                 onEdit()

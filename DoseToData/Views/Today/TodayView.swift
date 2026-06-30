@@ -8,12 +8,10 @@ struct TodayView: View {
     @Environment(SubscriptionService.self) private var sub
 
     @Query(sort: \DailyCheckIn.date, order: .reverse) private var checkIns: [DailyCheckIn]
-    @Query(sort: \Test.startDate, order: .reverse) private var tests: [Test]
     @Query(sort: \UserMedication.startDate, order: .reverse) private var userMedications: [UserMedication]
     @Query private var adherenceLogs: [MedAdherenceLog]
 
     @State private var showingCheckIn = false
-    @State private var showingCreateTest = false
     @State private var showingLogMedChange = false
     /// When set, presents the MedChangeMarkerDetailSheet for that event so
     /// the user can edit or delete from the Today screen.
@@ -32,7 +30,7 @@ struct TodayView: View {
         var id: TimeInterval { date.timeIntervalSince1970 }
     }
 
-    private let calendar = Calendar.current
+    private let calendar = AppCalendar.current
 
     private func consumePendingTodayDate() {
         guard let date = appState.pendingTodayDate else { return }
@@ -43,8 +41,7 @@ struct TodayView: View {
     // MARK: - Earliest data date (drives how far back the strip reaches)
 
     private var earliestDataDate: Date? {
-        var cal = Calendar(identifier: .iso8601)
-        cal.firstWeekday = 2
+        let cal = AppCalendar.current
         let checkInDates  = checkIns.map  { cal.startOfDay(for: $0.date) }
         let adherenceDates = adherenceLogs.map { cal.startOfDay(for: $0.date) }
         return (checkInDates + adherenceDates).min()
@@ -53,8 +50,7 @@ struct TodayView: View {
     // MARK: - Day states (for all dates shown in the scroll strip)
 
     private var allDayStates: [Date: WeekDayState] {
-        var cal = Calendar(identifier: .iso8601)
-        cal.firstWeekday = 2
+        let cal = AppCalendar.current
         let today = cal.startOfDay(for: Date())
         let daysBack: Int
         if let earliest = earliestDataDate {
@@ -108,13 +104,10 @@ struct TodayView: View {
         }
     }
 
-    private var activeTest: Test? {
-        tests.first { $0.actualEndDate == nil && $0.startEvent != nil }
-    }
 
     /// Returns false and triggers the paywall when the user can't write.
     private func requireSubscription() -> Bool {
-        guard sub.status.canWrite else {
+        guard sub.canWrite else {
             showingPaywall = true
             return false
         }
@@ -156,9 +149,6 @@ struct TodayView: View {
         }
         .sheet(isPresented: $showingCheckIn) {
             DailyCheckInSheet()
-        }
-        .sheet(isPresented: $showingCreateTest) {
-            CreateTestSheet()
         }
         .sheet(item: $selectedRecentChange) { event in
             MedChangeMarkerDetailSheet(event: event)
@@ -428,56 +418,6 @@ struct TodayView: View {
             return std.shortLabel
         }
         return "Custom"
-    }
-
-    private func currentTestsSection(test: Test, startEvent: MedEvent) -> some View {
-        let daysSinceStart = calendar.dateComponents([.day], from: test.startDate, to: Date()).day ?? 0
-        let plannedDays: Int? = test.plannedEndDate.map {
-            calendar.dateComponents([.day], from: test.startDate, to: $0).day ?? 0
-        }
-        let medName = startEvent.userMedication?.medication.brandName ?? "Current test"
-        let dayLabel = plannedDays.map { "Day \(daysSinceStart + 1) of \($0)" } ?? "Day \(daysSinceStart + 1)"
-
-        return VStack(alignment: .leading, spacing: 12) {
-            Text("Current tests")
-                .font(Theme.Font.caption)
-                .foregroundStyle(Theme.Palette.textSecondary)
-                .padding(.leading, 4)
-
-            Button {
-                appState.pendingInsightsTestID = test.id
-            } label: {
-                HStack(spacing: 14) {
-                    ZStack {
-                        Circle()
-                            .fill(Theme.Palette.attention.opacity(0.25))
-                            .frame(width: 48, height: 48)
-                        Image(systemName: "flame.fill")
-                            .foregroundStyle(Theme.Palette.attention)
-                            .font(.system(size: 20, weight: .semibold))
-                    }
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(dayLabel)
-                            .font(Theme.Font.caption)
-                            .foregroundStyle(Theme.Palette.textSecondary)
-                        Text(test.displayName.isEmpty ? medName : test.displayName)
-                            .font(Theme.Font.bodyEmphasis)
-                            .foregroundStyle(Theme.Palette.textPrimary)
-                        if !test.watchingFor.isEmpty {
-                            Text("Watching: \(test.watchingFor)")
-                                .font(Theme.Font.caption)
-                                .foregroundStyle(Theme.Palette.textSecondary)
-                                .lineLimit(1)
-                        }
-                    }
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .foregroundStyle(Theme.Palette.textSecondary)
-                }
-                .cardStyle()
-            }
-            .buttonStyle(.plain)
-        }
     }
 
     private var changesSection: some View {

@@ -52,20 +52,10 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         else { return }
 
         let context = ModelContext(container)
-        let today = Calendar.current.startOfDay(for: Date())
 
-        // Find today's log or create a new one.
-        let descriptor = FetchDescriptor<MedAdherenceLog>(
-            predicate: #Predicate { $0.date == today }
-        )
-        let log: MedAdherenceLog
-        if let existing = try? context.fetch(descriptor).first {
-            log = existing
-        } else {
-            let new = MedAdherenceLog(date: today)
-            context.insert(new)
-            log = new
-        }
+        // Idempotent: returns today's canonical log, merging any duplicates
+        // created by a racing check-in save on the main context (M3).
+        let log = AdherenceLogStore.upsert(for: Date(), in: context)
 
         switch actionID {
         case ReminderManager.tookItAction:
@@ -78,6 +68,6 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
             break
         }
 
-        try? context.save()
+        context.saveChanges("adherence quick action")
     }
 }

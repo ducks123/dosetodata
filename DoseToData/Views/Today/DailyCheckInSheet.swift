@@ -12,6 +12,7 @@ struct DailyCheckInSheet: View {
     @Query(sort: \DailyCheckIn.date, order: .reverse) private var allCheckIns: [DailyCheckIn]
     @Query(sort: \Test.startDate, order: .reverse) private var tests: [Test]
     @Query private var adherenceLogs: [MedAdherenceLog]
+    @Query(sort: \SideEffectEntry.date) private var allSideEffects: [SideEffectEntry]
 
     let targetDate: Date
 
@@ -34,6 +35,13 @@ struct DailyCheckInSheet: View {
         let id = UUID()
         var label: String
         var severity: SideEffectSeverity
+        /// Set when this row was hydrated from an existing `SideEffectEntry`
+        /// for the day being edited. Lets save() reconcile (keep/remove)
+        /// instead of always inserting duplicates. Nil for freshly-added rows.
+        var existingID: UUID? = nil
+        /// Preserved from an existing entry (e.g. a quick-add note) so
+        /// reconciliation never silently drops it.
+        var note: String? = nil
     }
 
     private let calendar = Calendar.current
@@ -42,6 +50,11 @@ struct DailyCheckInSheet: View {
 
     private var existingCheckIn: DailyCheckIn? {
         allCheckIns.first { calendar.isDate($0.date, inSameDayAs: targetDate) }
+    }
+
+    /// Side effects already recorded for the day being edited.
+    private var existingSideEffectsForDate: [SideEffectEntry] {
+        allSideEffects.filter { calendar.isDate($0.date, inSameDayAs: targetDate) }
     }
 
     var body: some View {
@@ -127,6 +140,14 @@ struct DailyCheckInSheet: View {
                     }
                 }
                 note = existing.note ?? ""
+            }
+            // Hydrate side effects already logged for this day so the user can
+            // see and remove them — and so save() reconciles instead of
+            // inserting duplicates (H4).
+            if sideEffectsToday.isEmpty {
+                sideEffectsToday = existingSideEffectsForDate.map {
+                    PendingSideEffect(label: $0.label, severity: $0.severity, existingID: $0.id, note: $0.note)
+                }
             }
             // Pre-fill med status from any notification quick-actions taken earlier.
             if let log = existingAdherenceLog {
@@ -480,23 +501,40 @@ struct DailyCheckInSheet: View {
             modelContext.insert(ci)
         }
 
-        for se in sideEffectsToday {
-            let entry = SideEffectEntry(label: se.label, severity: se.severity)
+        // Reconcile side effects against the day being edited (H4):
+        //  - new rows (no existingID) are inserted with the TARGET day's date,
+        //    not today's, so editing a past check-in records them correctly;
+        //  - existing rows the user removed are deleted;
+        //  - existing rows kept are left untouched (preserving their note).
+        let keptExistingIDs = Set(sideEffectsToday.compactMap { $0.existingID })
+        let deleteIDs = Set(CheckInSideEffectReconciler.idsToDelete(
+            existingForDate: existingSideEffectsForDate.map(\.id),
+            keptExistingIDs: keptExistingIDs
+        ))
+        for entry in existingSideEffectsForDate where deleteIDs.contains(entry.id) {
+            modelContext.delete(entry)
+        }
+        let sideEffectDate = CheckInSideEffectReconciler.sideEffectDate(
+            forTargetDate: targetDate, now: Date(), calendar: calendar
+        )
+        for se in sideEffectsToday where se.existingID == nil {
+            let entry = SideEffectEntry(
+                date: sideEffectDate,
+                label: se.label,
+                severity: se.severity,
+                note: se.note
+            )
             modelContext.insert(entry)
         }
 
-        // Persist med adherence for this day.
+        // Persist med adherence for this day. Idempotent upsert collapses any
+        // duplicate same-day logs (e.g. one created by a notification quick
+        // action on another context) into one before we write (M3).
         if !scheduledMedsForDate.isEmpty {
             let takenIDs = scheduledMedsForDate.map(\.id).filter { !skippedMedIDs.contains($0) }
-            if let log = existingAdherenceLog {
-                log.takenMedIDs = takenIDs
-                log.skippedMedIDs = Array(skippedMedIDs)
-            } else {
-                let log = MedAdherenceLog(date: targetDate)
-                log.takenMedIDs = takenIDs
-                log.skippedMedIDs = Array(skippedMedIDs)
-                modelContext.insert(log)
-            }
+            let log = AdherenceLogStore.upsert(for: targetDate, in: modelContext)
+            log.takenMedIDs = takenIDs
+            log.skippedMedIDs = Array(skippedMedIDs)
         }
 
         do {
