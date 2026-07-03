@@ -307,19 +307,15 @@ struct TimelineStrip: View {
                             let x = 20 + CGFloat(event.minutesFromStart) / 60 * hourWidth
                             let lane = medLaneIndex[event.userMed.id] ?? 0
                             let y = topPaddingForHours + CGFloat(lane) * (laneHeight + laneSpacing)
-                            if let profile = PKProfile.profile(for: event.userMed.medication) {
-                                EffectBandView(
-                                    userMed: event.userMed,
-                                    timeString: event.timeString,
-                                    profile: profile,
-                                    hourWidth: hourWidth,
-                                    laneHeight: laneHeight
-                                )
+                            // Plain dose-time marker only. The pharmacokinetic
+                            // "effect band" + "Peak" label were removed (#14):
+                            // rendering a predicted effect curve reads as
+                            // individualized medical prediction/advice, which
+                            // is off-strategy and an App Store 1.4.2 risk. The
+                            // timeline shows *when* doses/reminders are, nothing
+                            // more.
+                            EventPill(userMed: event.userMed, timeString: event.timeString, width: hourWidth)
                                 .offset(x: x, y: y)
-                            } else {
-                                EventPill(userMed: event.userMed, timeString: event.timeString, width: hourWidth)
-                                    .offset(x: x, y: y)
-                            }
                         }
                     }
                     .frame(width: totalWidth, height: contentHeight)
@@ -420,146 +416,3 @@ private struct EventPill: View {
     }
 }
 
-// MARK: - Pharmacokinetic effect band
-
-/// Trapezoidal "mountain" that visualizes a dose's effect curve over time.
-/// Baseline at both ends (no effect) rising through onset to a peak plateau,
-/// then falling back to baseline when the dose wears off.
-private struct EffectBand: Shape {
-    /// Fraction of total width where onset ends and the rise begins (0...1).
-    let onsetFraction: CGFloat
-    /// Fraction where the peak plateau begins (0...1).
-    let peakStartFraction: CGFloat
-    /// Fraction where the peak plateau ends (0...1).
-    let peakEndFraction: CGFloat
-
-    func path(in rect: CGRect) -> Path {
-        let w = rect.width
-        let h = rect.height
-        let baselineY = h - 1       // sit just above the bottom so stroke is visible
-        let peakY: CGFloat = 4      // how high the peak reaches
-        let onsetX = max(0, min(w, onsetFraction * w))
-        let peakStartX = max(onsetX, min(w, peakStartFraction * w))
-        let peakEndX = max(peakStartX, min(w, peakEndFraction * w))
-
-        return Path { p in
-            p.move(to: CGPoint(x: 0, y: baselineY))
-            // flat baseline during the initial onset delay
-            p.addLine(to: CGPoint(x: onsetX, y: baselineY))
-            // smooth ramp up to peak
-            let riseSpan = peakStartX - onsetX
-            p.addCurve(
-                to: CGPoint(x: peakStartX, y: peakY),
-                control1: CGPoint(x: onsetX + riseSpan * 0.55, y: baselineY),
-                control2: CGPoint(x: peakStartX - riseSpan * 0.35, y: peakY)
-            )
-            // peak plateau
-            p.addLine(to: CGPoint(x: peakEndX, y: peakY))
-            // smooth ramp down to baseline
-            let fallSpan = w - peakEndX
-            p.addCurve(
-                to: CGPoint(x: w, y: baselineY),
-                control1: CGPoint(x: peakEndX + fallSpan * 0.35, y: peakY),
-                control2: CGPoint(x: w - fallSpan * 0.55, y: baselineY)
-            )
-            p.closeSubpath()
-        }
-    }
-}
-
-/// Renders an EffectBand for a scheduled dose, with a compact label at the start
-/// showing the medication name and time.
-private struct EffectBandView: View {
-    let userMed: UserMedication
-    let timeString: String
-    let profile: PKProfile
-    let hourWidth: CGFloat
-    let laneHeight: CGFloat
-
-    private var bandWidth: CGFloat {
-        CGFloat(profile.durationMin) / 60 * hourWidth
-    }
-
-    private var onsetFraction: CGFloat {
-        CGFloat(profile.onsetMin) / CGFloat(max(1, profile.durationMin))
-    }
-
-    private var peakStartFraction: CGFloat {
-        CGFloat(profile.peakStartMin) / CGFloat(max(1, profile.durationMin))
-    }
-
-    private var peakEndFraction: CGFloat {
-        CGFloat(profile.peakEndMin) / CGFloat(max(1, profile.durationMin))
-    }
-
-    var body: some View {
-        ZStack(alignment: .topLeading) {
-            // The effect curve — filled with a gradient that brightens through the peak window.
-            EffectBand(
-                onsetFraction: onsetFraction,
-                peakStartFraction: peakStartFraction,
-                peakEndFraction: peakEndFraction
-            )
-            .fill(
-                LinearGradient(
-                    stops: [
-                        .init(color: userMed.scheduleColor.opacity(0.25), location: 0.0),
-                        .init(color: userMed.scheduleColor.opacity(0.55), location: max(0.01, peakStartFraction)),
-                        .init(color: userMed.scheduleColor.opacity(0.70), location: min(0.99, peakEndFraction)),
-                        .init(color: userMed.scheduleColor.opacity(0.25), location: 1.0)
-                    ],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-            .overlay(
-                EffectBand(
-                    onsetFraction: onsetFraction,
-                    peakStartFraction: peakStartFraction,
-                    peakEndFraction: peakEndFraction
-                )
-                .stroke(userMed.scheduleColor.opacity(0.9), lineWidth: 1)
-            )
-            .frame(width: bandWidth, height: laneHeight)
-
-            // Small "Peak" marker anchored at the middle of the peak plateau.
-            Text("Peak")
-                .font(.system(size: 9, weight: .semibold))
-                .foregroundStyle(Theme.Palette.textSecondary)
-                .padding(.horizontal, 5)
-                .padding(.vertical, 1)
-                .background(
-                    Capsule().fill(Color.white.opacity(0.85))
-                )
-                .offset(
-                    x: (peakStartFraction + peakEndFraction) / 2 * bandWidth - 14,
-                    y: -6
-                )
-
-            // Start label: brand name + dose time.
-            HStack(spacing: 5) {
-                Image(systemName: userMed.medication.category.iconSystemName)
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundStyle(Theme.Palette.primary)
-                Text(userMed.medication.brandName)
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Theme.Palette.textPrimary)
-                    .lineLimit(1)
-                Text(ScheduleTime.displayString(from: timeString))
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(Theme.Palette.textSecondary)
-                    .lineLimit(1)
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(
-                Capsule().fill(Color.white.opacity(0.95))
-            )
-            .overlay(
-                Capsule().stroke(userMed.scheduleColor.opacity(0.9), lineWidth: 1)
-            )
-            .offset(x: 4, y: laneHeight - 26)
-        }
-        .frame(width: bandWidth, height: laneHeight, alignment: .topLeading)
-    }
-}

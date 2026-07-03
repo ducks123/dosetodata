@@ -42,9 +42,27 @@ struct LogMedChangeSheet: View {
         userMedications.filter { $0.endDate == nil }
     }
 
+    /// A drafted action is complete enough to save: it has a medication, and
+    /// Start / Dose change also have a (new) dose. Stop needs nothing more.
+    /// (Prevents saving an ambiguous change — empty starting dose, or a
+    /// "Dose change" with no new dose — that makes charts / clinician notes
+    /// useless. #16)
+    private func draftIsComplete(_ draft: ActionDraft) -> Bool {
+        guard draft.medication != nil else { return false }
+        switch draft.kind {
+        case .start, .doseChange:
+            return !draft.dose.trimmingCharacters(in: .whitespaces).isEmpty
+        case .stop:
+            return true
+        }
+    }
+
     private var canSave: Bool {
-        // At least one action with a medication picked.
-        actionDrafts.contains { $0.medication != nil }
+        // At least one medication picked, and every picked-medication row is
+        // complete. Rows with no medication (e.g. a trailing "add another"
+        // row) are ignored.
+        let withMedication = actionDrafts.filter { $0.medication != nil }
+        return !withMedication.isEmpty && withMedication.allSatisfy(draftIsComplete)
     }
 
     var body: some View {
@@ -237,6 +255,18 @@ struct LogMedChangeSheet: View {
                 }
             case .stop:
                 EmptyView()
+            }
+
+            // Inline hint when a medication is picked but its required dose is
+            // still blank, so the user knows why Save is disabled (#16).
+            if draft.wrappedValue.medication != nil,
+               draft.wrappedValue.kind != .stop,
+               draft.wrappedValue.dose.trimmingCharacters(in: .whitespaces).isEmpty {
+                Text(draft.wrappedValue.kind == .start
+                     ? "Enter a dose to save this change."
+                     : "Enter the new dose to save this change.")
+                    .font(.system(size: 11))
+                    .foregroundStyle(Theme.Palette.negative)
             }
 
             // Remove row button (only if more than one)

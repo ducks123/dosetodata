@@ -158,8 +158,16 @@ struct DailyCheckInSheet: View {
 
     /// True when the user has entered *anything* — a scale answer or a non-empty
     /// text answer. Either counts as "logged for today".
+    /// A check-in is worth saving if the user recorded ANY tracking data —
+    /// a scale/text answer, a medication marked skipped, a side effect, or a
+    /// note. Previously only scale/text answers counted, so an
+    /// adherence-only / side-effect-only / note-only entry couldn't be saved.
     private var hasAnyAnswer: Bool {
-        !answers.isEmpty || textAnswers.values.contains { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        !answers.isEmpty
+            || textAnswers.values.contains { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+            || !skippedMedIDs.isEmpty
+            || !sideEffectsToday.isEmpty
+            || !note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     private var header: some View {
@@ -199,7 +207,7 @@ struct DailyCheckInSheet: View {
 
     private var medStatusSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Medications today")
+            Text(isToday ? "Medications today" : "Medications on this day")
                 .font(Theme.Font.caption)
                 .foregroundStyle(Theme.Palette.textSecondary)
                 .padding(.leading, 4)
@@ -404,7 +412,7 @@ struct DailyCheckInSheet: View {
 
     private var sideEffectsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Side effects today")
+            Text(isToday ? "Side effects today" : "Side effects on this day")
                 .font(Theme.Font.caption)
                 .foregroundStyle(Theme.Palette.textSecondary)
                 .padding(.leading, 4)

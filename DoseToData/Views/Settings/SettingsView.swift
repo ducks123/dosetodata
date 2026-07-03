@@ -12,6 +12,7 @@ struct SettingsView: View {
     @State private var showDeleteConfirm = false
     @State private var showPaywall = false
     @State private var wasSignedIn = false
+    @State private var restoreMessage: String? = nil
 
     var body: some View {
         NavigationStack {
@@ -117,7 +118,14 @@ struct SettingsView: View {
                     }
 
                     Button("Restore purchases") {
-                        Task { try? await sub.restorePurchases() }
+                        Task {
+                            do {
+                                try await sub.restorePurchases()
+                                restoreMessage = "Restore complete — your subscription status is up to date."
+                            } catch {
+                                restoreMessage = "Couldn't restore purchases. Please check your connection and try again."
+                            }
+                        }
                     }
                     .foregroundStyle(Theme.Palette.textSecondary)
                 }
@@ -165,11 +173,19 @@ struct SettingsView: View {
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("This permanently deletes your account and all synced data from our servers. Data on this device is not removed.")
+                Text("This permanently deletes your account sign-in. Your check-ins and medications stay on this device and are not affected.")
             }
             .sheet(isPresented: $showPaywall) {
                 PaywallView()
                     .environment(sub)
+            }
+            .alert("Restore purchases", isPresented: Binding(
+                get: { restoreMessage != nil },
+                set: { if !$0 { restoreMessage = nil } }
+            )) {
+                Button("OK", role: .cancel) { restoreMessage = nil }
+            } message: {
+                Text(restoreMessage ?? "")
             }
             .onAppear {
                 if case .signedIn = auth.state { wasSignedIn = true }

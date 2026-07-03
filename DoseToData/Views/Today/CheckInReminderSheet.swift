@@ -202,13 +202,9 @@ struct CheckInReminderSheet: View {
     }
 
     private func save() {
-        // If the custom picker is still open, auto-commit the displayed time
-        if showCustomPicker {
-            let comps = Calendar.current.dateComponents([.hour, .minute], from: customTime)
-            let h = comps.hour ?? 17
-            let m = comps.minute ?? 0
-            selectedTimes.insert(String(format: "%02d:%02d", h, m))
-        }
+        // Only times the user explicitly added via "Add this time" are saved.
+        // An open-but-uncommitted custom picker is intentionally ignored so we
+        // never schedule a reminder the user didn't confirm.
         let times = Array(selectedTimes).sorted()
         prefs.checkInReminderTimes = times
         Task {

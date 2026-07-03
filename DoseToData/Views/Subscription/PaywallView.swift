@@ -16,6 +16,7 @@ struct PaywallView: View {
     @State private var selectedPlan: Plan = .trialAnnual
     @State private var showError = false
     @State private var showSilentRestoreAlert = false
+    @State private var restoreMessage: String? = nil
 
     enum Plan: Equatable {
         case annual
@@ -182,7 +183,14 @@ struct PaywallView: View {
 
                 // ── Restore ─────────────────────────────────────────────
                 Button("Restore purchases") {
-                    Task { try? await sub.restorePurchases() }
+                    Task {
+                        do {
+                            try await sub.restorePurchases()
+                            restoreMessage = "Restore complete — your subscription status is up to date."
+                        } catch {
+                            restoreMessage = "Couldn't restore purchases. Please check your connection and try again."
+                        }
+                    }
                 }
                 .font(.system(size: 13))
                 .foregroundStyle(Theme.Palette.textSecondary)
@@ -233,6 +241,14 @@ struct PaywallView: View {
         } message: {
             Text("This Apple ID already has an active DoseToData subscription, so no new charge was made. Tap Enter app to continue.")
         }
+        .alert("Restore purchases", isPresented: Binding(
+            get: { restoreMessage != nil },
+            set: { if !$0 { restoreMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) { restoreMessage = nil }
+        } message: {
+            Text(restoreMessage ?? "")
+        }
         .onChange(of: sub.errorMessage) { _, msg in
             if msg != nil { showError = true }
         }
@@ -268,7 +284,7 @@ struct PaywallView: View {
             Text("DoseToData Premium")
                 .font(.system(size: 26, weight: .bold))
                 .foregroundStyle(Theme.Palette.textPrimary)
-            Text("Track your health, understand your data.")
+            Text("Track daily patterns privately.")
                 .font(.system(size: 15))
                 .foregroundStyle(Theme.Palette.textSecondary)
                 .multilineTextAlignment(.center)
@@ -281,7 +297,7 @@ struct PaywallView: View {
         ("Unlimited daily check-ins",       "checkmark.circle.fill"),
         ("Track medications & adherence",   "pill.fill"),
         ("Insights & trend charts",         "chart.xyaxis.line"),
-        ("Run custom tracking tests",       "flask.fill"),
+        ("Custom questions for what matters", "list.bullet.clipboard"),
         ("Medication timeline & reminders", "bell.fill"),
     ]
 

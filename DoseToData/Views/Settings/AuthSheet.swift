@@ -35,7 +35,7 @@ struct AuthSheet: View {
                     signedInPane
                 }
             }
-            .navigationTitle("Back up & sync")
+            .navigationTitle("Account")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -241,7 +241,7 @@ struct AuthSheet: View {
                 .foregroundStyle(Theme.Palette.success)
             Text("You're signed in")
                 .font(Theme.Font.sectionTitle)
-            Text("Sync is on. Your data will back up automatically.")
+            Text("Your account is linked to this device. Your check-ins and medications stay on your phone.")
                 .font(Theme.Font.body)
                 .foregroundStyle(Theme.Palette.textSecondary)
                 .multilineTextAlignment(.center)

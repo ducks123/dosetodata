@@ -459,7 +459,7 @@ struct TodayView: View {
     }
 
     private var emptyRecentChangesCard: some View {
-        Text("Log your first medication change so your chart shows what's affecting your trends.")
+        Text("Log your first medication change to see it marked alongside your trends.")
             .font(Theme.Font.caption)
             .foregroundStyle(Theme.Palette.textSecondary)
             .multilineTextAlignment(.leading)
