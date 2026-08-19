@@ -123,7 +123,7 @@ struct MainTabView: View {
         case 1:
             if selectedTab == .today && !hasCheckInToday {
                 bottomAligned(
-                    TourGuideBanner(text: "Complete today's check-in to put your first point on the chart.")
+                    TourGuideBanner(text: "Tap \"Complete today's check-in\" to put your first point on the chart.")
                 )
             }
         case 2:

@@ -33,29 +33,6 @@ enum TrackingGoal: String, CaseIterable, Identifiable, Codable {
         }
     }
 
-    /// Standard check-in questions this goal maps to. Goals with no scale
-    /// question (medications, side effects) return [] — those are covered by
-    /// the adherence and side-effect cards, which always show.
-    var mappedQuestions: [StandardCheckInQuestion] {
-        switch self {
-        case .mood:   return [.mood]
-        case .focus:  return [.focus, .easeToStart]
-        case .energy: return [.energy]
-        case .sleep:  return [.sleep]
-        case .medications, .sideEffects: return []
-        }
-    }
-
-    /// Hidden-question keys implied by a goal selection: every mappable
-    /// standard question NOT covered by the selected goals. Empty (nothing
-    /// hidden) when no scale-mapped goal was selected — hiding everything
-    /// would gut the check-in, so we fall back to showing all questions.
-    static func hiddenQuestionKeys(for selection: Set<TrackingGoal>) -> Set<String> {
-        let covered = Set(selection.flatMap(\.mappedQuestions))
-        guard !covered.isEmpty else { return [] }
-        let mappable = Set(allCases.flatMap(\.mappedQuestions))
-        return Set(mappable.subtracting(covered).map(\.rawValue))
-    }
 }
 
 @Observable

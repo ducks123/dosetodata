@@ -271,6 +271,12 @@ struct AddMedicationFlow: View {
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
             .overlay(RoundedRectangle(cornerRadius: Theme.Radius.button).stroke(Theme.Palette.divider, lineWidth: 1))
 
+            // No match for the search: Add-custom leads so the escape hatch
+            // is the first thing under the field, not buried below.
+            if !searchText.isEmpty && filteredLibrary.isEmpty {
+                customMedRow
+            }
+
             ForEach(filteredLibrary.prefix(searchText.isEmpty ? 8 : 20)) { med in
                 Button {
                     selectedMed = med
@@ -304,42 +310,48 @@ struct AddMedicationFlow: View {
                 .buttonStyle(.plain)
             }
 
-            Button {
-                showingCustomForm = true
-            } label: {
-                HStack(spacing: 12) {
-                    ZStack {
-                        Circle()
-                            .fill(MedCategory.other.pastelColor)
-                            .frame(width: 40, height: 40)
-                        Image(systemName: "plus")
-                            .foregroundStyle(Theme.Palette.primary)
-                            .font(.system(size: 16, weight: .semibold))
-                    }
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Can't find it?")
-                            .font(Theme.Font.bodyEmphasis)
-                        Text("Add a custom medication")
-                            .font(Theme.Font.caption)
-                            .foregroundStyle(Theme.Palette.textSecondary)
-                    }
-                    Spacer()
-                    Image(systemName: "chevron.right")
+            if searchText.isEmpty || !filteredLibrary.isEmpty {
+                customMedRow
+            }
+        }
+    }
+
+    private var customMedRow: some View {
+        Button {
+            showingCustomForm = true
+        } label: {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(MedCategory.other.pastelColor)
+                        .frame(width: 40, height: 40)
+                    Image(systemName: "plus")
+                        .foregroundStyle(Theme.Palette.primary)
+                        .font(.system(size: 16, weight: .semibold))
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Can't find it?")
+                        .font(Theme.Font.bodyEmphasis)
+                    Text("Add a custom medication")
+                        .font(Theme.Font.caption)
                         .foregroundStyle(Theme.Palette.textSecondary)
                 }
-                .padding(12)
-                .background(Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
-                .overlay(
-                    RoundedRectangle(cornerRadius: Theme.Radius.card)
-                        .strokeBorder(
-                            Theme.Palette.primary.opacity(0.4),
-                            style: StrokeStyle(lineWidth: 1, dash: [4, 3])
-                        )
-                )
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(Theme.Palette.textSecondary)
             }
-            .buttonStyle(.plain)
+            .padding(12)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.Radius.card)
+                    .strokeBorder(
+                        Theme.Palette.primary.opacity(0.4),
+                        style: StrokeStyle(lineWidth: 1, dash: [4, 3])
+                    )
+            )
         }
+        .buttonStyle(.plain)
     }
 
     private var medDetailsSection: some View {

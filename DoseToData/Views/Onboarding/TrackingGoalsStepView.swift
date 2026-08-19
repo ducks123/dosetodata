@@ -30,7 +30,7 @@ struct TrackingGoalsStepView: View {
                 Text("What do you want\nto track?")
                     .font(Theme.Font.hero)
                     .foregroundStyle(Theme.Palette.textPrimary)
-                Text("Your daily check-in will match what you pick. You can change it later.")
+                Text("Pick anything that matters. You can change this later.")
                     .font(Theme.Font.body)
                     .foregroundStyle(Theme.Palette.textSecondary)
                     .padding(.top, 4)
@@ -55,11 +55,11 @@ struct TrackingGoalsStepView: View {
 
             VStack(spacing: 12) {
                 Button {
+                    // Stored for personalization signal; every check-in
+                    // question stays available regardless (tester feedback:
+                    // hiding questions by goal felt like missing features).
+                    // Users customize questions from the check-in itself.
                     prefs.trackingGoals = selected
-                    // Tailor the daily check-in to the selected goals: hide
-                    // the scale questions no goal covers. Selecting no
-                    // scale-mapped goal (or skipping) hides nothing.
-                    prefs.hiddenStandardQuestionKeys = TrackingGoal.hiddenQuestionKeys(for: selected)
                     onContinue()
                 } label: {
                     Text("Continue")

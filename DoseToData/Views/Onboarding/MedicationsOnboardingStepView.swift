@@ -51,37 +51,26 @@ struct MedicationsOnboardingStepView: View {
 
             ScrollView {
                 VStack(spacing: 10) {
-                    if !userMedications.isEmpty {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("Added")
-                                .font(Theme.Font.caption)
-                                .foregroundStyle(Theme.Palette.textSecondary)
-                            ForEach(userMedications) { userMed in
-                                AddedMedRow(userMed: userMed) {
-                                    // Clear pending reminders for the med being
-                                    // removed so notifications don't outlive it (H2).
-                                    let removedID = userMed.id
-                                    modelContext.delete(userMed)
-                                    modelContext.saveChanges("onboarding medication")
-                                    Task { await ReminderManager.shared.clearReminders(for: removedID) }
-                                }
-                            }
-                        }
-                        .padding(.top, 16)
+                    if searchText.isEmpty {
+                        // Browsing: added meds first, then the library.
+                        addedSection
+                        libraryRows
+                        CantFindItRow { showingCustomForm = true }
+                            .padding(.top, 6)
+                    } else if filteredLibrary.isEmpty {
+                        // No match: Add-custom leads so the escape hatch is
+                        // never buried under the keyboard or added meds.
+                        CantFindItRow { showingCustomForm = true }
+                            .padding(.top, 12)
+                        addedSection
+                    } else {
+                        // Matches lead so the keyboard and the already-added
+                        // list can't hide them.
+                        libraryRows
+                        CantFindItRow { showingCustomForm = true }
+                            .padding(.top, 6)
+                        addedSection
                     }
-
-                    if !filteredLibrary.isEmpty {
-                        ForEach(filteredLibrary.prefix(searchText.isEmpty ? 30 : 50)) { med in
-                            MedLibraryRow(med: med) {
-                                pendingMed = med
-                            }
-                        }
-                    }
-
-                    CantFindItRow {
-                        showingCustomForm = true
-                    }
-                    .padding(.top, 6)
                 }
                 .padding(.horizontal, 24)
                 .padding(.vertical, 12)
@@ -140,6 +129,35 @@ struct MedicationsOnboardingStepView: View {
                 if userMed.remindersEnabled && !userMed.scheduledTimes.isEmpty {
                     Task { await ReminderManager.shared.scheduleReminders(for: userMed) }
                 }
+            }
+        }
+    }
+
+    @ViewBuilder private var addedSection: some View {
+        if !userMedications.isEmpty {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Added")
+                    .font(Theme.Font.caption)
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                ForEach(userMedications) { userMed in
+                    AddedMedRow(userMed: userMed) {
+                        // Clear pending reminders for the med being
+                        // removed so notifications don't outlive it (H2).
+                        let removedID = userMed.id
+                        modelContext.delete(userMed)
+                        modelContext.saveChanges("onboarding medication")
+                        Task { await ReminderManager.shared.clearReminders(for: removedID) }
+                    }
+                }
+            }
+            .padding(.top, searchText.isEmpty ? 16 : 6)
+        }
+    }
+
+    private var libraryRows: some View {
+        ForEach(filteredLibrary.prefix(searchText.isEmpty ? 30 : 50)) { med in
+            MedLibraryRow(med: med) {
+                pendingMed = med
             }
         }
     }

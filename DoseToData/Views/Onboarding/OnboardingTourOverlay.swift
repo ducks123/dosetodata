@@ -7,25 +7,38 @@ import Charts
 // MARK: - Stage 1 banner (Today)
 
 /// Nudge shown above the tab bar until the user saves their first check-in.
+/// Bounces and points upward at the check-in card's button, matching the
+/// tab tooltips so all tour prompts read as one family.
 struct TourGuideBanner: View {
     let text: String
 
+    @State private var bounce = false
+
     var body: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "hand.point.up.left.fill")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.9))
-            Text(text)
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(.white)
-                .fixedSize(horizontal: false, vertical: true)
+        VStack(spacing: 0) {
+            Image(systemName: "arrowtriangle.up.fill")
+                .font(.system(size: 18))
+                .foregroundStyle(Theme.Palette.primary)
+                .offset(y: 3)
+            HStack(spacing: 10) {
+                Image(systemName: "hand.point.up.left.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.9))
+                Text(text)
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(.white)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.horizontal, 18)
+            .padding(.vertical, 14)
+            .background(Theme.Palette.primary)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
+            .shadow(color: Theme.Palette.primary.opacity(0.4), radius: 12, y: 4)
         }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 14)
-        .background(Theme.Palette.primary)
-        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
-        .shadow(color: Theme.Palette.primary.opacity(0.4), radius: 12, y: 4)
         .padding(.horizontal, 20)
+        .offset(y: bounce ? -7 : 2)
+        .animation(.easeInOut(duration: 0.7).repeatForever(autoreverses: true), value: bounce)
+        .onAppear { bounce = true }
     }
 }
 

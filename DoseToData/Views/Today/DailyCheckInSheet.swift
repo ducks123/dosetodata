@@ -315,6 +315,19 @@ struct DailyCheckInSheet: View {
 
     private var standardQuestionsSection: some View {
         VStack(spacing: 12) {
+            // First-ever check-in: explain that the question set is theirs
+            // to shape. Disappears once any check-in exists.
+            if allCheckIns.isEmpty {
+                Label("Answer what matters and skip the rest. Hide any question from its ··· menu, or add your own below.",
+                      systemImage: "slider.horizontal.3")
+                    .font(Theme.Font.caption)
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(12)
+                    .background(Theme.Palette.heroAccent)
+                    .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
+            }
             ForEach(visibleStandardQuestions) { question in
                 QuestionCard(
                     prompt: question.config.question,
