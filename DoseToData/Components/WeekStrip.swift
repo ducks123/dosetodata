@@ -136,6 +136,9 @@ private struct ScrollDayCell: View {
     }
 
     @ViewBuilder private var stateContent: some View {
+        // Always show the day NUMBER — state is carried by the circle's
+        // fill/ring color. A checkmark here made runs of logged days
+        // indistinguishable ("which one is the 14th?").
         let dayNum = calendar.component(.day, from: date)
         switch state {
         case .empty:
@@ -147,12 +150,12 @@ private struct ScrollDayCell: View {
                 .font(.system(size: 13, weight: isSelected ? .bold : .semibold))
                 .foregroundStyle(Theme.Palette.success)
         case .complete:
-            Image(systemName: "checkmark")
-                .font(.system(size: 12, weight: .bold))
+            Text("\(dayNum)")
+                .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(.white)
         case .medsMissed:
-            Image(systemName: "checkmark")
-                .font(.system(size: 12, weight: .bold))
+            Text("\(dayNum)")
+                .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(Theme.Palette.attention)
         }
     }
@@ -184,24 +187,14 @@ struct DateStripLegend: View {
     }
 
     private var completeSwatch: some View {
-        ZStack {
-            Circle().fill(Theme.Palette.success).frame(width: 14, height: 14)
-            Image(systemName: "checkmark")
-                .font(.system(size: 7, weight: .bold))
-                .foregroundStyle(.white)
-        }
+        Circle().fill(Theme.Palette.success).frame(width: 14, height: 14)
     }
 
     private var medsMissedSwatch: some View {
-        ZStack {
-            Circle()
-                .fill(Color.white)
-                .overlay(Circle().stroke(Theme.Palette.attention, lineWidth: 2))
-                .frame(width: 14, height: 14)
-            Image(systemName: "checkmark")
-                .font(.system(size: 7, weight: .bold))
-                .foregroundStyle(Theme.Palette.attention)
-        }
+        Circle()
+            .fill(Color.white)
+            .overlay(Circle().stroke(Theme.Palette.attention, lineWidth: 2))
+            .frame(width: 14, height: 14)
     }
 
     private var emptySwatch: some View {
@@ -360,13 +353,13 @@ private struct DayCell: View {
                 .foregroundStyle(Theme.Palette.success)
 
         case .complete:
-            Image(systemName: "checkmark")
-                .font(.system(size: 14, weight: .bold))
+            Text("\(day.dayNumber)")
+                .font(.system(size: 15, weight: .bold))
                 .foregroundStyle(.white)
 
         case .medsMissed:
-            Image(systemName: "checkmark")
-                .font(.system(size: 14, weight: .bold))
+            Text("\(day.dayNumber)")
+                .font(.system(size: 15, weight: .bold))
                 .foregroundStyle(Theme.Palette.attention)
         }
     }

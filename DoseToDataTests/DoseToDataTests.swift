@@ -239,15 +239,33 @@ final class DoseToDataTests: XCTestCase {
         XCTAssertEqual(cal.firstWeekday, Calendar.current.firstWeekday)
     }
 
-    // MARK: - M5: future check-ins excluded from Insights scope
+    // MARK: - M5 (revised): future check-ins plot, but never move trend %
 
-    func testFutureCheckInIsExcludedFromScope() {
+    func testFutureCheckInIsInScopeForPlotting() {
         let cal = fixedCalendar
         let now = cal.date(from: DateComponents(year: 2026, month: 6, day: 28, hour: 15))!
         let start = cal.date(from: DateComponents(year: 2026, month: 6, day: 1))!
         let tomorrow = cal.date(from: DateComponents(year: 2026, month: 6, day: 29, hour: 9))!
-        XCTAssertFalse(InsightsView.isCheckInInScope(tomorrow, start: start, now: now, calendar: cal),
-                       "A future-dated check-in must not count toward charts/trends")
+        // Logging ahead is a deliberate feature; the chart's trailing headroom
+        // renders future points instead of clipping them invisible.
+        XCTAssertTrue(InsightsView.isCheckInInScope(tomorrow, start: start, now: now, calendar: cal),
+                      "A future-dated check-in must plot on the charts")
+    }
+
+    func testTrendSeriesDropsFutureBuckets() {
+        let cal = fixedCalendar
+        let todayBucket = cal.date(from: DateComponents(year: 2026, month: 6, day: 28))!
+        let yesterday = cal.date(from: DateComponents(year: 2026, month: 6, day: 27))!
+        let tomorrow = cal.date(from: DateComponents(year: 2026, month: 6, day: 29))!
+        let points = [
+            InsightsView.ChartPoint(date: yesterday, value: 3),
+            InsightsView.ChartPoint(date: todayBucket, value: 4),
+            InsightsView.ChartPoint(date: tomorrow, value: 5),
+        ]
+        let trend = InsightsView.trendSeries(points, todayBucket: todayBucket)
+        // The future bucket plots on the chart but must not move the trend %.
+        XCTAssertEqual(trend.map(\.value), [3, 4],
+                       "Future buckets must be excluded from trend math (M5)")
     }
 
     func testTodayAndPastCheckInsAreInScope() {

@@ -391,9 +391,10 @@ struct InsightsView: View {
             .sorted { $0.date < $1.date }
     }
 
-    /// % change in overall score: most recent bucket vs the one before it.
+    /// % change in overall score: most recent NON-FUTURE bucket vs the one
+    /// before it. Future-dated entries plot but never move this number (M5).
     private var overallTrendPercent: Double? {
-        let points = overallSeries
+        let points = Self.trendSeries(overallSeries, todayBucket: bucketKey(for: Date()))
         guard points.count >= 2 else { return nil }
         let current  = points.last!.value
         let previous = points[points.count - 2].value
@@ -805,8 +806,12 @@ struct InsightsView: View {
             let end = test.actualEndDate ?? test.plannedEndDate ?? Date()
             return (calendar.startOfDay(for: test.startDate), end)
         }
-        let end   = Date()
-        let today = calendar.startOfDay(for: end)
+        // Future-dated check-ins are a deliberate feature (logging ahead) —
+        // extend the window so they plot in the chart's trailing headroom
+        // instead of silently disappearing from Insights.
+        let latestEntry = allCheckIns.first.map(\.date) ?? Date()
+        let end   = max(Date(), latestEntry)
+        let today = calendar.startOfDay(for: Date())
         let start: Date
         // Fixed windows per agreed UX (no chart scrolling needed):
         //   Day   = last 7 days        (1 week)
@@ -844,20 +849,28 @@ struct InsightsView: View {
         }
     }
 
-    /// Whether a check-in counts toward charts/trends for the current scope:
-    /// at/after `start`, and strictly before the start of tomorrow. The upper
-    /// bound excludes future-dated check-ins — the app lets users log ahead in
-    /// the Today strip, but a future point the chart domain clips off must not
-    /// still move the trend % (M5). (Extracted as a static for testability.)
+    /// Whether a check-in counts toward the PLOTTED series for the current
+    /// scope: at/after `start`. Future-dated check-ins are included — logging
+    /// ahead is a deliberate feature and, with the chart's trailing headroom,
+    /// they now render instead of being clipped invisible. The M5 concern
+    /// (a future entry silently moving the trend %) is handled separately:
+    /// `trendSeries` drops future buckets before the trend math.
+    /// (`now`/`calendar` retained for signature stability with older tests.)
     static func isCheckInInScope(_ date: Date, start: Date, now: Date, calendar: Calendar) -> Bool {
-        let startOfTomorrow = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now))
-            ?? now
-        return date >= start && date < startOfTomorrow
+        date >= start
     }
 
-    /// % change for one question key: most recent bucket vs the one before it.
+    /// Buckets eligible for the trend badge: everything up to and including
+    /// today's bucket. Future buckets plot on the chart but must not move
+    /// the trend % (M5). (Extracted as a static for testability.)
+    static func trendSeries(_ points: [ChartPoint], todayBucket: Date) -> [ChartPoint] {
+        points.filter { $0.date <= todayBucket }
+    }
+
+    /// % change for one question key: most recent NON-FUTURE bucket vs the
+    /// one before it. Future-dated entries plot but never move this number (M5).
     private func trendPercent(for questionKey: String) -> Double? {
-        let points = bucketedSeries(for: questionKey)
+        let points = Self.trendSeries(bucketedSeries(for: questionKey), todayBucket: bucketKey(for: Date()))
         guard points.count >= 2 else { return nil }
         let current  = points.last!.value
         let previous = points[points.count - 2].value

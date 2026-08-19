@@ -390,6 +390,8 @@ private struct OnboardingMedDetailsSheet: View {
                 .padding(20)
                 .padding(.bottom, 24)
             }
+            .scrollDismissesKeyboard(.immediately)
+            .dismissKeyboardOnTap()
             .background(Theme.Palette.background)
             .navigationTitle("Add medication")
             .navigationBarTitleDisplayMode(.inline)
