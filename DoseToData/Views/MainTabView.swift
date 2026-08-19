@@ -73,11 +73,9 @@ struct MainTabView: View {
             }
         }
         // ── Guided tour ─────────────────────────────────────────────────
-        .overlay(alignment: .bottom) {
+        .overlay {
             if inTour {
-                tourOverlay
-                    .padding(.bottom, 74)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                tourLayer
             }
         }
         .animation(.easeInOut(duration: 0.25), value: prefs.onboardingTourStage)
@@ -120,26 +118,51 @@ struct MainTabView: View {
     }
 
     @ViewBuilder
-    private var tourOverlay: some View {
+    private var tourLayer: some View {
         switch prefs.onboardingTourStage {
         case 1:
             if selectedTab == .today && !hasCheckInToday {
-                TourGuideBanner(text: "Complete today's check-in to put your first point on the chart.")
+                bottomAligned(
+                    TourGuideBanner(text: "Complete today's check-in to put your first point on the chart.")
+                )
             }
         case 2:
-            TourTabTooltip(text: "Your meds are on the Schedule tab", tabPosition: 0.5)
+            bottomAligned(
+                TourTabTooltip(text: "Your meds are on the Schedule tab", arrowFraction: 0.5)
+            )
         case 3:
-            TourTabTooltip(text: "Now see your trends in Insights", tabPosition: 1.0)
+            bottomAligned(
+                TourTabTooltip(text: "Now see your trends in Insights", arrowFraction: 0.71)
+            )
         case 4:
             if selectedTab == .insights {
-                TourInsightsCard(todayScore: todayScore) {
-                    prefs.onboardingTourStage = 5
-                    showTourPaywall = true
+                // Modal moment: dim everything so Continue is the only
+                // action, per tester feedback (a half-interactive state read
+                // as broken/fake).
+                ZStack {
+                    Color.black.opacity(0.45)
+                        .ignoresSafeArea()
+                        .onTapGesture {}  // absorb taps behind the card
+                    TourInsightsCard(todayScore: todayScore) {
+                        prefs.onboardingTourStage = 5
+                        showTourPaywall = true
+                    }
                 }
+                .transition(.opacity)
             }
         default:
             EmptyView()
         }
+    }
+
+    /// Pins tour banners/tooltips just above the floating tab bar.
+    private func bottomAligned<Content: View>(_ content: Content) -> some View {
+        VStack {
+            Spacer()
+            content
+                .padding(.bottom, 74)
+        }
+        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
     private func finishTour() {

@@ -776,6 +776,16 @@ struct InsightsView: View {
             let nudged = calendar.date(byAdding: bucketUnit, value: 1, to: alignedStart) ?? alignedStart
             return alignedStart ... nudged
         }
+        // Live (non-test) scopes get trailing headroom so today's point sits
+        // about two-thirds of the way across instead of pinned to the right
+        // edge. Half the visible span of empty future keeps the latest point
+        // readable (annotation has room) and shows where the trend is headed.
+        // Historical test windows stay exact — their end isn't "now".
+        if selectedTestID == nil {
+            let span = alignedEnd.timeIntervalSince(alignedStart)
+            let padded = alignedEnd.addingTimeInterval(span / 2)
+            return alignedStart ... padded
+        }
         return alignedStart ... alignedEnd
     }
 
@@ -917,9 +927,9 @@ struct InsightsView: View {
     private var xAxisMarks: some AxisContent {
         switch range {
         case .day:
-            // 7 daily dots → label every day with weekday short + day-of-month
-            // ("Wed 28"). Fits on screen, plenty informative.
-            AxisMarks(values: .stride(by: .day)) { _ in
+            // ~10 daily ticks once trailing headroom is added → label every
+            // other day ("Wed 28") so labels never collide.
+            AxisMarks(values: .stride(by: .day, count: 2)) { _ in
                 AxisGridLine()
                 AxisValueLabel(format: .dateTime.weekday(.abbreviated).day())
             }

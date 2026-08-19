@@ -372,9 +372,23 @@ private struct OnboardingMedDetailsSheet: View {
                             showingTimePicker = true
                         }
                     )
+
+                    // The CTA lives at the END of the form, not pinned over
+                    // it — users pass dose, times, and days before reaching
+                    // it, so nobody commits before configuring reminders.
+                    Button {
+                        onCommit(dose, addToSchedule, scheduledTimes, scheduledDays)
+                        dismiss()
+                    } label: {
+                        Text("Add to my medications")
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                    .disabled(dose.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .opacity(dose.trimmingCharacters(in: .whitespaces).isEmpty ? 0.5 : 1)
+                    .padding(.top, 8)
                 }
                 .padding(20)
-                .padding(.bottom, 80)
+                .padding(.bottom, 24)
             }
             .background(Theme.Palette.background)
             .navigationTitle("Add medication")
@@ -383,20 +397,6 @@ private struct OnboardingMedDetailsSheet: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { dismiss() }
                 }
-            }
-            .safeAreaInset(edge: .bottom) {
-                Button {
-                    onCommit(dose, addToSchedule, scheduledTimes, scheduledDays)
-                    dismiss()
-                } label: {
-                    Text("Add to my medications")
-                }
-                .buttonStyle(PrimaryButtonStyle())
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
-                .background(Theme.Palette.background.opacity(0.96))
-                .disabled(dose.trimmingCharacters(in: .whitespaces).isEmpty)
-                .opacity(dose.trimmingCharacters(in: .whitespaces).isEmpty ? 0.5 : 1)
             }
         }
         .sheet(isPresented: $showingTimePicker) {

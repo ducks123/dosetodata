@@ -13,73 +13,63 @@ struct TourGuideBanner: View {
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: "hand.point.up.left.fill")
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(Theme.Palette.primary)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.9))
             Text(text)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundStyle(Theme.Palette.textPrimary)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(.white)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(Color.white)
+        .padding(.horizontal, 18)
+        .padding(.vertical, 14)
+        .background(Theme.Palette.primary)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
-                .stroke(Theme.Palette.primary.opacity(0.35), lineWidth: 1.5)
-        )
-        .shadow(color: .black.opacity(0.10), radius: 10, y: 4)
+        .shadow(color: Theme.Palette.primary.opacity(0.4), radius: 12, y: 4)
         .padding(.horizontal, 20)
     }
 }
 
 // MARK: - Tab tooltip (stages 2 and 3)
 
-/// Small tooltip with a downward arrow, positioned above the tab bar and
-/// horizontally aligned with the tab it points at.
+/// Bouncing tooltip above the tab bar whose arrow lines up with the tab it
+/// points at.
 struct TourTabTooltip: View {
     let text: String
-    /// 0 = leading tab, 0.5 = center tab, 1 = trailing tab.
-    let tabPosition: CGFloat
+    /// Horizontal position of the target tab's center, as a fraction of
+    /// screen width (Schedule ≈ 0.5, Insights ≈ 0.71).
+    let arrowFraction: CGFloat
+
+    @State private var bounce = false
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 8) {
-                Text(text)
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.white)
-                Image(systemName: "arrow.down")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(.white.opacity(0.9))
-            }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .background(Theme.Palette.primary)
-            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .shadow(color: Theme.Palette.primary.opacity(0.35), radius: 8, y: 3)
+            Text(text)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(.white)
+                .padding(.horizontal, 18)
+                .padding(.vertical, 13)
+                .background(Theme.Palette.primary)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .shadow(color: Theme.Palette.primary.opacity(0.45), radius: 10, y: 4)
 
             Image(systemName: "arrowtriangle.down.fill")
-                .font(.system(size: 14))
+                .font(.system(size: 18))
                 .foregroundStyle(Theme.Palette.primary)
-                .offset(y: -2)
+                .offset(y: -3)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, UIScreen.main.bounds.width * arrowFraction - 9)
         }
-        .frame(maxWidth: .infinity, alignment: tabAlignment)
-        .padding(.horizontal, 40)
-    }
-
-    private var tabAlignment: Alignment {
-        switch tabPosition {
-        case ..<0.34:   return .leading
-        case ..<0.67:   return .center
-        default:        return .trailing
-        }
+        .offset(y: bounce ? -7 : 2)
+        .animation(.easeInOut(duration: 0.7).repeatForever(autoreverses: true), value: bounce)
+        .onAppear { bounce = true }
     }
 }
 
-// MARK: - Insights example card (stage 4)
+// MARK: - Insights example card (stage 4, shown over a dimmed scrim)
 
-/// Shown over the real Insights tab: the user's actual first data point plus
-/// a clearly-labeled example of what two weeks of tracking looks like.
+/// Modal card over the real Insights tab: the user's actual first data point
+/// plus a clearly-labeled example of what two weeks of tracking looks like.
+/// The scrim behind it (owned by MainTabView) makes Continue the only action.
 ///
 /// Compliance note (Guideline 1.4.2): the grey line is generic EXAMPLE data,
 /// dashed and muted, labeled as an example in the caption. It is deliberately
@@ -120,11 +110,11 @@ struct TourInsightsCard: View {
             }
             .buttonStyle(PrimaryButtonStyle())
         }
-        .padding(16)
+        .padding(18)
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
-        .shadow(color: .black.opacity(0.18), radius: 18, y: 6)
-        .padding(.horizontal, 20)
+        .shadow(color: .black.opacity(0.25), radius: 24, y: 8)
+        .padding(.horizontal, 24)
     }
 
     private var chart: some View {

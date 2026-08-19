@@ -191,10 +191,24 @@ struct AddMedicationFlow: View {
                         librarySection
                     } else {
                         medDetailsSection
+
+                        // The CTA lives at the END of the form, not pinned
+                        // over it — users pass dose, times, and days before
+                        // reaching it, so nobody commits before configuring
+                        // reminders.
+                        Button {
+                            commit()
+                        } label: {
+                            Text("Add to my medications")
+                        }
+                        .buttonStyle(PrimaryButtonStyle())
+                        .disabled(dose.isEmpty)
+                        .opacity(dose.isEmpty ? 0.5 : 1)
+                        .padding(.top, 8)
                     }
                 }
                 .padding(20)
-                .padding(.bottom, 80)
+                .padding(.bottom, 24)
             }
             .background(Theme.Palette.background)
             .navigationTitle("Add medication")
@@ -202,21 +216,6 @@ struct AddMedicationFlow: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { dismiss() }
-                }
-            }
-            .safeAreaInset(edge: .bottom) {
-                if selectedMed != nil {
-                    Button {
-                        commit()
-                    } label: {
-                        Text("Add to my medications")
-                    }
-                    .buttonStyle(PrimaryButtonStyle())
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 12)
-                    .background(Theme.Palette.background.opacity(0.96))
-                    .disabled(dose.isEmpty)
-                    .opacity(dose.isEmpty ? 0.5 : 1)
                 }
             }
         }
@@ -733,9 +732,22 @@ struct CustomMedicationForm: View {
                         scheduledDays: $scheduledDays,
                         onAddTime: { showingTimePicker = true }
                     )
+
+                    // The CTA lives at the END of the form, not pinned over
+                    // it — users pass dose, times, and days before reaching
+                    // it, so nobody commits before configuring reminders.
+                    Button {
+                        save()
+                    } label: {
+                        Text("Add to my medications")
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                    .disabled(!canSave)
+                    .opacity(canSave ? 1 : 0.5)
+                    .padding(.top, 8)
                 }
                 .padding(20)
-                .padding(.bottom, 80)
+                .padding(.bottom, 24)
             }
             .background(Theme.Palette.background)
             .navigationTitle("Custom medication")
@@ -744,19 +756,6 @@ struct CustomMedicationForm: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { dismiss() }
                 }
-            }
-            .safeAreaInset(edge: .bottom) {
-                Button {
-                    save()
-                } label: {
-                    Text("Add to my medications")
-                }
-                .buttonStyle(PrimaryButtonStyle())
-                .disabled(!canSave)
-                .opacity(canSave ? 1 : 0.5)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
-                .background(Theme.Palette.background.opacity(0.96))
             }
             .sheet(isPresented: $showingTimePicker) {
                 TimePickerSheet(initialTime: pendingTime) { time in
