@@ -130,7 +130,7 @@ struct LogMedChangeSheet: View {
             Image(systemName: "info.circle")
                 .foregroundStyle(Theme.Palette.textSecondary)
                 .font(.system(size: 14))
-            Text("Editing updates this timeline entry only. It won't change your current medication list — manage that in Schedule → Edit medications.")
+            Text("Editing updates this timeline entry only. It won't change your current medication list. Manage that in Schedule → Edit medications.")
                 .font(Theme.Font.caption)
                 .foregroundStyle(Theme.Palette.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)

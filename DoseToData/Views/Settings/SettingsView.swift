@@ -253,7 +253,7 @@ struct SettingsView: View {
         case .active:   return "Active"
         case .expired:  return "Trial ended"
         case .trial(let days):
-            return days == 1 ? "Trial — 1 day left" : "Trial — \(days) days left"
+            return days == 1 ? "Trial · 1 day left" : "Trial · \(days) days left"
         }
     }
 

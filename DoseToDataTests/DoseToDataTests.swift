@@ -355,3 +355,43 @@ final class DoseToDataTests: XCTestCase {
         XCTAssertEqual(action.summaryLine, "Wellbutrin ↕ 300mg → 150mg")
     }
 }
+
+// MARK: - Paywall savings badge math
+
+final class SavingsPercentTests: XCTestCase {
+    func testStandardPricing() {
+        // $4.99/mo * 12 = $59.88 vs $39.99/yr → 33% savings.
+        // Regression: Int(truncating:) on the raw NSDecimalNumber quotient
+        // overflowed and returned 0, silently hiding the SAVE badge.
+        XCTAssertEqual(
+            PaywallView.savingsPercent(monthlyPrice: Decimal(string: "4.99")!,
+                                       annualPrice: Decimal(string: "39.99")!),
+            33
+        )
+    }
+
+    func testAnnualMoreExpensiveThanMonthlyIsZero() {
+        XCTAssertEqual(
+            PaywallView.savingsPercent(monthlyPrice: Decimal(string: "1.00")!,
+                                       annualPrice: Decimal(string: "20.00")!),
+            0
+        )
+    }
+
+    func testZeroMonthlyPriceIsZero() {
+        XCTAssertEqual(
+            PaywallView.savingsPercent(monthlyPrice: 0,
+                                       annualPrice: Decimal(string: "39.99")!),
+            0
+        )
+    }
+
+    func testExactIntegerSavings() {
+        // $2/mo * 12 = $24 vs $12/yr → exactly 50%.
+        XCTAssertEqual(
+            PaywallView.savingsPercent(monthlyPrice: Decimal(string: "2.00")!,
+                                       annualPrice: Decimal(string: "12.00")!),
+            50
+        )
+    }
+}

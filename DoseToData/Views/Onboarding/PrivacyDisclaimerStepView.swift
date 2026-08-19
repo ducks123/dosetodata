@@ -6,7 +6,7 @@ struct PrivacyDisclaimerStepView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Before you start · Step 2 of 4")
+                Text("Before you start · Step 2 of 3")
                     .font(Theme.Font.heroLabel)
                     .foregroundStyle(Theme.Palette.textSecondary)
                 Text("A few things\nto know.")
@@ -30,7 +30,7 @@ struct PrivacyDisclaimerStepView: View {
                     DisclaimerPoint(
                         icon: "person.2.fill",
                         title: "For use with your clinician",
-                        detail: "Use what you track here in conversation with your prescribing doctor — not instead of them."
+                        detail: "Use what you track here in conversation with your prescribing doctor, not instead of them."
                     )
                 }
                 .padding(24)

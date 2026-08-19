@@ -53,6 +53,6 @@ extension AppState {
         "Your future self will thank you for this.",
         "Consistency is the real superpower. Nice work.",
         "You showed up today. That matters more than you know.",
-        "Data is only as good as the person collecting it — and you're doing great.",
+        "Data is only as good as the person collecting it, and you're doing great.",
     ]
 }

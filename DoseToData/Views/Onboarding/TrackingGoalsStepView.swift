@@ -24,7 +24,7 @@ struct TrackingGoalsStepView: View {
             .padding(.top, 16)
 
             VStack(alignment: .leading, spacing: 10) {
-                Text("Welcome · Step 1 of 4")
+                Text("Welcome · Step 1 of 3")
                     .font(Theme.Font.heroLabel)
                     .foregroundStyle(Theme.Palette.textSecondary)
                 Text("What do you want\nto track?")

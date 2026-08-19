@@ -69,6 +69,7 @@ final class UserPreferences {
         static let dailyCheckInReminderTime = "dosetodata.reminders.dailyCheckIn.time"
         static let checkInReminderTimes = "dosetodata.reminders.checkIn.times"
         static let hiddenStandardQuestionKeys = "dosetodata.checkIn.hiddenStandardKeys"
+        static let onboardingTourStage = "dosetodata.onboarding.tourStage"
     }
 
     /// Default time for the end-of-day check-in reminder.
@@ -80,6 +81,16 @@ final class UserPreferences {
 
     var hasCompletedOnboarding: Bool {
         didSet { defaults.set(hasCompletedOnboarding, forKey: Keys.hasCompletedOnboarding) }
+    }
+
+    /// Guided-tour progress after the onboarding question steps. 0 = tour not
+    /// started (still in question steps, or a pre-tour install). Stages:
+    /// 1 = waiting for first check-in on Today, 2 = guide to Schedule tab,
+    /// 3 = guide to Insights tab, 4 = Insights example card, 5 = paywall.
+    /// Persisted so killing the app mid-tour resumes where the user left off.
+    /// Irrelevant once `hasCompletedOnboarding` is true.
+    var onboardingTourStage: Int {
+        didSet { defaults.set(onboardingTourStage, forKey: Keys.onboardingTourStage) }
     }
 
     var disclaimerAccepted: Bool {
@@ -157,5 +168,6 @@ final class UserPreferences {
             ?? Self.defaultCheckInReminderTimes
         let rawHidden = defaults.array(forKey: Keys.hiddenStandardQuestionKeys) as? [String] ?? []
         self.hiddenStandardQuestionKeys = Set(rawHidden)
+        self.onboardingTourStage = defaults.integer(forKey: Keys.onboardingTourStage)
     }
 }

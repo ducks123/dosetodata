@@ -82,7 +82,7 @@ final class ReminderManager {
 
                 let content = UNMutableNotificationContent()
                 content.title = "Time for \(medName)"
-                content.body = dose.isEmpty ? "Tap to log this dose." : "\(dose) — tap to log this dose."
+                content.body = dose.isEmpty ? "Tap to log this dose." : "\(dose). Tap to log this dose."
                 content.sound = .default
                 content.threadIdentifier = userMed.id.uuidString
                 content.categoryIdentifier = Self.medReminderCategoryID

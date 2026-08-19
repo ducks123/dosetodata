@@ -68,7 +68,7 @@ struct MedChangeMarkerDetailSheet: View {
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("This removes the marker from your charts and timeline. It does NOT change your current medication list — if this change started, stopped, or adjusted a medication, update that in Schedule → Edit medications. Your check-in history isn't affected.")
+                Text("This removes the marker from your charts and timeline. It does NOT change your current medication list. If this change started, stopped, or adjusted a medication, update that in Schedule → Edit medications. Your check-in history isn't affected.")
             }
         }
     }

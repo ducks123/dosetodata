@@ -156,7 +156,7 @@ struct AuthSheet: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Label("About your account", systemImage: "person.circle")
                         .font(Theme.Font.bodyEmphasis)
-                    Text("Signing in links your account to this device. Your data is stored locally — deleting the app will erase your history.")
+                    Text("Signing in links your account to this device. Your data is stored locally, and deleting the app will erase your history.")
                         .font(Theme.Font.caption)
                         .foregroundStyle(Theme.Palette.textSecondary)
                     Text("You can delete your account any time from Settings.")

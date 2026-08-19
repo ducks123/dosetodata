@@ -123,11 +123,24 @@ struct PaywallView: View {
 
     private var savingsPercent: Int {
         guard let monthly = monthlyPackage, let annual = annualPackage else { return 0 }
-        let monthlyCost = monthly.storeProduct.price * 12
-        let annualCost  = annual.storeProduct.price
-        guard monthlyCost > 0 else { return 0 }
-        let savings = ((monthlyCost - annualCost) / monthlyCost * 100) as NSDecimalNumber
-        return Int(truncating: savings)
+        return Self.savingsPercent(
+            monthlyPrice: monthly.storeProduct.price,
+            annualPrice: annual.storeProduct.price
+        )
+    }
+
+    /// Pure savings math, extracted for testability.
+    ///
+    /// Do NOT use `Int(truncating:)` directly on the division result: the
+    /// quotient carries a 38-digit mantissa and NSDecimalNumber's integer
+    /// accessors overflow on it and return 0 (which silently hid the SAVE
+    /// badge). Converting through `doubleValue` first is reliable.
+    static func savingsPercent(monthlyPrice: Decimal, annualPrice: Decimal) -> Int {
+        guard monthlyPrice > 0 else { return 0 }
+        let monthlyCost = monthlyPrice * 12
+        guard monthlyCost > annualPrice else { return 0 }
+        let savings = (monthlyCost - annualPrice) / monthlyCost * 100
+        return Int((savings as NSDecimalNumber).doubleValue)
     }
 
     // MARK: - Body
@@ -153,7 +166,7 @@ struct PaywallView: View {
                     Button {
                         Task { await sub.refresh() }
                     } label: {
-                        Label("Could not load prices — tap to retry", systemImage: "arrow.clockwise")
+                        Label("Could not load prices. Tap to retry", systemImage: "arrow.clockwise")
                             .font(.system(size: 13))
                             .foregroundStyle(Theme.Palette.negative)
                     }
@@ -313,8 +326,8 @@ struct PaywallView: View {
         let days = trialDays(for: annualPackage) ?? trialDays(for: monthlyPackage)
         let trialPhrase = days.map { "Try every feature free for \($0) days" } ?? "Try every feature free"
         return dayOneLogged
-            ? "Day 1 is logged. \(trialPhrase) — keep your streak going."
-            : "\(trialPhrase) — cancel anytime."
+            ? "Day 1 is logged. \(trialPhrase) and keep your streak going."
+            : "\(trialPhrase). Cancel anytime."
     }
 
     // MARK: - Feature list
@@ -464,7 +477,7 @@ struct PaywallView: View {
                         Text(trialHeadlineText)
                             .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(Theme.Palette.textPrimary)
-                        Text("Then the plan you choose below — cancel anytime")
+                        Text("Then the plan you choose below. Cancel anytime")
                             .font(.system(size: 11))
                             .foregroundStyle(Theme.Palette.textSecondary)
                     }
@@ -622,7 +635,11 @@ struct PaywallView: View {
 
     private var trialNote: some View {
         Group {
-            if case .trial(let days) = sub.status {
+            // The "N days left" line only makes sense for an in-app visit
+            // during an active trial. In onboarding/tour mode the user hasn't
+            // started a trial yet (the local-fallback trial status would make
+            // this read "14 days left" right under a Start Free Trial button).
+            if isDismissible, case .trial(let days) = sub.status {
                 Text("\(days) day\(days == 1 ? "" : "s") left in your free trial. Cancel any time.")
             } else if selectedPlan.isTrial {
                 Text("Cancel before the trial ends and you won't be charged.")
@@ -769,10 +786,13 @@ struct LockedFeatureButton<Label: View>: View {
 /// A small amber banner shown inside the Today / Schedule tabs while on trial.
 struct TrialBanner: View {
     @Environment(SubscriptionService.self) private var sub
+    @Environment(UserPreferences.self) private var prefs
     @State private var showPaywall = false
 
     var body: some View {
-        if case .trial(let days) = sub.status {
+        // Hidden during the onboarding tour: the local-fallback trial status
+        // would show "Day 1 of 14" before the user has started any trial.
+        if case .trial(let days) = sub.status, prefs.hasCompletedOnboarding {
             let totalDays = SubscriptionService.trialDays
             let dayNumber = max(1, totalDays - days + 1)
             Button {
@@ -782,7 +802,7 @@ struct TrialBanner: View {
                     Image(systemName: "sparkles")
                         .font(.system(size: 13, weight: .semibold))
                     VStack(alignment: .leading, spacing: 1) {
-                        Text(days == 1 ? "Last day of your free trial" : "Day \(dayNumber) of \(totalDays) — free trial")
+                        Text(days == 1 ? "Last day of your free trial" : "Free trial · Day \(dayNumber) of \(totalDays)")
                             .font(.system(size: 13, weight: .semibold))
                         Text(days == 1 ? "Upgrade today to keep access" : "\(days) days remaining")
                             .font(.system(size: 11))
@@ -823,7 +843,7 @@ struct ExpiredBanner: View {
                 HStack(spacing: 10) {
                     Image(systemName: "lock.fill")
                         .font(.system(size: 14))
-                    Text("Your free trial has ended — upgrade to keep logging")
+                    Text("Your free trial has ended. Upgrade to keep logging")
                         .font(.system(size: 13, weight: .semibold))
                         .multilineTextAlignment(.leading)
                     Spacer()

@@ -36,7 +36,7 @@ struct ReminderPrimerStepView: View {
                 Text("A daily nudge\nbuilds the habit.")
                     .font(Theme.Font.hero)
                     .foregroundStyle(Theme.Palette.textPrimary)
-                Text("One gentle reminder a day keeps your chart filling in. Change the time — or turn it off — any time from the Today tab.")
+                Text("One gentle reminder a day keeps your chart filling in. You can change the time or turn it off anytime from the Today tab.")
                     .font(Theme.Font.body)
                     .foregroundStyle(Theme.Palette.textSecondary)
                     .padding(.top, 4)

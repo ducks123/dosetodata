@@ -27,7 +27,7 @@ struct MedicationsOnboardingStepView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Step 3 of 4")
+                Text("Step 3 of 3")
                     .font(Theme.Font.heroLabel)
                     .foregroundStyle(Theme.Palette.textSecondary)
                 Text("Any medications\nyou're taking now?")
@@ -37,7 +37,7 @@ struct MedicationsOnboardingStepView: View {
                     .font(Theme.Font.body)
                     .foregroundStyle(Theme.Palette.textSecondary)
                     .padding(.top, 2)
-                Label("Stored only on your phone — never uploaded.", systemImage: "lock.fill")
+                Label("Stored only on your phone. Never uploaded.", systemImage: "lock.fill")
                     .font(Theme.Font.caption)
                     .foregroundStyle(Theme.Palette.textSecondary)
                     .padding(.top, 4)
@@ -87,14 +87,20 @@ struct MedicationsOnboardingStepView: View {
                 .padding(.vertical, 12)
             }
 
-            Button {
-                onContinue()
-            } label: {
-                Text(userMedications.isEmpty ? "Skip for now" : "Continue")
+            VStack(spacing: 8) {
+                Button {
+                    onContinue()
+                } label: {
+                    Text(userMedications.isEmpty ? "Skip for now" : "Continue")
+                }
+                .buttonStyle(PrimaryButtonStyle())
+
+                Text("You can add or change medications anytime.")
+                    .font(Theme.Font.caption)
+                    .foregroundStyle(Theme.Palette.textSecondary)
             }
-            .buttonStyle(PrimaryButtonStyle())
             .padding(.horizontal, 24)
-            .padding(.bottom, 28)
+            .padding(.bottom, 24)
         }
         .sheet(item: $pendingMed) { med in
             OnboardingMedDetailsSheet(medication: med) { dose, addToSchedule, scheduledTimes, scheduledDays in
