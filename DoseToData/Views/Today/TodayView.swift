@@ -131,6 +131,15 @@ struct TodayView: View {
                 }
                 DateStripLegend()
                 checkInCard(for: selectedDate)
+                // Tour stage 1: the nudge sits directly UNDER the check-in
+                // card so its arrow points at the right button. (It previously
+                // floated above the tab bar, right next to "Log a medication
+                // change" — testers tapped the wrong button.)
+                if prefs.onboardingTourStage == 1 && !prefs.hasCompletedOnboarding
+                    && calendar.isDateInToday(selectedDate)
+                    && !checkIns.contains(where: { calendar.isDate($0.date, inSameDayAs: selectedDate) }) {
+                    TourGuideBanner(text: "Tap \"Complete today's check-in\" to put your first point on the chart.")
+                }
                 // Legacy "Current tests" section removed in Build 81 as part
                 // of the cutover to MedChangeEvent. Existing Test records are
                 // auto-ended via TestRetirementMigration on first launch of

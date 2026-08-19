@@ -35,7 +35,6 @@ struct TourGuideBanner: View {
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
             .shadow(color: Theme.Palette.primary.opacity(0.4), radius: 12, y: 4)
         }
-        .padding(.horizontal, 20)
         .offset(y: bounce ? -7 : 2)
         .animation(.easeInOut(duration: 0.7).repeatForever(autoreverses: true), value: bounce)
         .onAppear { bounce = true }

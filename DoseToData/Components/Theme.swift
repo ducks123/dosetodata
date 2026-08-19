@@ -126,6 +126,9 @@ extension MedCategory {
         case .birthControl, .hormonal: return Theme.Palette.pastelPink
         case .thyroid: return Theme.Palette.pastelYellow
         case .glp1: return Theme.Palette.pastelPeach
+        case .moodStabilizer: return Theme.Palette.pastelYellow
+        case .pain: return Theme.Palette.pastelPeach
+        case .migraine: return Theme.Palette.pastelSky
         case .other: return Theme.Palette.divider
         }
     }
@@ -140,6 +143,9 @@ extension MedCategory {
         case .hormonal: return "leaf.fill"
         case .thyroid: return "flame.fill"
         case .glp1: return "drop.fill"
+        case .moodStabilizer: return "equal.circle.fill"
+        case .pain: return "bandage.fill"
+        case .migraine: return "brain.head.profile"
         case .other: return "capsule.fill"
         }
     }

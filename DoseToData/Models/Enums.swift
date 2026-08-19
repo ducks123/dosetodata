@@ -9,6 +9,9 @@ enum MedCategory: String, Codable, CaseIterable, Identifiable {
     case hormonal = "Hormonal"
     case thyroid = "Thyroid"
     case glp1 = "GLP1"
+    case moodStabilizer = "MoodStabilizer"
+    case pain = "Pain"
+    case migraine = "Migraine"
     case other = "Other"
 
     var id: String { rawValue }
@@ -22,7 +25,10 @@ enum MedCategory: String, Codable, CaseIterable, Identifiable {
         case .birthControl: return "Birth control"
         case .hormonal: return "Hormonal"
         case .thyroid: return "Thyroid"
-        case .glp1: return "GLP-1"
+        case .glp1: return "Weight"
+        case .moodStabilizer: return "Mood stabilizer"
+        case .pain: return "Pain"
+        case .migraine: return "Migraine"
         case .other: return "Other"
         }
     }

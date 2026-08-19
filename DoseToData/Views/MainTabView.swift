@@ -120,12 +120,8 @@ struct MainTabView: View {
     @ViewBuilder
     private var tourLayer: some View {
         switch prefs.onboardingTourStage {
-        case 1:
-            if selectedTab == .today && !hasCheckInToday {
-                bottomAligned(
-                    TourGuideBanner(text: "Tap \"Complete today's check-in\" to put your first point on the chart.")
-                )
-            }
+        // Stage 1's banner lives inside TodayView, directly under the
+        // check-in card, so its arrow points at the right button.
         case 2:
             bottomAligned(
                 TourTabTooltip(text: "Your meds are on the Schedule tab", arrowFraction: 0.5)

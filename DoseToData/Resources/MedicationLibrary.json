@@ -1,92 +1,2308 @@
 [
-  { "brandName": "Adderall IR", "genericName": "amphetamine/dextroamphetamine", "medClass": "Stimulant", "category": "ADHD", "commonDoses": ["5mg", "7.5mg", "10mg", "12.5mg", "15mg", "20mg", "30mg"], "commonSideEffects": ["Appetite suppressed", "Dry mouth", "Insomnia", "Anxiety", "Elevated heart rate"], "isExtendedRelease": false },
-  { "brandName": "Adderall XR", "genericName": "amphetamine/dextroamphetamine ER", "medClass": "Stimulant", "category": "ADHD", "commonDoses": ["5mg", "10mg", "15mg", "20mg", "25mg", "30mg"], "commonSideEffects": ["Appetite suppressed", "Dry mouth", "Insomnia", "Irritability", "Elevated heart rate"], "isExtendedRelease": true },
-  { "brandName": "Vyvanse", "genericName": "lisdexamfetamine", "medClass": "Stimulant", "category": "ADHD", "commonDoses": ["10mg", "20mg", "30mg", "40mg", "50mg", "60mg", "70mg"], "commonSideEffects": ["Appetite suppressed", "Dry mouth", "Insomnia", "Anxiety", "Headache"], "isExtendedRelease": true },
-  { "brandName": "Mydayis", "genericName": "amphetamine/dextroamphetamine ER", "medClass": "Stimulant", "category": "ADHD", "commonDoses": ["12.5mg", "25mg", "37.5mg", "50mg"], "commonSideEffects": ["Appetite suppressed", "Insomnia", "Anxiety", "Dry mouth"], "isExtendedRelease": true },
-  { "brandName": "Dexedrine IR", "genericName": "dextroamphetamine", "medClass": "Stimulant", "category": "ADHD", "commonDoses": ["5mg", "7.5mg", "10mg", "15mg"], "commonSideEffects": ["Appetite suppressed", "Dry mouth", "Insomnia", "Irritability"], "isExtendedRelease": false },
-  { "brandName": "Dexedrine Spansule", "genericName": "dextroamphetamine ER", "medClass": "Stimulant", "category": "ADHD", "commonDoses": ["5mg", "10mg", "15mg"], "commonSideEffects": ["Appetite suppressed", "Dry mouth", "Insomnia", "Anxiety"], "isExtendedRelease": true },
-  { "brandName": "Ritalin IR", "genericName": "methylphenidate", "medClass": "Stimulant", "category": "ADHD", "commonDoses": ["5mg", "10mg", "15mg", "20mg"], "commonSideEffects": ["Appetite suppressed", "Insomnia", "Headache", "Anxiety"], "isExtendedRelease": false },
-  { "brandName": "Ritalin LA", "genericName": "methylphenidate ER", "medClass": "Stimulant", "category": "ADHD", "commonDoses": ["10mg", "20mg", "30mg", "40mg", "60mg"], "commonSideEffects": ["Appetite suppressed", "Insomnia", "Headache", "Anxiety"], "isExtendedRelease": true },
-  { "brandName": "Concerta", "genericName": "methylphenidate ER", "medClass": "Stimulant", "category": "ADHD", "commonDoses": ["18mg", "27mg", "36mg", "54mg", "72mg"], "commonSideEffects": ["Appetite suppressed", "Insomnia", "Headache", "Dry mouth", "Elevated heart rate"], "isExtendedRelease": true },
-  { "brandName": "Focalin IR", "genericName": "dexmethylphenidate", "medClass": "Stimulant", "category": "ADHD", "commonDoses": ["2.5mg", "5mg", "10mg"], "commonSideEffects": ["Appetite suppressed", "Insomnia", "Headache", "Anxiety"], "isExtendedRelease": false },
-  { "brandName": "Focalin XR", "genericName": "dexmethylphenidate ER", "medClass": "Stimulant", "category": "ADHD", "commonDoses": ["5mg", "10mg", "15mg", "20mg", "25mg", "30mg", "35mg", "40mg"], "commonSideEffects": ["Appetite suppressed", "Insomnia", "Headache", "Anxiety"], "isExtendedRelease": true },
-  { "brandName": "Jornay PM", "genericName": "methylphenidate ER (evening-dosed)", "medClass": "Stimulant", "category": "ADHD", "commonDoses": ["20mg", "40mg", "60mg", "80mg", "100mg"], "commonSideEffects": ["Appetite suppressed", "Insomnia", "Headache"], "isExtendedRelease": true },
-  { "brandName": "Azstarys", "genericName": "serdexmethylphenidate/dexmethylphenidate", "medClass": "Stimulant", "category": "ADHD", "commonDoses": ["26.1/5.2mg", "39.2/7.8mg", "52.3/10.4mg"], "commonSideEffects": ["Appetite suppressed", "Insomnia", "Anxiety"], "isExtendedRelease": true },
-  { "brandName": "Daytrana", "genericName": "methylphenidate transdermal", "medClass": "Stimulant", "category": "ADHD", "commonDoses": ["10mg", "15mg", "20mg", "30mg"], "commonSideEffects": ["Appetite suppressed", "Skin irritation", "Insomnia", "Headache"], "isExtendedRelease": true },
-
-  { "brandName": "Strattera", "genericName": "atomoxetine", "medClass": "Non-stimulant", "category": "ADHD", "commonDoses": ["10mg", "18mg", "25mg", "40mg", "60mg", "80mg", "100mg"], "commonSideEffects": ["Nausea", "Fatigue", "Dry mouth", "Decreased appetite", "Elevated heart rate"], "isExtendedRelease": false },
-  { "brandName": "Qelbree", "genericName": "viloxazine", "medClass": "Non-stimulant", "category": "ADHD", "commonDoses": ["100mg", "150mg", "200mg"], "commonSideEffects": ["Fatigue", "Nausea", "Decreased appetite", "Headache"], "isExtendedRelease": true },
-  { "brandName": "Intuniv", "genericName": "guanfacine ER", "medClass": "Non-stimulant", "category": "ADHD", "commonDoses": ["1mg", "2mg", "3mg", "4mg"], "commonSideEffects": ["Drowsiness", "Fatigue", "Low blood pressure", "Dry mouth"], "isExtendedRelease": true },
-  { "brandName": "Kapvay", "genericName": "clonidine ER", "medClass": "Non-stimulant", "category": "ADHD", "commonDoses": ["0.1mg", "0.2mg"], "commonSideEffects": ["Drowsiness", "Fatigue", "Dry mouth", "Low blood pressure"], "isExtendedRelease": true },
-  { "brandName": "Wellbutrin XL", "genericName": "bupropion ER", "medClass": "Atypical Antidepressant", "category": "ADHD", "commonDoses": ["150mg", "300mg", "450mg"], "commonSideEffects": ["Insomnia", "Dry mouth", "Headache", "Anxiety"], "isExtendedRelease": true },
-  { "brandName": "Catapres", "genericName": "clonidine", "medClass": "Non-stimulant", "category": "ADHD", "commonDoses": ["0.1mg", "0.2mg", "0.3mg"], "commonSideEffects": ["Drowsiness", "Dry mouth", "Low blood pressure"], "isExtendedRelease": false },
-
-  { "brandName": "Lexapro", "genericName": "escitalopram", "medClass": "SSRI", "category": "Depression", "commonDoses": ["5mg", "10mg", "20mg"], "commonSideEffects": ["Nausea", "Drowsiness", "Sexual dysfunction", "Dry mouth", "Fatigue"], "isExtendedRelease": false },
-  { "brandName": "Zoloft", "genericName": "sertraline", "medClass": "SSRI", "category": "Depression", "commonDoses": ["25mg", "50mg", "100mg", "150mg", "200mg"], "commonSideEffects": ["Nausea", "Diarrhea", "Sexual dysfunction", "Insomnia", "Dry mouth"], "isExtendedRelease": false },
-  { "brandName": "Prozac", "genericName": "fluoxetine", "medClass": "SSRI", "category": "Depression", "commonDoses": ["10mg", "20mg", "40mg", "60mg"], "commonSideEffects": ["Nausea", "Insomnia", "Sexual dysfunction", "Anxiety", "Headache"], "isExtendedRelease": false },
-  { "brandName": "Celexa", "genericName": "citalopram", "medClass": "SSRI", "category": "Depression", "commonDoses": ["10mg", "20mg", "40mg"], "commonSideEffects": ["Nausea", "Drowsiness", "Sexual dysfunction", "Dry mouth"], "isExtendedRelease": false },
-  { "brandName": "Paxil", "genericName": "paroxetine", "medClass": "SSRI", "category": "Depression", "commonDoses": ["10mg", "20mg", "30mg", "40mg"], "commonSideEffects": ["Nausea", "Drowsiness", "Sexual dysfunction", "Weight gain", "Dry mouth"], "isExtendedRelease": false },
-  { "brandName": "Luvox", "genericName": "fluvoxamine", "medClass": "SSRI", "category": "Depression", "commonDoses": ["25mg", "50mg", "100mg", "150mg", "200mg"], "commonSideEffects": ["Nausea", "Drowsiness", "Insomnia", "Dry mouth"], "isExtendedRelease": false },
-  { "brandName": "Viibryd", "genericName": "vilazodone", "medClass": "SSRI/5-HT1A", "category": "Depression", "commonDoses": ["10mg", "20mg", "40mg"], "commonSideEffects": ["Nausea", "Diarrhea", "Headache"], "isExtendedRelease": false },
-
-  { "brandName": "Effexor XR", "genericName": "venlafaxine ER", "medClass": "SNRI", "category": "Depression", "commonDoses": ["37.5mg", "75mg", "150mg", "225mg"], "commonSideEffects": ["Nausea", "Dry mouth", "Insomnia", "Elevated blood pressure", "Sexual dysfunction"], "isExtendedRelease": true },
-  { "brandName": "Cymbalta", "genericName": "duloxetine", "medClass": "SNRI", "category": "Depression", "commonDoses": ["20mg", "30mg", "60mg", "90mg", "120mg"], "commonSideEffects": ["Nausea", "Dry mouth", "Fatigue", "Insomnia", "Dizziness"], "isExtendedRelease": false },
-  { "brandName": "Pristiq", "genericName": "desvenlafaxine", "medClass": "SNRI", "category": "Depression", "commonDoses": ["25mg", "50mg", "100mg"], "commonSideEffects": ["Nausea", "Dry mouth", "Headache", "Insomnia"], "isExtendedRelease": true },
-
-  { "brandName": "Wellbutrin SR", "genericName": "bupropion SR", "medClass": "Atypical Antidepressant", "category": "Depression", "commonDoses": ["100mg", "150mg", "200mg"], "commonSideEffects": ["Insomnia", "Dry mouth", "Headache", "Anxiety"], "isExtendedRelease": true },
-  { "brandName": "Trintellix", "genericName": "vortioxetine", "medClass": "Atypical Antidepressant", "category": "Depression", "commonDoses": ["5mg", "10mg", "20mg"], "commonSideEffects": ["Nausea", "Dry mouth", "Dizziness", "Headache"], "isExtendedRelease": false },
-  { "brandName": "Remeron", "genericName": "mirtazapine", "medClass": "Atypical Antidepressant", "category": "Depression", "commonDoses": ["7.5mg", "15mg", "30mg", "45mg"], "commonSideEffects": ["Drowsiness", "Weight gain", "Dry mouth", "Increased appetite"], "isExtendedRelease": false },
-  { "brandName": "Auvelity", "genericName": "dextromethorphan/bupropion", "medClass": "Atypical Antidepressant", "category": "Depression", "commonDoses": ["45/105mg"], "commonSideEffects": ["Dizziness", "Headache", "Dry mouth", "Anxiety"], "isExtendedRelease": true },
-
-  { "brandName": "Xanax", "genericName": "alprazolam", "medClass": "Benzodiazepine", "category": "Anxiety", "commonDoses": ["0.25mg", "0.5mg", "1mg", "2mg"], "commonSideEffects": ["Drowsiness", "Fatigue", "Memory issues", "Dependence risk"], "isExtendedRelease": false },
-  { "brandName": "Klonopin", "genericName": "clonazepam", "medClass": "Benzodiazepine", "category": "Anxiety", "commonDoses": ["0.25mg", "0.5mg", "1mg", "2mg"], "commonSideEffects": ["Drowsiness", "Fatigue", "Memory issues", "Dependence risk"], "isExtendedRelease": false },
-  { "brandName": "Ativan", "genericName": "lorazepam", "medClass": "Benzodiazepine", "category": "Anxiety", "commonDoses": ["0.5mg", "1mg", "2mg"], "commonSideEffects": ["Drowsiness", "Fatigue", "Memory issues", "Dependence risk"], "isExtendedRelease": false },
-  { "brandName": "Valium", "genericName": "diazepam", "medClass": "Benzodiazepine", "category": "Anxiety", "commonDoses": ["2mg", "5mg", "10mg"], "commonSideEffects": ["Drowsiness", "Fatigue", "Memory issues", "Dependence risk"], "isExtendedRelease": false },
-  { "brandName": "Buspar", "genericName": "buspirone", "medClass": "Anxiolytic", "category": "Anxiety", "commonDoses": ["5mg", "7.5mg", "10mg", "15mg", "30mg"], "commonSideEffects": ["Dizziness", "Nausea", "Headache"], "isExtendedRelease": false },
-  { "brandName": "Vistaril", "genericName": "hydroxyzine", "medClass": "Antihistamine", "category": "Anxiety", "commonDoses": ["10mg", "25mg", "50mg", "100mg"], "commonSideEffects": ["Drowsiness", "Dry mouth", "Dizziness"], "isExtendedRelease": false },
-  { "brandName": "Propranolol", "genericName": "propranolol", "medClass": "Beta blocker", "category": "Anxiety", "commonDoses": ["10mg", "20mg", "40mg", "60mg", "80mg"], "commonSideEffects": ["Fatigue", "Low blood pressure", "Cold hands", "Slow heart rate"], "isExtendedRelease": false },
-
-  { "brandName": "Ambien", "genericName": "zolpidem", "medClass": "Z-drug", "category": "Sleep", "commonDoses": ["5mg", "10mg"], "commonSideEffects": ["Drowsiness", "Dizziness", "Memory issues", "Parasomnia"], "isExtendedRelease": false },
-  { "brandName": "Lunesta", "genericName": "eszopiclone", "medClass": "Z-drug", "category": "Sleep", "commonDoses": ["1mg", "2mg", "3mg"], "commonSideEffects": ["Metallic taste", "Drowsiness", "Dizziness"], "isExtendedRelease": false },
-  { "brandName": "Trazodone", "genericName": "trazodone", "medClass": "Atypical Antidepressant", "category": "Sleep", "commonDoses": ["25mg", "50mg", "100mg", "150mg"], "commonSideEffects": ["Drowsiness", "Dry mouth", "Dizziness", "Morning grogginess"], "isExtendedRelease": false },
-  { "brandName": "Melatonin", "genericName": "melatonin", "medClass": "Supplement", "category": "Sleep", "commonDoses": ["0.5mg", "1mg", "3mg", "5mg", "10mg"], "commonSideEffects": ["Morning grogginess", "Vivid dreams", "Headache"], "isExtendedRelease": false },
-  { "brandName": "Belsomra", "genericName": "suvorexant", "medClass": "Orexin antagonist", "category": "Sleep", "commonDoses": ["5mg", "10mg", "15mg", "20mg"], "commonSideEffects": ["Drowsiness", "Headache", "Dry mouth"], "isExtendedRelease": false },
-  { "brandName": "Sonata", "genericName": "zaleplon", "medClass": "Z-drug", "category": "Sleep", "commonDoses": ["5mg", "10mg"], "commonSideEffects": ["Drowsiness", "Headache"], "isExtendedRelease": false },
-  { "brandName": "Rozerem", "genericName": "ramelteon", "medClass": "Melatonin agonist", "category": "Sleep", "commonDoses": ["8mg"], "commonSideEffects": ["Drowsiness", "Fatigue", "Dizziness"], "isExtendedRelease": false },
-  { "brandName": "Quviviq", "genericName": "daridorexant", "medClass": "Orexin antagonist", "category": "Sleep", "commonDoses": ["25mg", "50mg"], "commonSideEffects": ["Headache", "Drowsiness"], "isExtendedRelease": false },
-
-  { "brandName": "Loestrin", "genericName": "norethindrone/ethinyl estradiol", "medClass": "Combined oral contraceptive", "category": "BirthControl", "commonDoses": ["1/20", "1.5/30"], "commonSideEffects": ["Nausea", "Breast tenderness", "Mood changes", "Spotting"], "isExtendedRelease": false },
-  { "brandName": "Yaz", "genericName": "drospirenone/ethinyl estradiol", "medClass": "Combined oral contraceptive", "category": "BirthControl", "commonDoses": ["3/0.02"], "commonSideEffects": ["Nausea", "Breast tenderness", "Mood changes"], "isExtendedRelease": false },
-  { "brandName": "Junel", "genericName": "norethindrone/ethinyl estradiol", "medClass": "Combined oral contraceptive", "category": "BirthControl", "commonDoses": ["1/20", "1.5/30"], "commonSideEffects": ["Nausea", "Breast tenderness", "Spotting"], "isExtendedRelease": false },
-  { "brandName": "Sprintec", "genericName": "norgestimate/ethinyl estradiol", "medClass": "Combined oral contraceptive", "category": "BirthControl", "commonDoses": ["0.25/35"], "commonSideEffects": ["Nausea", "Headache", "Spotting"], "isExtendedRelease": false },
-  { "brandName": "Lo Loestrin", "genericName": "norethindrone/ethinyl estradiol", "medClass": "Combined oral contraceptive", "category": "BirthControl", "commonDoses": ["1/10"], "commonSideEffects": ["Nausea", "Breast tenderness", "Spotting"], "isExtendedRelease": false },
-  { "brandName": "Tri-Sprintec", "genericName": "norgestimate/ethinyl estradiol triphasic", "medClass": "Combined oral contraceptive", "category": "BirthControl", "commonDoses": ["0.18-0.215-0.25/35"], "commonSideEffects": ["Nausea", "Headache", "Spotting"], "isExtendedRelease": false },
-  { "brandName": "Mirena", "genericName": "levonorgestrel IUD", "medClass": "IUD", "category": "BirthControl", "commonDoses": ["52mg"], "commonSideEffects": ["Spotting", "Cramping", "Mood changes"], "isExtendedRelease": true },
-  { "brandName": "Nexplanon", "genericName": "etonogestrel implant", "medClass": "Implant", "category": "BirthControl", "commonDoses": ["68mg"], "commonSideEffects": ["Spotting", "Weight gain", "Mood changes", "Headache"], "isExtendedRelease": true },
-  { "brandName": "NuvaRing", "genericName": "etonogestrel/ethinyl estradiol", "medClass": "Vaginal ring", "category": "BirthControl", "commonDoses": ["standard"], "commonSideEffects": ["Nausea", "Breast tenderness", "Headache"], "isExtendedRelease": false },
-  { "brandName": "Depo-Provera", "genericName": "medroxyprogesterone", "medClass": "Injectable", "category": "BirthControl", "commonDoses": ["150mg"], "commonSideEffects": ["Weight gain", "Irregular bleeding", "Mood changes"], "isExtendedRelease": true },
-  { "brandName": "Slynd", "genericName": "drospirenone", "medClass": "Progestin-only pill", "category": "BirthControl", "commonDoses": ["4mg"], "commonSideEffects": ["Irregular bleeding", "Headache", "Breast tenderness"], "isExtendedRelease": false },
-
-  { "brandName": "Estradiol patch", "genericName": "estradiol transdermal", "medClass": "Estrogen", "category": "Hormonal", "commonDoses": ["0.025mg", "0.0375mg", "0.05mg", "0.075mg", "0.1mg"], "commonSideEffects": ["Breast tenderness", "Nausea", "Headache", "Skin irritation"], "isExtendedRelease": true },
-  { "brandName": "Premarin", "genericName": "conjugated estrogens", "medClass": "Estrogen", "category": "Hormonal", "commonDoses": ["0.3mg", "0.45mg", "0.625mg", "0.9mg", "1.25mg"], "commonSideEffects": ["Breast tenderness", "Nausea", "Headache"], "isExtendedRelease": false },
-  { "brandName": "Provera", "genericName": "medroxyprogesterone", "medClass": "Progestin", "category": "Hormonal", "commonDoses": ["2.5mg", "5mg", "10mg"], "commonSideEffects": ["Mood changes", "Headache", "Breast tenderness"], "isExtendedRelease": false },
-  { "brandName": "Prometrium", "genericName": "progesterone (micronized)", "medClass": "Progestin", "category": "Hormonal", "commonDoses": ["100mg", "200mg"], "commonSideEffects": ["Drowsiness", "Dizziness", "Breast tenderness"], "isExtendedRelease": false },
-  { "brandName": "Climara", "genericName": "estradiol transdermal", "medClass": "Estrogen", "category": "Hormonal", "commonDoses": ["0.025mg", "0.0375mg", "0.05mg", "0.075mg", "0.1mg"], "commonSideEffects": ["Breast tenderness", "Skin irritation", "Headache"], "isExtendedRelease": true },
-  { "brandName": "Estrogel", "genericName": "estradiol gel", "medClass": "Estrogen", "category": "Hormonal", "commonDoses": ["0.06%"], "commonSideEffects": ["Breast tenderness", "Headache", "Nausea"], "isExtendedRelease": false },
-  { "brandName": "Vagifem", "genericName": "estradiol vaginal tablet", "medClass": "Estrogen", "category": "Hormonal", "commonDoses": ["10mcg"], "commonSideEffects": ["Vaginal irritation", "Headache"], "isExtendedRelease": false },
-  { "brandName": "Estring", "genericName": "estradiol vaginal ring", "medClass": "Estrogen", "category": "Hormonal", "commonDoses": ["2mg"], "commonSideEffects": ["Vaginal irritation", "Headache"], "isExtendedRelease": true },
-  { "brandName": "Estrace", "genericName": "estradiol", "medClass": "Estrogen", "category": "Hormonal", "commonDoses": ["0.5mg", "1mg", "2mg"], "commonSideEffects": ["Breast tenderness", "Headache", "Nausea"], "isExtendedRelease": false },
-
-  { "brandName": "Ozempic", "genericName": "semaglutide", "medClass": "GLP-1 agonist", "category": "GLP1", "commonDoses": ["0.25mg", "0.5mg", "1mg", "2mg"], "commonSideEffects": ["Nausea", "Diarrhea", "Constipation", "Decreased appetite"], "isExtendedRelease": true },
-  { "brandName": "Wegovy", "genericName": "semaglutide", "medClass": "GLP-1 agonist", "category": "GLP1", "commonDoses": ["0.25mg", "0.5mg", "1mg", "1.7mg", "2.4mg"], "commonSideEffects": ["Nausea", "Diarrhea", "Constipation", "Fatigue"], "isExtendedRelease": true },
-  { "brandName": "Mounjaro", "genericName": "tirzepatide", "medClass": "GLP-1/GIP agonist", "category": "GLP1", "commonDoses": ["2.5mg", "5mg", "7.5mg", "10mg", "12.5mg", "15mg"], "commonSideEffects": ["Nausea", "Diarrhea", "Vomiting", "Decreased appetite"], "isExtendedRelease": true },
-  { "brandName": "Zepbound", "genericName": "tirzepatide", "medClass": "GLP-1/GIP agonist", "category": "GLP1", "commonDoses": ["2.5mg", "5mg", "7.5mg", "10mg", "12.5mg", "15mg"], "commonSideEffects": ["Nausea", "Diarrhea", "Vomiting", "Fatigue"], "isExtendedRelease": true },
-  { "brandName": "Rybelsus", "genericName": "semaglutide (oral)", "medClass": "GLP-1 agonist", "category": "GLP1", "commonDoses": ["3mg", "7mg", "14mg"], "commonSideEffects": ["Nausea", "Diarrhea", "Decreased appetite"], "isExtendedRelease": false },
-
-  { "brandName": "Synthroid", "genericName": "levothyroxine", "medClass": "Thyroid hormone", "category": "Thyroid", "commonDoses": ["25mcg", "50mcg", "75mcg", "100mcg", "125mcg", "150mcg", "175mcg"], "commonSideEffects": ["Palpitations", "Weight changes", "Anxiety", "Insomnia"], "isExtendedRelease": false },
-  { "brandName": "Levoxyl", "genericName": "levothyroxine", "medClass": "Thyroid hormone", "category": "Thyroid", "commonDoses": ["25mcg", "50mcg", "75mcg", "100mcg", "125mcg", "150mcg"], "commonSideEffects": ["Palpitations", "Weight changes", "Anxiety"], "isExtendedRelease": false },
-  { "brandName": "Armour Thyroid", "genericName": "desiccated thyroid extract", "medClass": "Thyroid hormone", "category": "Thyroid", "commonDoses": ["15mg", "30mg", "60mg", "90mg", "120mg"], "commonSideEffects": ["Palpitations", "Anxiety", "Insomnia", "Sweating"], "isExtendedRelease": false },
-  { "brandName": "Cytomel", "genericName": "liothyronine (T3)", "medClass": "Thyroid hormone", "category": "Thyroid", "commonDoses": ["5mcg", "25mcg", "50mcg"], "commonSideEffects": ["Palpitations", "Anxiety", "Insomnia", "Sweating"], "isExtendedRelease": false },
-  { "brandName": "Tirosint", "genericName": "levothyroxine (gel cap)", "medClass": "Thyroid hormone", "category": "Thyroid", "commonDoses": ["13mcg", "25mcg", "50mcg", "75mcg", "100mcg", "125mcg"], "commonSideEffects": ["Palpitations", "Weight changes", "Anxiety"], "isExtendedRelease": false },
-  { "brandName": "NP Thyroid", "genericName": "desiccated thyroid extract", "medClass": "Thyroid hormone", "category": "Thyroid", "commonDoses": ["15mg", "30mg", "60mg", "90mg", "120mg"], "commonSideEffects": ["Palpitations", "Anxiety", "Insomnia"], "isExtendedRelease": false }
+  {
+    "brandName": "Adderall IR",
+    "genericName": "amphetamine/dextroamphetamine",
+    "medClass": "Stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "5mg",
+      "7.5mg",
+      "10mg",
+      "12.5mg",
+      "15mg",
+      "20mg",
+      "30mg"
+    ],
+    "commonSideEffects": [
+      "Appetite suppressed",
+      "Dry mouth",
+      "Insomnia",
+      "Anxiety",
+      "Elevated heart rate"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Adderall XR",
+    "genericName": "amphetamine/dextroamphetamine ER",
+    "medClass": "Stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "5mg",
+      "10mg",
+      "15mg",
+      "20mg",
+      "25mg",
+      "30mg"
+    ],
+    "commonSideEffects": [
+      "Appetite suppressed",
+      "Dry mouth",
+      "Insomnia",
+      "Irritability",
+      "Elevated heart rate"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Vyvanse",
+    "genericName": "lisdexamfetamine",
+    "medClass": "Stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "10mg",
+      "20mg",
+      "30mg",
+      "40mg",
+      "50mg",
+      "60mg",
+      "70mg"
+    ],
+    "commonSideEffects": [
+      "Appetite suppressed",
+      "Dry mouth",
+      "Insomnia",
+      "Anxiety",
+      "Headache"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Mydayis",
+    "genericName": "amphetamine/dextroamphetamine ER",
+    "medClass": "Stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "12.5mg",
+      "25mg",
+      "37.5mg",
+      "50mg"
+    ],
+    "commonSideEffects": [
+      "Appetite suppressed",
+      "Insomnia",
+      "Anxiety",
+      "Dry mouth"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Dexedrine IR",
+    "genericName": "dextroamphetamine",
+    "medClass": "Stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "5mg",
+      "7.5mg",
+      "10mg",
+      "15mg"
+    ],
+    "commonSideEffects": [
+      "Appetite suppressed",
+      "Dry mouth",
+      "Insomnia",
+      "Irritability"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Dexedrine Spansule",
+    "genericName": "dextroamphetamine ER",
+    "medClass": "Stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "5mg",
+      "10mg",
+      "15mg"
+    ],
+    "commonSideEffects": [
+      "Appetite suppressed",
+      "Dry mouth",
+      "Insomnia",
+      "Anxiety"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Ritalin IR",
+    "genericName": "methylphenidate",
+    "medClass": "Stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "5mg",
+      "10mg",
+      "15mg",
+      "20mg"
+    ],
+    "commonSideEffects": [
+      "Appetite suppressed",
+      "Insomnia",
+      "Headache",
+      "Anxiety"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Ritalin LA",
+    "genericName": "methylphenidate ER",
+    "medClass": "Stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "10mg",
+      "20mg",
+      "30mg",
+      "40mg",
+      "60mg"
+    ],
+    "commonSideEffects": [
+      "Appetite suppressed",
+      "Insomnia",
+      "Headache",
+      "Anxiety"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Concerta",
+    "genericName": "methylphenidate ER",
+    "medClass": "Stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "18mg",
+      "27mg",
+      "36mg",
+      "54mg",
+      "72mg"
+    ],
+    "commonSideEffects": [
+      "Appetite suppressed",
+      "Insomnia",
+      "Headache",
+      "Dry mouth",
+      "Elevated heart rate"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Focalin IR",
+    "genericName": "dexmethylphenidate",
+    "medClass": "Stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "2.5mg",
+      "5mg",
+      "10mg"
+    ],
+    "commonSideEffects": [
+      "Appetite suppressed",
+      "Insomnia",
+      "Headache",
+      "Anxiety"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Focalin XR",
+    "genericName": "dexmethylphenidate ER",
+    "medClass": "Stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "5mg",
+      "10mg",
+      "15mg",
+      "20mg",
+      "25mg",
+      "30mg",
+      "35mg",
+      "40mg"
+    ],
+    "commonSideEffects": [
+      "Appetite suppressed",
+      "Insomnia",
+      "Headache",
+      "Anxiety"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Jornay PM",
+    "genericName": "methylphenidate ER (evening-dosed)",
+    "medClass": "Stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "20mg",
+      "40mg",
+      "60mg",
+      "80mg",
+      "100mg"
+    ],
+    "commonSideEffects": [
+      "Appetite suppressed",
+      "Insomnia",
+      "Headache"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Azstarys",
+    "genericName": "serdexmethylphenidate/dexmethylphenidate",
+    "medClass": "Stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "26.1/5.2mg",
+      "39.2/7.8mg",
+      "52.3/10.4mg"
+    ],
+    "commonSideEffects": [
+      "Appetite suppressed",
+      "Insomnia",
+      "Anxiety"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Daytrana",
+    "genericName": "methylphenidate transdermal",
+    "medClass": "Stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "10mg",
+      "15mg",
+      "20mg",
+      "30mg"
+    ],
+    "commonSideEffects": [
+      "Appetite suppressed",
+      "Skin irritation",
+      "Insomnia",
+      "Headache"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Strattera",
+    "genericName": "atomoxetine",
+    "medClass": "Non-stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "10mg",
+      "18mg",
+      "25mg",
+      "40mg",
+      "60mg",
+      "80mg",
+      "100mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Fatigue",
+      "Dry mouth",
+      "Decreased appetite",
+      "Elevated heart rate"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Qelbree",
+    "genericName": "viloxazine",
+    "medClass": "Non-stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "100mg",
+      "150mg",
+      "200mg"
+    ],
+    "commonSideEffects": [
+      "Fatigue",
+      "Nausea",
+      "Decreased appetite",
+      "Headache"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Intuniv",
+    "genericName": "guanfacine ER",
+    "medClass": "Non-stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "1mg",
+      "2mg",
+      "3mg",
+      "4mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Fatigue",
+      "Low blood pressure",
+      "Dry mouth"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Kapvay",
+    "genericName": "clonidine ER",
+    "medClass": "Non-stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "0.1mg",
+      "0.2mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Fatigue",
+      "Dry mouth",
+      "Low blood pressure"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Wellbutrin XL",
+    "genericName": "bupropion ER",
+    "medClass": "Atypical Antidepressant",
+    "category": "ADHD",
+    "commonDoses": [
+      "150mg",
+      "300mg",
+      "450mg"
+    ],
+    "commonSideEffects": [
+      "Insomnia",
+      "Dry mouth",
+      "Headache",
+      "Anxiety"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Catapres",
+    "genericName": "clonidine",
+    "medClass": "Non-stimulant",
+    "category": "ADHD",
+    "commonDoses": [
+      "0.1mg",
+      "0.2mg",
+      "0.3mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Dry mouth",
+      "Low blood pressure"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Lexapro",
+    "genericName": "escitalopram",
+    "medClass": "SSRI",
+    "category": "Depression",
+    "commonDoses": [
+      "5mg",
+      "10mg",
+      "20mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Drowsiness",
+      "Sexual dysfunction",
+      "Dry mouth",
+      "Fatigue"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Zoloft",
+    "genericName": "sertraline",
+    "medClass": "SSRI",
+    "category": "Depression",
+    "commonDoses": [
+      "25mg",
+      "50mg",
+      "100mg",
+      "150mg",
+      "200mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Diarrhea",
+      "Sexual dysfunction",
+      "Insomnia",
+      "Dry mouth"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Prozac",
+    "genericName": "fluoxetine",
+    "medClass": "SSRI",
+    "category": "Depression",
+    "commonDoses": [
+      "10mg",
+      "20mg",
+      "40mg",
+      "60mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Insomnia",
+      "Sexual dysfunction",
+      "Anxiety",
+      "Headache"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Celexa",
+    "genericName": "citalopram",
+    "medClass": "SSRI",
+    "category": "Depression",
+    "commonDoses": [
+      "10mg",
+      "20mg",
+      "40mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Drowsiness",
+      "Sexual dysfunction",
+      "Dry mouth"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Paxil",
+    "genericName": "paroxetine",
+    "medClass": "SSRI",
+    "category": "Depression",
+    "commonDoses": [
+      "10mg",
+      "20mg",
+      "30mg",
+      "40mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Drowsiness",
+      "Sexual dysfunction",
+      "Weight gain",
+      "Dry mouth"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Luvox",
+    "genericName": "fluvoxamine",
+    "medClass": "SSRI",
+    "category": "Depression",
+    "commonDoses": [
+      "25mg",
+      "50mg",
+      "100mg",
+      "150mg",
+      "200mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Drowsiness",
+      "Insomnia",
+      "Dry mouth"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Viibryd",
+    "genericName": "vilazodone",
+    "medClass": "SSRI/5-HT1A",
+    "category": "Depression",
+    "commonDoses": [
+      "10mg",
+      "20mg",
+      "40mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Diarrhea",
+      "Headache"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Effexor XR",
+    "genericName": "venlafaxine ER",
+    "medClass": "SNRI",
+    "category": "Depression",
+    "commonDoses": [
+      "37.5mg",
+      "75mg",
+      "150mg",
+      "225mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Dry mouth",
+      "Insomnia",
+      "Elevated blood pressure",
+      "Sexual dysfunction"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Cymbalta",
+    "genericName": "duloxetine",
+    "medClass": "SNRI",
+    "category": "Depression",
+    "commonDoses": [
+      "20mg",
+      "30mg",
+      "60mg",
+      "90mg",
+      "120mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Dry mouth",
+      "Fatigue",
+      "Insomnia",
+      "Dizziness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Pristiq",
+    "genericName": "desvenlafaxine",
+    "medClass": "SNRI",
+    "category": "Depression",
+    "commonDoses": [
+      "25mg",
+      "50mg",
+      "100mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Dry mouth",
+      "Headache",
+      "Insomnia"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Wellbutrin SR",
+    "genericName": "bupropion SR",
+    "medClass": "Atypical Antidepressant",
+    "category": "Depression",
+    "commonDoses": [
+      "100mg",
+      "150mg",
+      "200mg"
+    ],
+    "commonSideEffects": [
+      "Insomnia",
+      "Dry mouth",
+      "Headache",
+      "Anxiety"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Trintellix",
+    "genericName": "vortioxetine",
+    "medClass": "Atypical Antidepressant",
+    "category": "Depression",
+    "commonDoses": [
+      "5mg",
+      "10mg",
+      "20mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Dry mouth",
+      "Dizziness",
+      "Headache"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Remeron",
+    "genericName": "mirtazapine",
+    "medClass": "Atypical Antidepressant",
+    "category": "Depression",
+    "commonDoses": [
+      "7.5mg",
+      "15mg",
+      "30mg",
+      "45mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Weight gain",
+      "Dry mouth",
+      "Increased appetite"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Auvelity",
+    "genericName": "dextromethorphan/bupropion",
+    "medClass": "Atypical Antidepressant",
+    "category": "Depression",
+    "commonDoses": [
+      "45/105mg"
+    ],
+    "commonSideEffects": [
+      "Dizziness",
+      "Headache",
+      "Dry mouth",
+      "Anxiety"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Xanax",
+    "genericName": "alprazolam",
+    "medClass": "Benzodiazepine",
+    "category": "Anxiety",
+    "commonDoses": [
+      "0.25mg",
+      "0.5mg",
+      "1mg",
+      "2mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Fatigue",
+      "Memory issues",
+      "Dependence risk"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Klonopin",
+    "genericName": "clonazepam",
+    "medClass": "Benzodiazepine",
+    "category": "Anxiety",
+    "commonDoses": [
+      "0.25mg",
+      "0.5mg",
+      "1mg",
+      "2mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Fatigue",
+      "Memory issues",
+      "Dependence risk"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Ativan",
+    "genericName": "lorazepam",
+    "medClass": "Benzodiazepine",
+    "category": "Anxiety",
+    "commonDoses": [
+      "0.5mg",
+      "1mg",
+      "2mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Fatigue",
+      "Memory issues",
+      "Dependence risk"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Valium",
+    "genericName": "diazepam",
+    "medClass": "Benzodiazepine",
+    "category": "Anxiety",
+    "commonDoses": [
+      "2mg",
+      "5mg",
+      "10mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Fatigue",
+      "Memory issues",
+      "Dependence risk"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Buspar",
+    "genericName": "buspirone",
+    "medClass": "Anxiolytic",
+    "category": "Anxiety",
+    "commonDoses": [
+      "5mg",
+      "7.5mg",
+      "10mg",
+      "15mg",
+      "30mg"
+    ],
+    "commonSideEffects": [
+      "Dizziness",
+      "Nausea",
+      "Headache"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Vistaril",
+    "genericName": "hydroxyzine",
+    "medClass": "Antihistamine",
+    "category": "Anxiety",
+    "commonDoses": [
+      "10mg",
+      "25mg",
+      "50mg",
+      "100mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Dry mouth",
+      "Dizziness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Propranolol",
+    "genericName": "propranolol",
+    "medClass": "Beta blocker",
+    "category": "Anxiety",
+    "commonDoses": [
+      "10mg",
+      "20mg",
+      "40mg",
+      "60mg",
+      "80mg"
+    ],
+    "commonSideEffects": [
+      "Fatigue",
+      "Low blood pressure",
+      "Cold hands",
+      "Slow heart rate"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Ambien",
+    "genericName": "zolpidem",
+    "medClass": "Z-drug",
+    "category": "Sleep",
+    "commonDoses": [
+      "5mg",
+      "10mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Dizziness",
+      "Memory issues",
+      "Parasomnia"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Lunesta",
+    "genericName": "eszopiclone",
+    "medClass": "Z-drug",
+    "category": "Sleep",
+    "commonDoses": [
+      "1mg",
+      "2mg",
+      "3mg"
+    ],
+    "commonSideEffects": [
+      "Metallic taste",
+      "Drowsiness",
+      "Dizziness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Trazodone",
+    "genericName": "trazodone",
+    "medClass": "Atypical Antidepressant",
+    "category": "Sleep",
+    "commonDoses": [
+      "25mg",
+      "50mg",
+      "100mg",
+      "150mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Dry mouth",
+      "Dizziness",
+      "Morning grogginess"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Melatonin",
+    "genericName": "melatonin",
+    "medClass": "Supplement",
+    "category": "Sleep",
+    "commonDoses": [
+      "0.5mg",
+      "1mg",
+      "3mg",
+      "5mg",
+      "10mg"
+    ],
+    "commonSideEffects": [
+      "Morning grogginess",
+      "Vivid dreams",
+      "Headache"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Belsomra",
+    "genericName": "suvorexant",
+    "medClass": "Orexin antagonist",
+    "category": "Sleep",
+    "commonDoses": [
+      "5mg",
+      "10mg",
+      "15mg",
+      "20mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Headache",
+      "Dry mouth"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Sonata",
+    "genericName": "zaleplon",
+    "medClass": "Z-drug",
+    "category": "Sleep",
+    "commonDoses": [
+      "5mg",
+      "10mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Headache"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Rozerem",
+    "genericName": "ramelteon",
+    "medClass": "Melatonin agonist",
+    "category": "Sleep",
+    "commonDoses": [
+      "8mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Fatigue",
+      "Dizziness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Quviviq",
+    "genericName": "daridorexant",
+    "medClass": "Orexin antagonist",
+    "category": "Sleep",
+    "commonDoses": [
+      "25mg",
+      "50mg"
+    ],
+    "commonSideEffects": [
+      "Headache",
+      "Drowsiness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Loestrin",
+    "genericName": "norethindrone/ethinyl estradiol",
+    "medClass": "Combined oral contraceptive",
+    "category": "BirthControl",
+    "commonDoses": [
+      "1/20",
+      "1.5/30"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Breast tenderness",
+      "Mood changes",
+      "Spotting"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Yaz",
+    "genericName": "drospirenone/ethinyl estradiol",
+    "medClass": "Combined oral contraceptive",
+    "category": "BirthControl",
+    "commonDoses": [
+      "3/0.02"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Breast tenderness",
+      "Mood changes"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Junel",
+    "genericName": "norethindrone/ethinyl estradiol",
+    "medClass": "Combined oral contraceptive",
+    "category": "BirthControl",
+    "commonDoses": [
+      "1/20",
+      "1.5/30"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Breast tenderness",
+      "Spotting"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Sprintec",
+    "genericName": "norgestimate/ethinyl estradiol",
+    "medClass": "Combined oral contraceptive",
+    "category": "BirthControl",
+    "commonDoses": [
+      "0.25/35"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Headache",
+      "Spotting"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Lo Loestrin",
+    "genericName": "norethindrone/ethinyl estradiol",
+    "medClass": "Combined oral contraceptive",
+    "category": "BirthControl",
+    "commonDoses": [
+      "1/10"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Breast tenderness",
+      "Spotting"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Tri-Sprintec",
+    "genericName": "norgestimate/ethinyl estradiol triphasic",
+    "medClass": "Combined oral contraceptive",
+    "category": "BirthControl",
+    "commonDoses": [
+      "0.18-0.215-0.25/35"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Headache",
+      "Spotting"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Mirena",
+    "genericName": "levonorgestrel IUD",
+    "medClass": "IUD",
+    "category": "BirthControl",
+    "commonDoses": [
+      "52mg"
+    ],
+    "commonSideEffects": [
+      "Spotting",
+      "Cramping",
+      "Mood changes"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Nexplanon",
+    "genericName": "etonogestrel implant",
+    "medClass": "Implant",
+    "category": "BirthControl",
+    "commonDoses": [
+      "68mg"
+    ],
+    "commonSideEffects": [
+      "Spotting",
+      "Weight gain",
+      "Mood changes",
+      "Headache"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "NuvaRing",
+    "genericName": "etonogestrel/ethinyl estradiol",
+    "medClass": "Vaginal ring",
+    "category": "BirthControl",
+    "commonDoses": [
+      "standard"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Breast tenderness",
+      "Headache"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Depo-Provera",
+    "genericName": "medroxyprogesterone",
+    "medClass": "Injectable",
+    "category": "BirthControl",
+    "commonDoses": [
+      "150mg"
+    ],
+    "commonSideEffects": [
+      "Weight gain",
+      "Irregular bleeding",
+      "Mood changes"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Slynd",
+    "genericName": "drospirenone",
+    "medClass": "Progestin-only pill",
+    "category": "BirthControl",
+    "commonDoses": [
+      "4mg"
+    ],
+    "commonSideEffects": [
+      "Irregular bleeding",
+      "Headache",
+      "Breast tenderness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Estradiol patch",
+    "genericName": "estradiol transdermal",
+    "medClass": "Estrogen",
+    "category": "Hormonal",
+    "commonDoses": [
+      "0.025mg",
+      "0.0375mg",
+      "0.05mg",
+      "0.075mg",
+      "0.1mg"
+    ],
+    "commonSideEffects": [
+      "Breast tenderness",
+      "Nausea",
+      "Headache",
+      "Skin irritation"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Premarin",
+    "genericName": "conjugated estrogens",
+    "medClass": "Estrogen",
+    "category": "Hormonal",
+    "commonDoses": [
+      "0.3mg",
+      "0.45mg",
+      "0.625mg",
+      "0.9mg",
+      "1.25mg"
+    ],
+    "commonSideEffects": [
+      "Breast tenderness",
+      "Nausea",
+      "Headache"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Provera",
+    "genericName": "medroxyprogesterone",
+    "medClass": "Progestin",
+    "category": "Hormonal",
+    "commonDoses": [
+      "2.5mg",
+      "5mg",
+      "10mg"
+    ],
+    "commonSideEffects": [
+      "Mood changes",
+      "Headache",
+      "Breast tenderness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Prometrium",
+    "genericName": "progesterone (micronized)",
+    "medClass": "Progestin",
+    "category": "Hormonal",
+    "commonDoses": [
+      "100mg",
+      "200mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Dizziness",
+      "Breast tenderness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Climara",
+    "genericName": "estradiol transdermal",
+    "medClass": "Estrogen",
+    "category": "Hormonal",
+    "commonDoses": [
+      "0.025mg",
+      "0.0375mg",
+      "0.05mg",
+      "0.075mg",
+      "0.1mg"
+    ],
+    "commonSideEffects": [
+      "Breast tenderness",
+      "Skin irritation",
+      "Headache"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Estrogel",
+    "genericName": "estradiol gel",
+    "medClass": "Estrogen",
+    "category": "Hormonal",
+    "commonDoses": [
+      "0.06%"
+    ],
+    "commonSideEffects": [
+      "Breast tenderness",
+      "Headache",
+      "Nausea"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Vagifem",
+    "genericName": "estradiol vaginal tablet",
+    "medClass": "Estrogen",
+    "category": "Hormonal",
+    "commonDoses": [
+      "10mcg"
+    ],
+    "commonSideEffects": [
+      "Vaginal irritation",
+      "Headache"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Estring",
+    "genericName": "estradiol vaginal ring",
+    "medClass": "Estrogen",
+    "category": "Hormonal",
+    "commonDoses": [
+      "2mg"
+    ],
+    "commonSideEffects": [
+      "Vaginal irritation",
+      "Headache"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Estrace",
+    "genericName": "estradiol",
+    "medClass": "Estrogen",
+    "category": "Hormonal",
+    "commonDoses": [
+      "0.5mg",
+      "1mg",
+      "2mg"
+    ],
+    "commonSideEffects": [
+      "Breast tenderness",
+      "Headache",
+      "Nausea"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Ozempic",
+    "genericName": "semaglutide",
+    "medClass": "GLP-1 agonist",
+    "category": "GLP1",
+    "commonDoses": [
+      "0.25mg",
+      "0.5mg",
+      "1mg",
+      "2mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Diarrhea",
+      "Constipation",
+      "Decreased appetite"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Wegovy",
+    "genericName": "semaglutide",
+    "medClass": "GLP-1 agonist",
+    "category": "GLP1",
+    "commonDoses": [
+      "0.25mg",
+      "0.5mg",
+      "1mg",
+      "1.7mg",
+      "2.4mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Diarrhea",
+      "Constipation",
+      "Fatigue"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Mounjaro",
+    "genericName": "tirzepatide",
+    "medClass": "GLP-1/GIP agonist",
+    "category": "GLP1",
+    "commonDoses": [
+      "2.5mg",
+      "5mg",
+      "7.5mg",
+      "10mg",
+      "12.5mg",
+      "15mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Diarrhea",
+      "Vomiting",
+      "Decreased appetite"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Zepbound",
+    "genericName": "tirzepatide",
+    "medClass": "GLP-1/GIP agonist",
+    "category": "GLP1",
+    "commonDoses": [
+      "2.5mg",
+      "5mg",
+      "7.5mg",
+      "10mg",
+      "12.5mg",
+      "15mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Diarrhea",
+      "Vomiting",
+      "Fatigue"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Rybelsus",
+    "genericName": "semaglutide (oral)",
+    "medClass": "GLP-1 agonist",
+    "category": "GLP1",
+    "commonDoses": [
+      "3mg",
+      "7mg",
+      "14mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Diarrhea",
+      "Decreased appetite"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Synthroid",
+    "genericName": "levothyroxine",
+    "medClass": "Thyroid hormone",
+    "category": "Thyroid",
+    "commonDoses": [
+      "25mcg",
+      "50mcg",
+      "75mcg",
+      "100mcg",
+      "125mcg",
+      "150mcg",
+      "175mcg"
+    ],
+    "commonSideEffects": [
+      "Palpitations",
+      "Weight changes",
+      "Anxiety",
+      "Insomnia"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Levoxyl",
+    "genericName": "levothyroxine",
+    "medClass": "Thyroid hormone",
+    "category": "Thyroid",
+    "commonDoses": [
+      "25mcg",
+      "50mcg",
+      "75mcg",
+      "100mcg",
+      "125mcg",
+      "150mcg"
+    ],
+    "commonSideEffects": [
+      "Palpitations",
+      "Weight changes",
+      "Anxiety"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Armour Thyroid",
+    "genericName": "desiccated thyroid extract",
+    "medClass": "Thyroid hormone",
+    "category": "Thyroid",
+    "commonDoses": [
+      "15mg",
+      "30mg",
+      "60mg",
+      "90mg",
+      "120mg"
+    ],
+    "commonSideEffects": [
+      "Palpitations",
+      "Anxiety",
+      "Insomnia",
+      "Sweating"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Cytomel",
+    "genericName": "liothyronine (T3)",
+    "medClass": "Thyroid hormone",
+    "category": "Thyroid",
+    "commonDoses": [
+      "5mcg",
+      "25mcg",
+      "50mcg"
+    ],
+    "commonSideEffects": [
+      "Palpitations",
+      "Anxiety",
+      "Insomnia",
+      "Sweating"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Tirosint",
+    "genericName": "levothyroxine (gel cap)",
+    "medClass": "Thyroid hormone",
+    "category": "Thyroid",
+    "commonDoses": [
+      "13mcg",
+      "25mcg",
+      "50mcg",
+      "75mcg",
+      "100mcg",
+      "125mcg"
+    ],
+    "commonSideEffects": [
+      "Palpitations",
+      "Weight changes",
+      "Anxiety"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "NP Thyroid",
+    "genericName": "desiccated thyroid extract",
+    "medClass": "Thyroid hormone",
+    "category": "Thyroid",
+    "commonDoses": [
+      "15mg",
+      "30mg",
+      "60mg",
+      "90mg",
+      "120mg"
+    ],
+    "commonSideEffects": [
+      "Palpitations",
+      "Anxiety",
+      "Insomnia"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Lithium",
+    "genericName": "lithium carbonate",
+    "medClass": "Mood stabilizer",
+    "category": "MoodStabilizer",
+    "commonDoses": [
+      "300mg",
+      "450mg",
+      "600mg",
+      "900mg"
+    ],
+    "commonSideEffects": [
+      "Thirst",
+      "Tremor",
+      "Nausea",
+      "Frequent urination"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Lamictal",
+    "genericName": "lamotrigine",
+    "medClass": "Anticonvulsant",
+    "category": "MoodStabilizer",
+    "commonDoses": [
+      "25mg",
+      "50mg",
+      "100mg",
+      "150mg",
+      "200mg"
+    ],
+    "commonSideEffects": [
+      "Dizziness",
+      "Headache",
+      "Rash",
+      "Blurred vision"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Depakote",
+    "genericName": "divalproex sodium",
+    "medClass": "Anticonvulsant",
+    "category": "MoodStabilizer",
+    "commonDoses": [
+      "250mg",
+      "500mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Nausea",
+      "Weight gain",
+      "Tremor"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Tegretol",
+    "genericName": "carbamazepine",
+    "medClass": "Anticonvulsant",
+    "category": "MoodStabilizer",
+    "commonDoses": [
+      "100mg",
+      "200mg",
+      "400mg"
+    ],
+    "commonSideEffects": [
+      "Dizziness",
+      "Drowsiness",
+      "Nausea",
+      "Unsteadiness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Trileptal",
+    "genericName": "oxcarbazepine",
+    "medClass": "Anticonvulsant",
+    "category": "MoodStabilizer",
+    "commonDoses": [
+      "150mg",
+      "300mg",
+      "600mg"
+    ],
+    "commonSideEffects": [
+      "Dizziness",
+      "Fatigue",
+      "Nausea",
+      "Double vision"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Abilify",
+    "genericName": "aripiprazole",
+    "medClass": "Atypical antipsychotic",
+    "category": "MoodStabilizer",
+    "commonDoses": [
+      "2mg",
+      "5mg",
+      "10mg",
+      "15mg",
+      "20mg",
+      "30mg"
+    ],
+    "commonSideEffects": [
+      "Restlessness",
+      "Insomnia",
+      "Nausea",
+      "Weight gain"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Seroquel",
+    "genericName": "quetiapine",
+    "medClass": "Atypical antipsychotic",
+    "category": "MoodStabilizer",
+    "commonDoses": [
+      "25mg",
+      "50mg",
+      "100mg",
+      "200mg",
+      "300mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Dry mouth",
+      "Weight gain",
+      "Dizziness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Zyprexa",
+    "genericName": "olanzapine",
+    "medClass": "Atypical antipsychotic",
+    "category": "MoodStabilizer",
+    "commonDoses": [
+      "2.5mg",
+      "5mg",
+      "10mg",
+      "15mg",
+      "20mg"
+    ],
+    "commonSideEffects": [
+      "Weight gain",
+      "Drowsiness",
+      "Dry mouth",
+      "Increased appetite"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Latuda",
+    "genericName": "lurasidone",
+    "medClass": "Atypical antipsychotic",
+    "category": "MoodStabilizer",
+    "commonDoses": [
+      "20mg",
+      "40mg",
+      "60mg",
+      "80mg",
+      "120mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Restlessness",
+      "Drowsiness",
+      "Insomnia"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Vraylar",
+    "genericName": "cariprazine",
+    "medClass": "Atypical antipsychotic",
+    "category": "MoodStabilizer",
+    "commonDoses": [
+      "1.5mg",
+      "3mg",
+      "4.5mg",
+      "6mg"
+    ],
+    "commonSideEffects": [
+      "Restlessness",
+      "Insomnia",
+      "Nausea",
+      "Constipation"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Rexulti",
+    "genericName": "brexpiprazole",
+    "medClass": "Atypical antipsychotic",
+    "category": "MoodStabilizer",
+    "commonDoses": [
+      "0.5mg",
+      "1mg",
+      "2mg",
+      "3mg",
+      "4mg"
+    ],
+    "commonSideEffects": [
+      "Weight gain",
+      "Restlessness",
+      "Headache",
+      "Drowsiness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Caplyta",
+    "genericName": "lumateperone",
+    "medClass": "Atypical antipsychotic",
+    "category": "MoodStabilizer",
+    "commonDoses": [
+      "42mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Dry mouth",
+      "Nausea",
+      "Dizziness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Tylenol",
+    "genericName": "acetaminophen",
+    "medClass": "Analgesic (OTC)",
+    "category": "Pain",
+    "commonDoses": [
+      "325mg",
+      "500mg",
+      "650mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Rash"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Advil",
+    "genericName": "ibuprofen",
+    "medClass": "NSAID",
+    "category": "Pain",
+    "commonDoses": [
+      "200mg",
+      "400mg",
+      "600mg",
+      "800mg"
+    ],
+    "commonSideEffects": [
+      "Stomach upset",
+      "Heartburn",
+      "Dizziness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Aleve",
+    "genericName": "naproxen",
+    "medClass": "NSAID",
+    "category": "Pain",
+    "commonDoses": [
+      "220mg",
+      "250mg",
+      "500mg"
+    ],
+    "commonSideEffects": [
+      "Stomach upset",
+      "Heartburn",
+      "Drowsiness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Mobic",
+    "genericName": "meloxicam",
+    "medClass": "NSAID",
+    "category": "Pain",
+    "commonDoses": [
+      "7.5mg",
+      "15mg"
+    ],
+    "commonSideEffects": [
+      "Stomach upset",
+      "Diarrhea",
+      "Dizziness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Celebrex",
+    "genericName": "celecoxib",
+    "medClass": "NSAID (COX-2)",
+    "category": "Pain",
+    "commonDoses": [
+      "100mg",
+      "200mg"
+    ],
+    "commonSideEffects": [
+      "Stomach upset",
+      "Headache",
+      "Swelling"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Voltaren Gel",
+    "genericName": "diclofenac (topical)",
+    "medClass": "NSAID (topical)",
+    "category": "Pain",
+    "commonDoses": [
+      "1% gel"
+    ],
+    "commonSideEffects": [
+      "Skin irritation",
+      "Dry skin"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Neurontin",
+    "genericName": "gabapentin",
+    "medClass": "Nerve pain / anticonvulsant",
+    "category": "Pain",
+    "commonDoses": [
+      "100mg",
+      "300mg",
+      "600mg",
+      "800mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Dizziness",
+      "Swelling",
+      "Brain fog"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Lyrica",
+    "genericName": "pregabalin",
+    "medClass": "Nerve pain / anticonvulsant",
+    "category": "Pain",
+    "commonDoses": [
+      "25mg",
+      "50mg",
+      "75mg",
+      "150mg"
+    ],
+    "commonSideEffects": [
+      "Dizziness",
+      "Drowsiness",
+      "Weight gain",
+      "Blurred vision"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Ultram",
+    "genericName": "tramadol",
+    "medClass": "Opioid analgesic",
+    "category": "Pain",
+    "commonDoses": [
+      "50mg",
+      "100mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Dizziness",
+      "Constipation",
+      "Drowsiness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Flexeril",
+    "genericName": "cyclobenzaprine",
+    "medClass": "Muscle relaxant",
+    "category": "Pain",
+    "commonDoses": [
+      "5mg",
+      "10mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Dry mouth",
+      "Dizziness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Robaxin",
+    "genericName": "methocarbamol",
+    "medClass": "Muscle relaxant",
+    "category": "Pain",
+    "commonDoses": [
+      "500mg",
+      "750mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Dizziness",
+      "Headache"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Imitrex",
+    "genericName": "sumatriptan",
+    "medClass": "Triptan",
+    "category": "Migraine",
+    "commonDoses": [
+      "25mg",
+      "50mg",
+      "100mg"
+    ],
+    "commonSideEffects": [
+      "Tingling",
+      "Flushing",
+      "Chest tightness",
+      "Drowsiness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Maxalt",
+    "genericName": "rizatriptan",
+    "medClass": "Triptan",
+    "category": "Migraine",
+    "commonDoses": [
+      "5mg",
+      "10mg"
+    ],
+    "commonSideEffects": [
+      "Dizziness",
+      "Drowsiness",
+      "Fatigue"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Zomig",
+    "genericName": "zolmitriptan",
+    "medClass": "Triptan",
+    "category": "Migraine",
+    "commonDoses": [
+      "2.5mg",
+      "5mg"
+    ],
+    "commonSideEffects": [
+      "Tingling",
+      "Dizziness",
+      "Dry mouth"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Relpax",
+    "genericName": "eletriptan",
+    "medClass": "Triptan",
+    "category": "Migraine",
+    "commonDoses": [
+      "20mg",
+      "40mg"
+    ],
+    "commonSideEffects": [
+      "Dizziness",
+      "Nausea",
+      "Weakness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Nurtec ODT",
+    "genericName": "rimegepant",
+    "medClass": "CGRP antagonist",
+    "category": "Migraine",
+    "commonDoses": [
+      "75mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Stomach pain"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Ubrelvy",
+    "genericName": "ubrogepant",
+    "medClass": "CGRP antagonist",
+    "category": "Migraine",
+    "commonDoses": [
+      "50mg",
+      "100mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Drowsiness",
+      "Dry mouth"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Qulipta",
+    "genericName": "atogepant",
+    "medClass": "CGRP antagonist",
+    "category": "Migraine",
+    "commonDoses": [
+      "10mg",
+      "30mg",
+      "60mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Constipation",
+      "Fatigue"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Aimovig",
+    "genericName": "erenumab",
+    "medClass": "CGRP monoclonal antibody",
+    "category": "Migraine",
+    "commonDoses": [
+      "70mg",
+      "140mg"
+    ],
+    "commonSideEffects": [
+      "Injection site reaction",
+      "Constipation"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Emgality",
+    "genericName": "galcanezumab",
+    "medClass": "CGRP monoclonal antibody",
+    "category": "Migraine",
+    "commonDoses": [
+      "120mg"
+    ],
+    "commonSideEffects": [
+      "Injection site reaction"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Ajovy",
+    "genericName": "fremanezumab",
+    "medClass": "CGRP monoclonal antibody",
+    "category": "Migraine",
+    "commonDoses": [
+      "225mg"
+    ],
+    "commonSideEffects": [
+      "Injection site reaction"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Topamax",
+    "genericName": "topiramate",
+    "medClass": "Anticonvulsant / migraine prevention",
+    "category": "Migraine",
+    "commonDoses": [
+      "25mg",
+      "50mg",
+      "100mg"
+    ],
+    "commonSideEffects": [
+      "Tingling",
+      "Brain fog",
+      "Taste changes",
+      "Weight loss"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Saxenda",
+    "genericName": "liraglutide",
+    "medClass": "GLP-1 agonist",
+    "category": "GLP1",
+    "commonDoses": [
+      "0.6mg",
+      "1.2mg",
+      "1.8mg",
+      "2.4mg",
+      "3mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Diarrhea",
+      "Constipation",
+      "Headache"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Contrave",
+    "genericName": "naltrexone / bupropion",
+    "medClass": "Weight management",
+    "category": "GLP1",
+    "commonDoses": [
+      "8mg/90mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Constipation",
+      "Headache",
+      "Insomnia"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Qsymia",
+    "genericName": "phentermine / topiramate",
+    "medClass": "Weight management",
+    "category": "GLP1",
+    "commonDoses": [
+      "3.75mg/23mg",
+      "7.5mg/46mg",
+      "15mg/92mg"
+    ],
+    "commonSideEffects": [
+      "Tingling",
+      "Dry mouth",
+      "Constipation",
+      "Insomnia"
+    ],
+    "isExtendedRelease": true
+  },
+  {
+    "brandName": "Adipex-P",
+    "genericName": "phentermine",
+    "medClass": "Appetite suppressant",
+    "category": "GLP1",
+    "commonDoses": [
+      "15mg",
+      "30mg",
+      "37.5mg"
+    ],
+    "commonSideEffects": [
+      "Dry mouth",
+      "Insomnia",
+      "Increased heart rate"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Dayvigo",
+    "genericName": "lemborexant",
+    "medClass": "Orexin receptor antagonist",
+    "category": "Sleep",
+    "commonDoses": [
+      "5mg",
+      "10mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Headache",
+      "Abnormal dreams"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Restoril",
+    "genericName": "temazepam",
+    "medClass": "Benzodiazepine",
+    "category": "Sleep",
+    "commonDoses": [
+      "7.5mg",
+      "15mg",
+      "30mg"
+    ],
+    "commonSideEffects": [
+      "Drowsiness",
+      "Dizziness",
+      "Grogginess"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Unisom",
+    "genericName": "doxylamine",
+    "medClass": "Antihistamine (OTC)",
+    "category": "Sleep",
+    "commonDoses": [
+      "25mg"
+    ],
+    "commonSideEffects": [
+      "Grogginess",
+      "Dry mouth",
+      "Blurred vision"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Yasmin",
+    "genericName": "drospirenone / ethinyl estradiol",
+    "medClass": "Combined oral contraceptive",
+    "category": "BirthControl",
+    "commonDoses": [
+      "3mg/0.03mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Breast tenderness",
+      "Headache",
+      "Spotting"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Ortho Tri-Cyclen",
+    "genericName": "norgestimate / ethinyl estradiol",
+    "medClass": "Combined oral contraceptive",
+    "category": "BirthControl",
+    "commonDoses": [
+      "Triphasic"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Headache",
+      "Breast tenderness"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Xulane",
+    "genericName": "norelgestromin / ethinyl estradiol",
+    "medClass": "Contraceptive patch",
+    "category": "BirthControl",
+    "commonDoses": [
+      "150mcg/35mcg weekly"
+    ],
+    "commonSideEffects": [
+      "Skin irritation",
+      "Breast tenderness",
+      "Nausea"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Camila",
+    "genericName": "norethindrone",
+    "medClass": "Progestin-only pill",
+    "category": "BirthControl",
+    "commonDoses": [
+      "0.35mg"
+    ],
+    "commonSideEffects": [
+      "Irregular bleeding",
+      "Headache",
+      "Nausea"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Paragard",
+    "genericName": "copper IUD",
+    "medClass": "Non-hormonal IUD",
+    "category": "BirthControl",
+    "commonDoses": [
+      "N/A"
+    ],
+    "commonSideEffects": [
+      "Heavier periods",
+      "Cramping",
+      "Spotting"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Aldactone",
+    "genericName": "spironolactone",
+    "medClass": "Anti-androgen / diuretic",
+    "category": "Hormonal",
+    "commonDoses": [
+      "25mg",
+      "50mg",
+      "100mg"
+    ],
+    "commonSideEffects": [
+      "Frequent urination",
+      "Dizziness",
+      "Breast tenderness",
+      "High potassium"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Glucophage",
+    "genericName": "metformin",
+    "medClass": "Insulin sensitizer",
+    "category": "Hormonal",
+    "commonDoses": [
+      "500mg",
+      "850mg",
+      "1000mg"
+    ],
+    "commonSideEffects": [
+      "Nausea",
+      "Diarrhea",
+      "Stomach upset",
+      "Metallic taste"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "Clomid",
+    "genericName": "clomiphene citrate",
+    "medClass": "Ovulation stimulant",
+    "category": "Hormonal",
+    "commonDoses": [
+      "50mg"
+    ],
+    "commonSideEffects": [
+      "Hot flashes",
+      "Mood swings",
+      "Bloating"
+    ],
+    "isExtendedRelease": false
+  },
+  {
+    "brandName": "AndroGel",
+    "genericName": "testosterone (topical)",
+    "medClass": "Androgen",
+    "category": "Hormonal",
+    "commonDoses": [
+      "20.25mg",
+      "40.5mg"
+    ],
+    "commonSideEffects": [
+      "Skin irritation",
+      "Acne",
+      "Mood changes"
+    ],
+    "isExtendedRelease": false
+  }
 ]
