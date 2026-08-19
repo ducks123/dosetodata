@@ -24,13 +24,13 @@ struct TrackingGoalsStepView: View {
             .padding(.top, 16)
 
             VStack(alignment: .leading, spacing: 10) {
-                Text("Welcome")
+                Text("Welcome · Step 1 of 4")
                     .font(Theme.Font.heroLabel)
                     .foregroundStyle(Theme.Palette.textSecondary)
                 Text("What do you want\nto track?")
                     .font(Theme.Font.hero)
                     .foregroundStyle(Theme.Palette.textPrimary)
-                Text("Pick anything that matters. You can change this later.")
+                Text("Your daily check-in will match what you pick. You can change it later.")
                     .font(Theme.Font.body)
                     .foregroundStyle(Theme.Palette.textSecondary)
                     .padding(.top, 4)
@@ -56,6 +56,10 @@ struct TrackingGoalsStepView: View {
             VStack(spacing: 12) {
                 Button {
                     prefs.trackingGoals = selected
+                    // Tailor the daily check-in to the selected goals: hide
+                    // the scale questions no goal covers. Selecting no
+                    // scale-mapped goal (or skipping) hides nothing.
+                    prefs.hiddenStandardQuestionKeys = TrackingGoal.hiddenQuestionKeys(for: selected)
                     onContinue()
                 } label: {
                     Text("Continue")

@@ -11,7 +11,6 @@ struct MedicationsOnboardingStepView: View {
     @State private var showingCustomForm = false
 
     let onContinue: () -> Void
-    let onSkip: () -> Void
 
     private var filteredLibrary: [Medication] {
         let alreadyAddedIDs = Set(userMedications.map { $0.medication.id })
@@ -28,7 +27,7 @@ struct MedicationsOnboardingStepView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Step 2 of 4")
+                Text("Step 3 of 4")
                     .font(Theme.Font.heroLabel)
                     .foregroundStyle(Theme.Palette.textSecondary)
                 Text("Any medications\nyou're taking now?")
@@ -38,6 +37,10 @@ struct MedicationsOnboardingStepView: View {
                     .font(Theme.Font.body)
                     .foregroundStyle(Theme.Palette.textSecondary)
                     .padding(.top, 2)
+                Label("Stored only on your phone — never uploaded.", systemImage: "lock.fill")
+                    .font(Theme.Font.caption)
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                    .padding(.top, 4)
             }
             .padding(.horizontal, 24)
             .padding(.top, 24)
@@ -84,20 +87,12 @@ struct MedicationsOnboardingStepView: View {
                 .padding(.vertical, 12)
             }
 
-            VStack(spacing: 10) {
-                Button {
-                    onContinue()
-                } label: {
-                    Text(userMedications.isEmpty ? "Continue without adding" : "Continue")
-                }
-                .buttonStyle(PrimaryButtonStyle())
-
-                Button("I'll add later") {
-                    onSkip()
-                }
-                .font(Theme.Font.body)
-                .foregroundStyle(Theme.Palette.textSecondary)
+            Button {
+                onContinue()
+            } label: {
+                Text(userMedications.isEmpty ? "Skip for now" : "Continue")
             }
+            .buttonStyle(PrimaryButtonStyle())
             .padding(.horizontal, 24)
             .padding(.bottom, 28)
         }

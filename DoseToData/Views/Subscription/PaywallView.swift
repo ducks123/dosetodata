@@ -9,6 +9,9 @@ struct PaywallView: View {
 
     /// When true, shows an "X" close button (e.g. when presented from within the app).
     var isDismissible: Bool = true
+    /// True when the user completed their first check-in during onboarding —
+    /// lets the header acknowledge the logged Day 1.
+    var dayOneLogged: Bool = false
     /// Called instead of dismiss() after a successful purchase, or when the user
     /// skips during onboarding. Used when PaywallView is embedded in the onboarding flow.
     var onComplete: (() -> Void)? = nil
@@ -281,14 +284,37 @@ struct PaywallView: View {
                         startPoint: .topLeading, endPoint: .bottomTrailing
                     )
                 )
-            Text("DoseToData Premium")
-                .font(.system(size: 26, weight: .bold))
-                .foregroundStyle(Theme.Palette.textPrimary)
-            Text("Track daily patterns privately.")
-                .font(.system(size: 15))
-                .foregroundStyle(Theme.Palette.textSecondary)
-                .multilineTextAlignment(.center)
+            // Onboarding mode with a real trial available: the trial is the
+            // hero, not "Premium" — a brand-new user hasn't seen the product
+            // yet, so "upgrade" framing reads wrong. The trial claim is gated
+            // on `anyTrialAvailable` so we never advertise a trial that
+            // isn't actually attached to a package.
+            if !isDismissible && anyTrialAvailable {
+                Text("Start your free trial")
+                    .font(.system(size: 26, weight: .bold))
+                    .foregroundStyle(Theme.Palette.textPrimary)
+                Text(onboardingSubtitle)
+                    .font(.system(size: 15))
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                    .multilineTextAlignment(.center)
+            } else {
+                Text("DoseToData Premium")
+                    .font(.system(size: 26, weight: .bold))
+                    .foregroundStyle(Theme.Palette.textPrimary)
+                Text("Track daily patterns privately.")
+                    .font(.system(size: 15))
+                    .foregroundStyle(Theme.Palette.textSecondary)
+                    .multilineTextAlignment(.center)
+            }
         }
+    }
+
+    private var onboardingSubtitle: String {
+        let days = trialDays(for: annualPackage) ?? trialDays(for: monthlyPackage)
+        let trialPhrase = days.map { "Try every feature free for \($0) days" } ?? "Try every feature free"
+        return dayOneLogged
+            ? "Day 1 is logged. \(trialPhrase) — keep your streak going."
+            : "\(trialPhrase) — cancel anytime."
     }
 
     // MARK: - Feature list
@@ -326,6 +352,12 @@ struct PaywallView: View {
 
     private var planPicker: some View {
         VStack(spacing: 10) {
+            // In onboarding (non-dismissible) mode the trial leads — it's the
+            // default selection and the headline offer for a brand-new user.
+            // In-app, the direct plans lead as before.
+            if !isDismissible && anyTrialAvailable {
+                trialRow
+            }
 
             // ── Annual ──────────────────────────────────────────────────
             // App Store Guideline 3.1.2(c): the BILLED amount must be the
@@ -353,7 +385,7 @@ struct PaywallView: View {
             // attached. If Apple's offer isn't configured / approved / in
             // the right country, this row disappears and the user simply
             // sees the direct subscribe options. No misleading copy.
-            if anyTrialAvailable {
+            if isDismissible && anyTrialAvailable {
                 trialRow
             }
         }
@@ -432,7 +464,7 @@ struct PaywallView: View {
                         Text(trialHeadlineText)
                             .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(Theme.Palette.textPrimary)
-                        Text("Then your selected plan price below")
+                        Text("Then the plan you choose below — cancel anytime")
                             .font(.system(size: 11))
                             .foregroundStyle(Theme.Palette.textSecondary)
                     }

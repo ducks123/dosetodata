@@ -3,6 +3,7 @@ import SwiftUI
 
 enum TrackingGoal: String, CaseIterable, Identifiable, Codable {
     case mood
+    case focus
     case medications
     case sideEffects
     case sleep
@@ -13,6 +14,7 @@ enum TrackingGoal: String, CaseIterable, Identifiable, Codable {
     var title: String {
         switch self {
         case .mood: return "Mood"
+        case .focus: return "Focus"
         case .medications: return "Medications"
         case .sideEffects: return "Side effects"
         case .sleep: return "Sleep"
@@ -23,11 +25,36 @@ enum TrackingGoal: String, CaseIterable, Identifiable, Codable {
     var icon: String {
         switch self {
         case .mood: return "heart.fill"
+        case .focus: return "scope"
         case .medications: return "pill.fill"
         case .sideEffects: return "exclamationmark.triangle.fill"
         case .sleep: return "moon.fill"
         case .energy: return "bolt.fill"
         }
+    }
+
+    /// Standard check-in questions this goal maps to. Goals with no scale
+    /// question (medications, side effects) return [] — those are covered by
+    /// the adherence and side-effect cards, which always show.
+    var mappedQuestions: [StandardCheckInQuestion] {
+        switch self {
+        case .mood:   return [.mood]
+        case .focus:  return [.focus, .easeToStart]
+        case .energy: return [.energy]
+        case .sleep:  return [.sleep]
+        case .medications, .sideEffects: return []
+        }
+    }
+
+    /// Hidden-question keys implied by a goal selection: every mappable
+    /// standard question NOT covered by the selected goals. Empty (nothing
+    /// hidden) when no scale-mapped goal was selected — hiding everything
+    /// would gut the check-in, so we fall back to showing all questions.
+    static func hiddenQuestionKeys(for selection: Set<TrackingGoal>) -> Set<String> {
+        let covered = Set(selection.flatMap(\.mappedQuestions))
+        guard !covered.isEmpty else { return [] }
+        let mappable = Set(allCases.flatMap(\.mappedQuestions))
+        return Set(mappable.subtracting(covered).map(\.rawValue))
     }
 }
 

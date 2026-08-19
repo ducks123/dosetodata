@@ -6,7 +6,7 @@ struct PrivacyDisclaimerStepView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Before you start")
+                Text("Before you start · Step 2 of 4")
                     .font(Theme.Font.heroLabel)
                     .foregroundStyle(Theme.Palette.textSecondary)
                 Text("A few things\nto know.")
@@ -17,6 +17,11 @@ struct PrivacyDisclaimerStepView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
+                    DisclaimerPoint(
+                        icon: "lock.fill",
+                        title: "Private by design",
+                        detail: "Everything you track stays on your phone. Nothing is uploaded, and no account is required."
+                    )
                     DisclaimerPoint(
                         icon: "stethoscope",
                         title: "Not a medical device",
