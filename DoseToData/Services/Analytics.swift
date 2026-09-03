@@ -57,6 +57,15 @@ enum Analytics {
         isEnabled = true
     }
 
+    /// PostHog's anonymous per-install id. Handed to RevenueCat's PostHog
+    /// integration so subscription events land on the same anonymous person
+    /// as the in-app funnel events. Nil while analytics is disabled. This is
+    /// a random UUID, not an identity — rule 2 above still holds.
+    static var distinctId: String? {
+        guard isEnabled else { return nil }
+        return PostHogSDK.shared.getDistinctId()
+    }
+
     /// Single choke point for every event. Keeping one function makes the
     /// "no health content" rule auditable in one place.
     private static func capture(_ event: String, _ properties: [String: Any]? = nil) {

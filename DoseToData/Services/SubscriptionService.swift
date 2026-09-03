@@ -121,6 +121,17 @@ final class SubscriptionService {
         if !didEnableAttribution {
             didEnableAttribution = true
             Purchases.shared.attribution.enableAdServicesAttributionTokenCollection()
+
+            // RevenueCat → PostHog integration: hand RevenueCat PostHog's
+            // anonymous distinct id so subscription events (trial started,
+            // converted, cancelled, churned) land on the SAME anonymous
+            // person as the in-app funnel events. The id is a random
+            // per-install UUID — no identity involved. Requires the PostHog
+            // integration to also be enabled in the RevenueCat dashboard.
+            Analytics.configure()
+            if let distinctId = Analytics.distinctId {
+                Purchases.shared.attribution.setPostHogUserID(distinctId)
+            }
         }
         return true
     }
