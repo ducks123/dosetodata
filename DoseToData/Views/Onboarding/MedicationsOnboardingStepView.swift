@@ -78,6 +78,7 @@ struct MedicationsOnboardingStepView: View {
 
             VStack(spacing: 8) {
                 Button {
+                    Analytics.onboardingMedsCompleted(medicationCount: userMedications.count)
                     onContinue()
                 } label: {
                     Text(userMedications.isEmpty ? "Skip for now" : "Continue")
@@ -91,6 +92,7 @@ struct MedicationsOnboardingStepView: View {
             .padding(.horizontal, 24)
             .padding(.bottom, 24)
         }
+        .onAppear { Analytics.onboardingStepViewed("medications") }
         .sheet(item: $pendingMed) { med in
             OnboardingMedDetailsSheet(medication: med) { dose, addToSchedule, scheduledTimes, scheduledDays in
                 let userMed = UserMedication(

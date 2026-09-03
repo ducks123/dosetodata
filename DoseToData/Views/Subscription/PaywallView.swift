@@ -270,6 +270,7 @@ struct PaywallView: View {
         }
         .background(Color(UIColor.systemGroupedBackground).ignoresSafeArea())
         .task {
+            Analytics.paywallShown(context: isDismissible ? "in_app" : "onboarding")
             sub.errorMessage = nil  // clear any stale error before presenting
             await sub.refresh()
             // After packages load, fall back to a non-trial plan if no trial
@@ -679,6 +680,12 @@ Any unused portion of a free trial will be forfeited upon purchase of a subscrip
                     switch outcome {
                     case .newPurchase:
                         // Real, fresh transaction — advance into the app.
+                        // RevenueCat remains the source of truth for revenue;
+                        // this just puts the step in the same funnel.
+                        Analytics.purchaseCompleted(
+                            plan: selectedPlan.isAnnual ? "annual" : "monthly",
+                            isTrial: selectedPlan.isTrial
+                        )
                         finish()
                     case .silentRestore:
                         // Apple silently completed because this Apple ID

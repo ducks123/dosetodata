@@ -74,6 +74,7 @@ struct ReminderPrimerStepView: View {
                     isScheduling = true
                     let times = [selectedTimeString]
                     prefs.checkInReminderTimes = times
+                    Analytics.reminderPrimerAnswered(enabled: true)
                     Task {
                         // Requests notification permission internally if the
                         // user hasn't been asked yet.
@@ -90,6 +91,7 @@ struct ReminderPrimerStepView: View {
                     // Clear the phantom default so the reminder sheet never
                     // shows a time as "on" that was never registered with iOS.
                     prefs.checkInReminderTimes = []
+                    Analytics.reminderPrimerAnswered(enabled: false)
                     onDone()
                 }
                 .font(Theme.Font.body)

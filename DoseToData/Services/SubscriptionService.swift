@@ -98,11 +98,30 @@ final class SubscriptionService {
 
     // MARK: - Configure
 
+    /// Guards the one-time SDK setup below. `configure()` is called from
+    /// several refresh paths, and RevenueCat's own setup is idempotent, but
+    /// attribution collection should only be enabled once.
+    private static var didEnableAttribution = false
+
     @discardableResult
     static func configure() -> Bool {
         guard apiKey.hasPrefix("appl_") else { return false }
         Purchases.configure(withAPIKey: apiKey)
         Purchases.logLevel = .error
+
+        // Apple Search Ads attribution. RevenueCat reads Apple's AdServices
+        // token so ad spend can be tied to trials and subscriptions, not just
+        // installs. Deliberately NOT calling collectDeviceIdentifiers(): that
+        // pulls IDFA and would require an App Tracking Transparency prompt.
+        // The AdServices token needs neither, so the app keeps
+        // NSPrivacyTracking = false.
+        //
+        // Note: tokens only resolve for real App Store installs — expect no
+        // attribution in the simulator or TestFlight.
+        if !didEnableAttribution {
+            didEnableAttribution = true
+            Purchases.shared.attribution.enableAdServicesAttributionTokenCollection()
+        }
         return true
     }
 

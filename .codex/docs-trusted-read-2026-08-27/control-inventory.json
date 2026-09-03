@@ -1,0 +1,152 @@
+{
+  "version": 1,
+  "kind": "google-docs-trusted-read-context",
+  "target": {
+    "documentId": "19mbTiUsfTweyxIUxvNZqiVtPJpo8208Lmreu1M7FBQs",
+    "title": "Dose to Data App Store Screenshot Gallery",
+    "revisionId": "AIroW37D-qo4Lt6WRO8FdQ3XvuvXaZzU30-VpS6aO1ST1GpZrz4Qhca5S1y4pmilPrwc5pflvscxphpWVUs4zKAGFI1Q9MefuOO2oa6aTjY",
+    "documentUrl": "https://docs.google.com/document/d/19mbTiUsfTweyxIUxvNZqiVtPJpo8208Lmreu1M7FBQs",
+    "selectedTabId": null
+  },
+  "dropdownMetadata": {
+    "status": "unavailable",
+    "resolvedTool": null,
+    "authoritative": false,
+    "count": 0
+  },
+  "derivedControlInventory": {
+    "hasProtectedControls": false,
+    "authoritativeDropdownCount": 0,
+    "opaqueControlCount": 0,
+    "nativeElementCounts": {
+      "inlineObjectElement": 5
+    },
+    "tabsScanned": [
+      "t.0"
+    ],
+    "controls": [],
+    "nativeElements": [
+      {
+        "type": "inlineObjectElement",
+        "startIndex": 1605,
+        "endIndex": 1606,
+        "tabId": "t.0",
+        "segmentId": null,
+        "container": {
+          "kind": "paragraph",
+          "path": "root.tabs[0].body.content[17]",
+          "tabId": "t.0",
+          "segmentId": null,
+          "startIndex": 1605,
+          "endIndex": 1607,
+          "namedStyleType": "NORMAL_TEXT",
+          "listId": null,
+          "nestingLevel": null,
+          "table": null
+        },
+        "properties": {
+          "inlineObjectId": "i.0",
+          "textStyle": {}
+        }
+      },
+      {
+        "type": "inlineObjectElement",
+        "startIndex": 1845,
+        "endIndex": 1846,
+        "tabId": "t.0",
+        "segmentId": null,
+        "container": {
+          "kind": "paragraph",
+          "path": "root.tabs[0].body.content[23]",
+          "tabId": "t.0",
+          "segmentId": null,
+          "startIndex": 1845,
+          "endIndex": 1847,
+          "namedStyleType": "NORMAL_TEXT",
+          "listId": null,
+          "nestingLevel": null,
+          "table": null
+        },
+        "properties": {
+          "inlineObjectId": "i.1",
+          "textStyle": {}
+        }
+      },
+      {
+        "type": "inlineObjectElement",
+        "startIndex": 2092,
+        "endIndex": 2093,
+        "tabId": "t.0",
+        "segmentId": null,
+        "container": {
+          "kind": "paragraph",
+          "path": "root.tabs[0].body.content[29]",
+          "tabId": "t.0",
+          "segmentId": null,
+          "startIndex": 2092,
+          "endIndex": 2094,
+          "namedStyleType": "NORMAL_TEXT",
+          "listId": null,
+          "nestingLevel": null,
+          "table": null
+        },
+        "properties": {
+          "inlineObjectId": "i.2",
+          "textStyle": {}
+        }
+      },
+      {
+        "type": "inlineObjectElement",
+        "startIndex": 2310,
+        "endIndex": 2311,
+        "tabId": "t.0",
+        "segmentId": null,
+        "container": {
+          "kind": "paragraph",
+          "path": "root.tabs[0].body.content[35]",
+          "tabId": "t.0",
+          "segmentId": null,
+          "startIndex": 2310,
+          "endIndex": 2312,
+          "namedStyleType": "NORMAL_TEXT",
+          "listId": null,
+          "nestingLevel": null,
+          "table": null
+        },
+        "properties": {
+          "inlineObjectId": "i.3",
+          "textStyle": {}
+        }
+      },
+      {
+        "type": "inlineObjectElement",
+        "startIndex": 2561,
+        "endIndex": 2562,
+        "tabId": "t.0",
+        "segmentId": null,
+        "container": {
+          "kind": "paragraph",
+          "path": "root.tabs[0].body.content[41]",
+          "tabId": "t.0",
+          "segmentId": null,
+          "startIndex": 2561,
+          "endIndex": 2563,
+          "namedStyleType": "NORMAL_TEXT",
+          "listId": null,
+          "nestingLevel": null,
+          "table": null
+        },
+        "properties": {
+          "inlineObjectId": "i.4",
+          "textStyle": {}
+        }
+      }
+    ]
+  },
+  "editGuidance": {
+    "advisoryOnly": true,
+    "requiresTargetedPreservation": false,
+    "recommendedBehavior": "No protected controls were detected in the scanned scope.",
+    "warnings": []
+  }
+}

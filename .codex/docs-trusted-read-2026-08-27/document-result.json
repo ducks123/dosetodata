@@ -1,0 +1,4029 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "documentId": "19mbTiUsfTweyxIUxvNZqiVtPJpo8208Lmreu1M7FBQs",
+    "title": "Dose to Data App Store Screenshot Gallery",
+    "revisionId": "AIroW37D-qo4Lt6WRO8FdQ3XvuvXaZzU30-VpS6aO1ST1GpZrz4Qhca5S1y4pmilPrwc5pflvscxphpWVUs4zKAGFI1Q9MefuOO2oa6aTjY",
+    "suggestionsViewMode": "SUGGESTIONS_INLINE",
+    "url": null,
+    "body": null,
+    "tabs": [
+      {
+        "tabId": "t.0",
+        "title": "Tab 1",
+        "parentTabId": null,
+        "index": 0,
+        "nestingLevel": null,
+        "iconEmoji": null,
+        "body": {
+          "content": [
+            {
+              "endIndex": 1,
+              "sectionBreak": {
+                "sectionStyle": {
+                  "columnSeparatorStyle": "NONE",
+                  "contentDirection": "LEFT_TO_RIGHT",
+                  "sectionType": "CONTINUOUS"
+                }
+              }
+            },
+            {
+              "startIndex": 1,
+              "endIndex": 43,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1,
+                    "endIndex": 42,
+                    "textRun": {
+                      "content": "Dose to Data App Store Screenshot Gallery",
+                      "textStyle": {
+                        "bold": false,
+                        "foregroundColor": {
+                          "color": {
+                            "rgbColor": {}
+                          }
+                        },
+                        "fontSize": {
+                          "magnitude": 26,
+                          "unit": "PT"
+                        },
+                        "weightedFontFamily": {
+                          "fontFamily": "Arial",
+                          "weight": 400
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 42,
+                    "endIndex": 43,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT",
+                  "spaceAbove": {
+                    "unit": "PT"
+                  },
+                  "spaceBelow": {
+                    "magnitude": 3,
+                    "unit": "PT"
+                  }
+                }
+              }
+            },
+            {
+              "startIndex": 43,
+              "endIndex": 104,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 43,
+                    "endIndex": 103,
+                    "textRun": {
+                      "content": "iPhone 6.9-inch creative handoff | Version 1.1.0 (Build 100)",
+                      "textStyle": {
+                        "foregroundColor": {
+                          "color": {
+                            "rgbColor": {
+                              "red": 0.33333334,
+                              "green": 0.33333334,
+                              "blue": 0.33333334
+                            }
+                          }
+                        },
+                        "fontSize": {
+                          "magnitude": 11,
+                          "unit": "PT"
+                        },
+                        "weightedFontFamily": {
+                          "fontFamily": "Arial",
+                          "weight": 400
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 103,
+                    "endIndex": 104,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT",
+                  "spaceBelow": {
+                    "magnitude": 12,
+                    "unit": "PT"
+                  }
+                }
+              }
+            },
+            {
+              "startIndex": 104,
+              "endIndex": 254,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 104,
+                    "endIndex": 113,
+                    "textRun": {
+                      "content": "Purpose: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 113,
+                    "endIndex": 254,
+                    "textRun": {
+                      "content": "Present Dose to Data as a calm, understandable medication and symptom-tracking tool, with each screenshot focused on one clear user benefit.\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 254,
+              "endIndex": 273,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 254,
+                    "endIndex": 273,
+                    "textRun": {
+                      "content": "Creative direction\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "HEADING_1",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 273,
+              "endIndex": 394,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 273,
+                    "endIndex": 284,
+                    "textRun": {
+                      "content": "MyTherapy: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 284,
+                    "endIndex": 309,
+                    "textRun": {
+                      "content": "Pill Reminder - MyTherapy",
+                      "textStyle": {
+                        "underline": true,
+                        "foregroundColor": {
+                          "color": {
+                            "rgbColor": {
+                              "red": 0.06666667,
+                              "green": 0.33333334,
+                              "blue": 0.8
+                            }
+                          }
+                        },
+                        "weightedFontFamily": {
+                          "fontFamily": "Arial",
+                          "weight": 400
+                        },
+                        "link": {
+                          "url": "https://apps.apple.com/us/app/pill-reminder-mytherapy/id662170995"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 309,
+                    "endIndex": 394,
+                    "textRun": {
+                      "content": " informed the concise, benefit-led storytelling and the idea of adding motion later.\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 394,
+              "endIndex": 505,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 394,
+                    "endIndex": 404,
+                    "textRun": {
+                      "content": "Bearable: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 404,
+                    "endIndex": 430,
+                    "textRun": {
+                      "content": "Bearable - Symptom Tracker",
+                      "textStyle": {
+                        "underline": true,
+                        "foregroundColor": {
+                          "color": {
+                            "rgbColor": {
+                              "red": 0.06666667,
+                              "green": 0.33333334,
+                              "blue": 0.8
+                            }
+                          }
+                        },
+                        "weightedFontFamily": {
+                          "fontFamily": "Arial",
+                          "weight": 400
+                        },
+                        "link": {
+                          "url": "https://apps.apple.com/us/app/bearable-symptom-tracker/id1482581097"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 430,
+                    "endIndex": 505,
+                    "textRun": {
+                      "content": " informed the soft gradient backgrounds and approachable visual hierarchy.\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 505,
+              "endIndex": 649,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 505,
+                    "endIndex": 534,
+                    "textRun": {
+                      "content": "Dose to Data interpretation: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 534,
+                    "endIndex": 649,
+                    "textRun": {
+                      "content": "Use varied blue, mint, lavender, blush, and peach gradients while keeping the app UI itself clear and inspectable.\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 649,
+              "endIndex": 675,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 649,
+                    "endIndex": 675,
+                    "textRun": {
+                      "content": "Recommended gallery order\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "HEADING_1",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 675,
+              "endIndex": 966,
+              "table": {
+                "rows": 6,
+                "columns": 3,
+                "tableRows": [
+                  {
+                    "startIndex": 676,
+                    "endIndex": 711,
+                    "tableCells": [
+                      {
+                        "startIndex": 677,
+                        "endIndex": 684,
+                        "content": [
+                          {
+                            "startIndex": 678,
+                            "endIndex": 684,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 678,
+                                  "endIndex": 683,
+                                  "textRun": {
+                                    "content": "Order",
+                                    "textStyle": {
+                                      "bold": true
+                                    }
+                                  }
+                                },
+                                {
+                                  "startIndex": 683,
+                                  "endIndex": 684,
+                                  "textRun": {
+                                    "content": "\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      },
+                      {
+                        "startIndex": 684,
+                        "endIndex": 701,
+                        "content": [
+                          {
+                            "startIndex": 685,
+                            "endIndex": 701,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 685,
+                                  "endIndex": 700,
+                                  "textRun": {
+                                    "content": "Primary message",
+                                    "textStyle": {
+                                      "bold": true
+                                    }
+                                  }
+                                },
+                                {
+                                  "startIndex": 700,
+                                  "endIndex": 701,
+                                  "textRun": {
+                                    "content": "\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      },
+                      {
+                        "startIndex": 701,
+                        "endIndex": 711,
+                        "content": [
+                          {
+                            "startIndex": 702,
+                            "endIndex": 711,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 702,
+                                  "endIndex": 710,
+                                  "textRun": {
+                                    "content": "App view",
+                                    "textStyle": {
+                                      "bold": true
+                                    }
+                                  }
+                                },
+                                {
+                                  "startIndex": 710,
+                                  "endIndex": 711,
+                                  "textRun": {
+                                    "content": "\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      }
+                    ],
+                    "tableRowStyle": {
+                      "minRowHeight": {
+                        "unit": "PT"
+                      },
+                      "tableHeader": true
+                    }
+                  },
+                  {
+                    "startIndex": 711,
+                    "endIndex": 766,
+                    "tableCells": [
+                      {
+                        "startIndex": 712,
+                        "endIndex": 716,
+                        "content": [
+                          {
+                            "startIndex": 713,
+                            "endIndex": 716,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 713,
+                                  "endIndex": 716,
+                                  "textRun": {
+                                    "content": "01\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      },
+                      {
+                        "startIndex": 716,
+                        "endIndex": 756,
+                        "content": [
+                          {
+                            "startIndex": 717,
+                            "endIndex": 756,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 717,
+                                  "endIndex": 756,
+                                  "textRun": {
+                                    "content": "Turn daily check-ins into clear trends\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      },
+                      {
+                        "startIndex": 756,
+                        "endIndex": 766,
+                        "content": [
+                          {
+                            "startIndex": 757,
+                            "endIndex": 766,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 757,
+                                  "endIndex": 766,
+                                  "textRun": {
+                                    "content": "Insights\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      }
+                    ],
+                    "tableRowStyle": {
+                      "minRowHeight": {
+                        "unit": "PT"
+                      },
+                      "preventOverflow": true
+                    }
+                  },
+                  {
+                    "startIndex": 766,
+                    "endIndex": 815,
+                    "tableCells": [
+                      {
+                        "startIndex": 767,
+                        "endIndex": 771,
+                        "content": [
+                          {
+                            "startIndex": 768,
+                            "endIndex": 771,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 768,
+                                  "endIndex": 771,
+                                  "textRun": {
+                                    "content": "02\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      },
+                      {
+                        "startIndex": 771,
+                        "endIndex": 799,
+                        "content": [
+                          {
+                            "startIndex": 772,
+                            "endIndex": 799,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 772,
+                                  "endIndex": 799,
+                                  "textRun": {
+                                    "content": "Check in in under a minute\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      },
+                      {
+                        "startIndex": 799,
+                        "endIndex": 815,
+                        "content": [
+                          {
+                            "startIndex": 800,
+                            "endIndex": 815,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 800,
+                                  "endIndex": 815,
+                                  "textRun": {
+                                    "content": "Daily check-in\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      }
+                    ],
+                    "tableRowStyle": {
+                      "minRowHeight": {
+                        "unit": "PT"
+                      },
+                      "preventOverflow": true
+                    }
+                  },
+                  {
+                    "startIndex": 815,
+                    "endIndex": 854,
+                    "tableCells": [
+                      {
+                        "startIndex": 816,
+                        "endIndex": 820,
+                        "content": [
+                          {
+                            "startIndex": 817,
+                            "endIndex": 820,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 817,
+                                  "endIndex": 820,
+                                  "textRun": {
+                                    "content": "03\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      },
+                      {
+                        "startIndex": 820,
+                        "endIndex": 847,
+                        "content": [
+                          {
+                            "startIndex": 821,
+                            "endIndex": 847,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 821,
+                                  "endIndex": 847,
+                                  "textRun": {
+                                    "content": "Know exactly what changed\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      },
+                      {
+                        "startIndex": 847,
+                        "endIndex": 854,
+                        "content": [
+                          {
+                            "startIndex": 848,
+                            "endIndex": 854,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 848,
+                                  "endIndex": 854,
+                                  "textRun": {
+                                    "content": "Today\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      }
+                    ],
+                    "tableRowStyle": {
+                      "minRowHeight": {
+                        "unit": "PT"
+                      },
+                      "preventOverflow": true
+                    }
+                  },
+                  {
+                    "startIndex": 854,
+                    "endIndex": 903,
+                    "tableCells": [
+                      {
+                        "startIndex": 855,
+                        "endIndex": 859,
+                        "content": [
+                          {
+                            "startIndex": 856,
+                            "endIndex": 859,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 856,
+                                  "endIndex": 859,
+                                  "textRun": {
+                                    "content": "04\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      },
+                      {
+                        "startIndex": 859,
+                        "endIndex": 893,
+                        "content": [
+                          {
+                            "startIndex": 860,
+                            "endIndex": 893,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 860,
+                                  "endIndex": 893,
+                                  "textRun": {
+                                    "content": "Every medication. Right on time.\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      },
+                      {
+                        "startIndex": 893,
+                        "endIndex": 903,
+                        "content": [
+                          {
+                            "startIndex": 894,
+                            "endIndex": 903,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 894,
+                                  "endIndex": 903,
+                                  "textRun": {
+                                    "content": "Schedule\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      }
+                    ],
+                    "tableRowStyle": {
+                      "minRowHeight": {
+                        "unit": "PT"
+                      },
+                      "preventOverflow": true
+                    }
+                  },
+                  {
+                    "startIndex": 903,
+                    "endIndex": 965,
+                    "tableCells": [
+                      {
+                        "startIndex": 904,
+                        "endIndex": 908,
+                        "content": [
+                          {
+                            "startIndex": 905,
+                            "endIndex": 908,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 905,
+                                  "endIndex": 908,
+                                  "textRun": {
+                                    "content": "05\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      },
+                      {
+                        "startIndex": 908,
+                        "endIndex": 948,
+                        "content": [
+                          {
+                            "startIndex": 909,
+                            "endIndex": 948,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 909,
+                                  "endIndex": 948,
+                                  "textRun": {
+                                    "content": "Bring the full picture to appointments\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      },
+                      {
+                        "startIndex": 948,
+                        "endIndex": 965,
+                        "content": [
+                          {
+                            "startIndex": 949,
+                            "endIndex": 965,
+                            "paragraph": {
+                              "elements": [
+                                {
+                                  "startIndex": 949,
+                                  "endIndex": 965,
+                                  "textRun": {
+                                    "content": "Check-in detail\n",
+                                    "textStyle": {}
+                                  }
+                                }
+                              ],
+                              "paragraphStyle": {
+                                "namedStyleType": "NORMAL_TEXT",
+                                "direction": "LEFT_TO_RIGHT",
+                                "spaceBelow": {
+                                  "unit": "PT"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "tableCellStyle": {
+                          "rowSpan": 1,
+                          "columnSpan": 1,
+                          "paddingTop": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "paddingBottom": {
+                            "magnitude": 4,
+                            "unit": "PT"
+                          },
+                          "contentAlignment": "MIDDLE"
+                        }
+                      }
+                    ],
+                    "tableRowStyle": {
+                      "minRowHeight": {
+                        "unit": "PT"
+                      },
+                      "preventOverflow": true
+                    }
+                  }
+                ],
+                "tableStyle": {
+                  "tableColumnProperties": [
+                    {
+                      "widthType": "FIXED_WIDTH",
+                      "width": {
+                        "magnitude": 50.4,
+                        "unit": "PT"
+                      }
+                    },
+                    {
+                      "widthType": "FIXED_WIDTH",
+                      "width": {
+                        "magnitude": 248.4,
+                        "unit": "PT"
+                      }
+                    },
+                    {
+                      "widthType": "FIXED_WIDTH",
+                      "width": {
+                        "magnitude": 169.2,
+                        "unit": "PT"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "startIndex": 966,
+              "endIndex": 990,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 966,
+                    "endIndex": 990,
+                    "textRun": {
+                      "content": "Key App Store decisions\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "HEADING_1",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 990,
+              "endIndex": 1199,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 990,
+                    "endIndex": 1005,
+                    "textRun": {
+                      "content": "Preview video: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 1005,
+                    "endIndex": 1177,
+                    "textRun": {
+                      "content": "Apple places App Preview videos before screenshots on iPhone, even when they are rearranged. Keep this gallery screenshot-only if the trends-led message must remain first. ",
+                      "textStyle": {}
+                    }
+                  },
+                  {
+                    "startIndex": 1177,
+                    "endIndex": 1198,
+                    "textRun": {
+                      "content": "Apple upload guidance",
+                      "textStyle": {
+                        "underline": true,
+                        "foregroundColor": {
+                          "color": {
+                            "rgbColor": {
+                              "red": 0.06666667,
+                              "green": 0.33333334,
+                              "blue": 0.8
+                            }
+                          }
+                        },
+                        "weightedFontFamily": {
+                          "fontFamily": "Arial",
+                          "weight": 400
+                        },
+                        "link": {
+                          "url": "https://developer.apple.com/help/app-store-connect/manage-app-information/upload-app-previews-and-screenshots"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 1198,
+                    "endIndex": 1199,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 1199,
+              "endIndex": 1346,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1199,
+                    "endIndex": 1216,
+                    "textRun": {
+                      "content": "Device coverage: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 1216,
+                    "endIndex": 1314,
+                    "textRun": {
+                      "content": "The current app target supports iPad, so a separate 13-inch iPad screenshot set is also required. ",
+                      "textStyle": {}
+                    }
+                  },
+                  {
+                    "startIndex": 1314,
+                    "endIndex": 1345,
+                    "textRun": {
+                      "content": "Apple screenshot specifications",
+                      "textStyle": {
+                        "underline": true,
+                        "foregroundColor": {
+                          "color": {
+                            "rgbColor": {
+                              "red": 0.06666667,
+                              "green": 0.33333334,
+                              "blue": 0.8
+                            }
+                          }
+                        },
+                        "weightedFontFamily": {
+                          "fontFamily": "Arial",
+                          "weight": 400
+                        },
+                        "link": {
+                          "url": "https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 1345,
+                    "endIndex": 1346,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 1346,
+              "endIndex": 1425,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1346,
+                    "endIndex": 1363,
+                    "textRun": {
+                      "content": "File validation: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 1363,
+                    "endIndex": 1425,
+                    "textRun": {
+                      "content": "1320 x 2868 px, RGB, no alpha; representative demo data only.\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 1425,
+              "endIndex": 1468,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1425,
+                    "endIndex": 1468,
+                    "textRun": {
+                      "content": "01: Turn daily check-ins into clear trends\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "HEADING_1",
+                  "direction": "LEFT_TO_RIGHT",
+                  "pageBreakBefore": true
+                }
+              }
+            },
+            {
+              "startIndex": 1468,
+              "endIndex": 1586,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1468,
+                    "endIndex": 1490,
+                    "textRun": {
+                      "content": "What it communicates: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 1490,
+                    "endIndex": 1586,
+                    "textRun": {
+                      "content": "Lead with the core outcome: daily scores and medication changes become an understandable story.\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 1586,
+              "endIndex": 1605,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1586,
+                    "endIndex": 1596,
+                    "textRun": {
+                      "content": "App view: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 1596,
+                    "endIndex": 1605,
+                    "textRun": {
+                      "content": "Insights\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 1605,
+              "endIndex": 1607,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1605,
+                    "endIndex": 1606,
+                    "inlineObjectElement": {
+                      "inlineObjectId": "i.0",
+                      "textStyle": {}
+                    }
+                  },
+                  {
+                    "startIndex": 1606,
+                    "endIndex": 1607,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "alignment": "CENTER",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 1607,
+              "endIndex": 1672,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1607,
+                    "endIndex": 1671,
+                    "textRun": {
+                      "content": "Upload asset: 1320 x 2868 pixels, portrait, RGB, no transparency",
+                      "textStyle": {
+                        "foregroundColor": {
+                          "color": {
+                            "rgbColor": {
+                              "red": 0.33333334,
+                              "green": 0.33333334,
+                              "blue": 0.33333334
+                            }
+                          }
+                        },
+                        "fontSize": {
+                          "magnitude": 9,
+                          "unit": "PT"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 1671,
+                    "endIndex": 1672,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "alignment": "CENTER",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 1672,
+              "endIndex": 1674,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1672,
+                    "endIndex": 1673,
+                    "pageBreak": {
+                      "textStyle": {}
+                    }
+                  },
+                  {
+                    "startIndex": 1673,
+                    "endIndex": 1674,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 1674,
+              "endIndex": 1705,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1674,
+                    "endIndex": 1705,
+                    "textRun": {
+                      "content": "02: Check in in under a minute\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "HEADING_1",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 1705,
+              "endIndex": 1820,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1705,
+                    "endIndex": 1727,
+                    "textRun": {
+                      "content": "What it communicates: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 1727,
+                    "endIndex": 1820,
+                    "textRun": {
+                      "content": "Show that the habit is lightweight and captures focus, mood, sleep, energy, and medications.\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 1820,
+              "endIndex": 1845,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1820,
+                    "endIndex": 1830,
+                    "textRun": {
+                      "content": "App view: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 1830,
+                    "endIndex": 1845,
+                    "textRun": {
+                      "content": "Daily check-in\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 1845,
+              "endIndex": 1847,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1845,
+                    "endIndex": 1846,
+                    "inlineObjectElement": {
+                      "inlineObjectId": "i.1",
+                      "textStyle": {}
+                    }
+                  },
+                  {
+                    "startIndex": 1846,
+                    "endIndex": 1847,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "alignment": "CENTER",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 1847,
+              "endIndex": 1912,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1847,
+                    "endIndex": 1911,
+                    "textRun": {
+                      "content": "Upload asset: 1320 x 2868 pixels, portrait, RGB, no transparency",
+                      "textStyle": {
+                        "foregroundColor": {
+                          "color": {
+                            "rgbColor": {
+                              "red": 0.33333334,
+                              "green": 0.33333334,
+                              "blue": 0.33333334
+                            }
+                          }
+                        },
+                        "fontSize": {
+                          "magnitude": 9,
+                          "unit": "PT"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 1911,
+                    "endIndex": 1912,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "alignment": "CENTER",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 1912,
+              "endIndex": 1914,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1912,
+                    "endIndex": 1913,
+                    "pageBreak": {
+                      "textStyle": {}
+                    }
+                  },
+                  {
+                    "startIndex": 1913,
+                    "endIndex": 1914,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 1914,
+              "endIndex": 1944,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1914,
+                    "endIndex": 1944,
+                    "textRun": {
+                      "content": "03: Know exactly what changed\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "HEADING_1",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 1944,
+              "endIndex": 2076,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 1944,
+                    "endIndex": 1966,
+                    "textRun": {
+                      "content": "What it communicates: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 1966,
+                    "endIndex": 2076,
+                    "textRun": {
+                      "content": "Connect medication adjustments to the daily record so users can understand context, not just isolated scores.\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 2076,
+              "endIndex": 2092,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 2076,
+                    "endIndex": 2086,
+                    "textRun": {
+                      "content": "App view: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 2086,
+                    "endIndex": 2092,
+                    "textRun": {
+                      "content": "Today\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 2092,
+              "endIndex": 2094,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 2092,
+                    "endIndex": 2093,
+                    "inlineObjectElement": {
+                      "inlineObjectId": "i.2",
+                      "textStyle": {}
+                    }
+                  },
+                  {
+                    "startIndex": 2093,
+                    "endIndex": 2094,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "alignment": "CENTER",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 2094,
+              "endIndex": 2159,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 2094,
+                    "endIndex": 2158,
+                    "textRun": {
+                      "content": "Upload asset: 1320 x 2868 pixels, portrait, RGB, no transparency",
+                      "textStyle": {
+                        "foregroundColor": {
+                          "color": {
+                            "rgbColor": {
+                              "red": 0.33333334,
+                              "green": 0.33333334,
+                              "blue": 0.33333334
+                            }
+                          }
+                        },
+                        "fontSize": {
+                          "magnitude": 9,
+                          "unit": "PT"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 2158,
+                    "endIndex": 2159,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "alignment": "CENTER",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 2159,
+              "endIndex": 2161,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 2159,
+                    "endIndex": 2160,
+                    "pageBreak": {
+                      "textStyle": {}
+                    }
+                  },
+                  {
+                    "startIndex": 2160,
+                    "endIndex": 2161,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 2161,
+              "endIndex": 2198,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 2161,
+                    "endIndex": 2198,
+                    "textRun": {
+                      "content": "04: Every medication. Right on time.\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "HEADING_1",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 2198,
+              "endIndex": 2291,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 2198,
+                    "endIndex": 2220,
+                    "textRun": {
+                      "content": "What it communicates: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 2220,
+                    "endIndex": 2291,
+                    "textRun": {
+                      "content": "Present the practical daily schedule and make every dose easy to scan.\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 2291,
+              "endIndex": 2310,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 2291,
+                    "endIndex": 2301,
+                    "textRun": {
+                      "content": "App view: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 2301,
+                    "endIndex": 2310,
+                    "textRun": {
+                      "content": "Schedule\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 2310,
+              "endIndex": 2312,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 2310,
+                    "endIndex": 2311,
+                    "inlineObjectElement": {
+                      "inlineObjectId": "i.3",
+                      "textStyle": {}
+                    }
+                  },
+                  {
+                    "startIndex": 2311,
+                    "endIndex": 2312,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "alignment": "CENTER",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 2312,
+              "endIndex": 2377,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 2312,
+                    "endIndex": 2376,
+                    "textRun": {
+                      "content": "Upload asset: 1320 x 2868 pixels, portrait, RGB, no transparency",
+                      "textStyle": {
+                        "foregroundColor": {
+                          "color": {
+                            "rgbColor": {
+                              "red": 0.33333334,
+                              "green": 0.33333334,
+                              "blue": 0.33333334
+                            }
+                          }
+                        },
+                        "fontSize": {
+                          "magnitude": 9,
+                          "unit": "PT"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 2376,
+                    "endIndex": 2377,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "alignment": "CENTER",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 2377,
+              "endIndex": 2379,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 2377,
+                    "endIndex": 2378,
+                    "pageBreak": {
+                      "textStyle": {}
+                    }
+                  },
+                  {
+                    "startIndex": 2378,
+                    "endIndex": 2379,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 2379,
+              "endIndex": 2422,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 2379,
+                    "endIndex": 2422,
+                    "textRun": {
+                      "content": "05: Bring the full picture to appointments\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "HEADING_1",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 2422,
+              "endIndex": 2535,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 2422,
+                    "endIndex": 2444,
+                    "textRun": {
+                      "content": "What it communicates: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 2444,
+                    "endIndex": 2535,
+                    "textRun": {
+                      "content": "Close with the payoff: a concise retrospective view of scores, medications, and adherence.\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 2535,
+              "endIndex": 2561,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 2535,
+                    "endIndex": 2545,
+                    "textRun": {
+                      "content": "App view: ",
+                      "textStyle": {
+                        "bold": true
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 2545,
+                    "endIndex": 2561,
+                    "textRun": {
+                      "content": "Check-in detail\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 2561,
+              "endIndex": 2563,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 2561,
+                    "endIndex": 2562,
+                    "inlineObjectElement": {
+                      "inlineObjectId": "i.4",
+                      "textStyle": {}
+                    }
+                  },
+                  {
+                    "startIndex": 2562,
+                    "endIndex": 2563,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "alignment": "CENTER",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            },
+            {
+              "startIndex": 2563,
+              "endIndex": 2628,
+              "paragraph": {
+                "elements": [
+                  {
+                    "startIndex": 2563,
+                    "endIndex": 2627,
+                    "textRun": {
+                      "content": "Upload asset: 1320 x 2868 pixels, portrait, RGB, no transparency",
+                      "textStyle": {
+                        "foregroundColor": {
+                          "color": {
+                            "rgbColor": {
+                              "red": 0.33333334,
+                              "green": 0.33333334,
+                              "blue": 0.33333334
+                            }
+                          }
+                        },
+                        "fontSize": {
+                          "magnitude": 9,
+                          "unit": "PT"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "startIndex": 2627,
+                    "endIndex": 2628,
+                    "textRun": {
+                      "content": "\n",
+                      "textStyle": {}
+                    }
+                  }
+                ],
+                "paragraphStyle": {
+                  "namedStyleType": "NORMAL_TEXT",
+                  "alignment": "CENTER",
+                  "direction": "LEFT_TO_RIGHT"
+                }
+              }
+            }
+          ]
+        },
+        "headers": null,
+        "footers": null,
+        "footnotes": null,
+        "documentStyle": {
+          "background": {
+            "color": {}
+          },
+          "pageNumberStart": 1,
+          "marginTop": {
+            "magnitude": 72,
+            "unit": "PT"
+          },
+          "marginBottom": {
+            "magnitude": 72,
+            "unit": "PT"
+          },
+          "marginRight": {
+            "magnitude": 72,
+            "unit": "PT"
+          },
+          "marginLeft": {
+            "magnitude": 72,
+            "unit": "PT"
+          },
+          "pageSize": {
+            "height": {
+              "magnitude": 792,
+              "unit": "PT"
+            },
+            "width": {
+              "magnitude": 612,
+              "unit": "PT"
+            }
+          },
+          "marginHeader": {
+            "magnitude": 35.4,
+            "unit": "PT"
+          },
+          "marginFooter": {
+            "magnitude": 35.4,
+            "unit": "PT"
+          },
+          "useCustomHeaderFooterMargins": true,
+          "documentFormat": {
+            "documentMode": "PAGES"
+          }
+        },
+        "suggestedDocumentStyleChanges": null,
+        "namedStyles": {
+          "styles": [
+            {
+              "namedStyleType": "NORMAL_TEXT",
+              "textStyle": {
+                "bold": false,
+                "italic": false,
+                "underline": false,
+                "strikethrough": false,
+                "smallCaps": false,
+                "backgroundColor": {},
+                "foregroundColor": {
+                  "color": {
+                    "rgbColor": {}
+                  }
+                },
+                "fontSize": {
+                  "magnitude": 11,
+                  "unit": "PT"
+                },
+                "weightedFontFamily": {
+                  "fontFamily": "Arial",
+                  "weight": 400
+                },
+                "baselineOffset": "NONE"
+              },
+              "paragraphStyle": {
+                "namedStyleType": "NORMAL_TEXT",
+                "alignment": "START",
+                "lineSpacing": 115,
+                "direction": "LEFT_TO_RIGHT",
+                "spacingMode": "NEVER_COLLAPSE",
+                "spaceAbove": {
+                  "unit": "PT"
+                },
+                "spaceBelow": {
+                  "magnitude": 8,
+                  "unit": "PT"
+                },
+                "borderBetween": {
+                  "color": {},
+                  "width": {
+                    "unit": "PT"
+                  },
+                  "padding": {
+                    "unit": "PT"
+                  },
+                  "dashStyle": "SOLID"
+                },
+                "borderTop": {
+                  "color": {},
+                  "width": {
+                    "unit": "PT"
+                  },
+                  "padding": {
+                    "unit": "PT"
+                  },
+                  "dashStyle": "SOLID"
+                },
+                "borderBottom": {
+                  "color": {},
+                  "width": {
+                    "unit": "PT"
+                  },
+                  "padding": {
+                    "unit": "PT"
+                  },
+                  "dashStyle": "SOLID"
+                },
+                "borderLeft": {
+                  "color": {},
+                  "width": {
+                    "unit": "PT"
+                  },
+                  "padding": {
+                    "unit": "PT"
+                  },
+                  "dashStyle": "SOLID"
+                },
+                "borderRight": {
+                  "color": {},
+                  "width": {
+                    "unit": "PT"
+                  },
+                  "padding": {
+                    "unit": "PT"
+                  },
+                  "dashStyle": "SOLID"
+                },
+                "indentFirstLine": {
+                  "unit": "PT"
+                },
+                "indentStart": {
+                  "unit": "PT"
+                },
+                "indentEnd": {
+                  "unit": "PT"
+                },
+                "keepLinesTogether": false,
+                "keepWithNext": false,
+                "avoidWidowAndOrphan": true,
+                "shading": {
+                  "backgroundColor": {}
+                },
+                "pageBreakBefore": false
+              }
+            },
+            {
+              "namedStyleType": "HEADING_1",
+              "textStyle": {
+                "bold": false,
+                "foregroundColor": {
+                  "color": {
+                    "rgbColor": {}
+                  }
+                },
+                "fontSize": {
+                  "magnitude": 20,
+                  "unit": "PT"
+                },
+                "weightedFontFamily": {
+                  "fontFamily": "Arial",
+                  "weight": 400
+                }
+              },
+              "paragraphStyle": {
+                "namedStyleType": "NORMAL_TEXT",
+                "direction": "LEFT_TO_RIGHT",
+                "spaceAbove": {
+                  "magnitude": 20,
+                  "unit": "PT"
+                },
+                "spaceBelow": {
+                  "magnitude": 6,
+                  "unit": "PT"
+                },
+                "keepLinesTogether": true,
+                "keepWithNext": true
+              }
+            },
+            {
+              "namedStyleType": "HEADING_2",
+              "textStyle": {
+                "bold": false,
+                "foregroundColor": {
+                  "color": {
+                    "rgbColor": {}
+                  }
+                },
+                "fontSize": {
+                  "magnitude": 16,
+                  "unit": "PT"
+                },
+                "weightedFontFamily": {
+                  "fontFamily": "Arial",
+                  "weight": 400
+                }
+              },
+              "paragraphStyle": {
+                "namedStyleType": "NORMAL_TEXT",
+                "direction": "LEFT_TO_RIGHT",
+                "spaceAbove": {
+                  "magnitude": 18,
+                  "unit": "PT"
+                },
+                "spaceBelow": {
+                  "magnitude": 6,
+                  "unit": "PT"
+                },
+                "keepLinesTogether": true,
+                "keepWithNext": true
+              }
+            },
+            {
+              "namedStyleType": "HEADING_3",
+              "textStyle": {
+                "bold": false,
+                "foregroundColor": {
+                  "color": {
+                    "rgbColor": {
+                      "red": 0.2627451,
+                      "green": 0.2627451,
+                      "blue": 0.2627451
+                    }
+                  }
+                },
+                "fontSize": {
+                  "magnitude": 14,
+                  "unit": "PT"
+                },
+                "weightedFontFamily": {
+                  "fontFamily": "Arial",
+                  "weight": 400
+                }
+              },
+              "paragraphStyle": {
+                "namedStyleType": "NORMAL_TEXT",
+                "direction": "LEFT_TO_RIGHT",
+                "spaceAbove": {
+                  "magnitude": 16,
+                  "unit": "PT"
+                },
+                "spaceBelow": {
+                  "magnitude": 4,
+                  "unit": "PT"
+                },
+                "keepLinesTogether": true,
+                "keepWithNext": true
+              }
+            },
+            {
+              "namedStyleType": "HEADING_4",
+              "textStyle": {
+                "bold": true,
+                "italic": true,
+                "foregroundColor": {
+                  "color": {
+                    "rgbColor": {
+                      "red": 0.30980393,
+                      "green": 0.5058824,
+                      "blue": 0.7411765
+                    }
+                  }
+                },
+                "weightedFontFamily": {
+                  "fontFamily": "Calibri",
+                  "weight": 400
+                }
+              },
+              "paragraphStyle": {
+                "namedStyleType": "NORMAL_TEXT",
+                "direction": "LEFT_TO_RIGHT",
+                "spaceAbove": {
+                  "magnitude": 10,
+                  "unit": "PT"
+                },
+                "spaceBelow": {
+                  "unit": "PT"
+                },
+                "keepLinesTogether": true,
+                "keepWithNext": true
+              }
+            },
+            {
+              "namedStyleType": "HEADING_5",
+              "textStyle": {
+                "foregroundColor": {
+                  "color": {
+                    "rgbColor": {
+                      "red": 0.14117648,
+                      "green": 0.24705882,
+                      "blue": 0.38039216
+                    }
+                  }
+                },
+                "weightedFontFamily": {
+                  "fontFamily": "Calibri",
+                  "weight": 400
+                }
+              },
+              "paragraphStyle": {
+                "namedStyleType": "NORMAL_TEXT",
+                "direction": "LEFT_TO_RIGHT",
+                "spaceAbove": {
+                  "magnitude": 10,
+                  "unit": "PT"
+                },
+                "spaceBelow": {
+                  "unit": "PT"
+                },
+                "keepLinesTogether": true,
+                "keepWithNext": true
+              }
+            },
+            {
+              "namedStyleType": "HEADING_6",
+              "textStyle": {
+                "italic": true,
+                "foregroundColor": {
+                  "color": {
+                    "rgbColor": {
+                      "red": 0.14117648,
+                      "green": 0.24705882,
+                      "blue": 0.38039216
+                    }
+                  }
+                },
+                "weightedFontFamily": {
+                  "fontFamily": "Calibri",
+                  "weight": 400
+                }
+              },
+              "paragraphStyle": {
+                "namedStyleType": "NORMAL_TEXT",
+                "direction": "LEFT_TO_RIGHT",
+                "spaceAbove": {
+                  "magnitude": 10,
+                  "unit": "PT"
+                },
+                "spaceBelow": {
+                  "unit": "PT"
+                },
+                "keepLinesTogether": true,
+                "keepWithNext": true
+              }
+            },
+            {
+              "namedStyleType": "TITLE",
+              "textStyle": {
+                "foregroundColor": {
+                  "color": {
+                    "rgbColor": {
+                      "red": 0.09019608,
+                      "green": 0.21176471,
+                      "blue": 0.3647059
+                    }
+                  }
+                },
+                "fontSize": {
+                  "magnitude": 26,
+                  "unit": "PT"
+                },
+                "weightedFontFamily": {
+                  "fontFamily": "Calibri",
+                  "weight": 400
+                }
+              },
+              "paragraphStyle": {
+                "namedStyleType": "NORMAL_TEXT",
+                "lineSpacing": 100,
+                "direction": "LEFT_TO_RIGHT",
+                "spacingMode": "NEVER_COLLAPSE",
+                "spaceBelow": {
+                  "magnitude": 15,
+                  "unit": "PT"
+                }
+              }
+            },
+            {
+              "namedStyleType": "SUBTITLE",
+              "textStyle": {
+                "italic": true,
+                "foregroundColor": {
+                  "color": {
+                    "rgbColor": {
+                      "red": 0.30980393,
+                      "green": 0.5058824,
+                      "blue": 0.7411765
+                    }
+                  }
+                },
+                "fontSize": {
+                  "magnitude": 12,
+                  "unit": "PT"
+                },
+                "weightedFontFamily": {
+                  "fontFamily": "Calibri",
+                  "weight": 400
+                }
+              },
+              "paragraphStyle": {
+                "namedStyleType": "NORMAL_TEXT",
+                "direction": "LEFT_TO_RIGHT"
+              }
+            }
+          ]
+        },
+        "suggestedNamedStylesChanges": null,
+        "lists": {
+          "kix.list.1": {
+            "listProperties": {
+              "nestingLevels": [
+                {
+                  "bulletAlignment": "START",
+                  "glyphSymbol": "●",
+                  "glyphFormat": "%0",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "magnitude": 18,
+                    "unit": "PT"
+                  },
+                  "textStyle": {
+                    "weightedFontFamily": {
+                      "fontFamily": "Noto Sans Symbols",
+                      "weight": 400
+                    }
+                  },
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                }
+              ]
+            }
+          },
+          "kix.list.2": {
+            "listProperties": {
+              "nestingLevels": [
+                {
+                  "bulletAlignment": "START",
+                  "glyphSymbol": "●",
+                  "glyphFormat": "%0",
+                  "indentFirstLine": {
+                    "magnitude": 18,
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "magnitude": 36,
+                    "unit": "PT"
+                  },
+                  "textStyle": {
+                    "weightedFontFamily": {
+                      "fontFamily": "Noto Sans Symbols",
+                      "weight": 400
+                    }
+                  },
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                }
+              ]
+            }
+          },
+          "kix.list.3": {
+            "listProperties": {
+              "nestingLevels": [
+                {
+                  "bulletAlignment": "START",
+                  "glyphSymbol": "●",
+                  "glyphFormat": "%0",
+                  "indentFirstLine": {
+                    "magnitude": 36,
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "magnitude": 54,
+                    "unit": "PT"
+                  },
+                  "textStyle": {
+                    "weightedFontFamily": {
+                      "fontFamily": "Noto Sans Symbols",
+                      "weight": 400
+                    }
+                  },
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                }
+              ]
+            }
+          },
+          "kix.list.4": {
+            "listProperties": {
+              "nestingLevels": [
+                {
+                  "bulletAlignment": "START",
+                  "glyphSymbol": "●",
+                  "glyphFormat": "%0",
+                  "indentFirstLine": {
+                    "magnitude": 54,
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "magnitude": 72,
+                    "unit": "PT"
+                  },
+                  "textStyle": {
+                    "weightedFontFamily": {
+                      "fontFamily": "Noto Sans Symbols",
+                      "weight": 400
+                    }
+                  },
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                }
+              ]
+            }
+          },
+          "kix.list.5": {
+            "listProperties": {
+              "nestingLevels": [
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "DECIMAL",
+                  "glyphFormat": "%0.",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "magnitude": 18,
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                }
+              ]
+            }
+          },
+          "kix.list.6": {
+            "listProperties": {
+              "nestingLevels": [
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "DECIMAL",
+                  "glyphFormat": "%0.",
+                  "indentFirstLine": {
+                    "magnitude": 18,
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "magnitude": 36,
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                }
+              ]
+            }
+          },
+          "kix.list.7": {
+            "listProperties": {
+              "nestingLevels": [
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "DECIMAL",
+                  "glyphFormat": "%0.",
+                  "indentFirstLine": {
+                    "magnitude": 36,
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "magnitude": 54,
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                }
+              ]
+            }
+          },
+          "kix.list.8": {
+            "listProperties": {
+              "nestingLevels": [
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "DECIMAL",
+                  "glyphFormat": "%0.",
+                  "indentFirstLine": {
+                    "magnitude": 54,
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "magnitude": 72,
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                }
+              ]
+            }
+          },
+          "kix.list.9": {
+            "listProperties": {
+              "nestingLevels": [
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "DECIMAL",
+                  "glyphFormat": "%0.",
+                  "indentFirstLine": {
+                    "magnitude": 72,
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "magnitude": 90,
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                },
+                {
+                  "bulletAlignment": "START",
+                  "glyphType": "NONE",
+                  "indentFirstLine": {
+                    "unit": "PT"
+                  },
+                  "indentStart": {
+                    "unit": "PT"
+                  },
+                  "textStyle": {},
+                  "startNumber": 1
+                }
+              ]
+            }
+          }
+        },
+        "namedRanges": null,
+        "inlineObjects": {
+          "i.0": {
+            "objectId": "i.0",
+            "inlineObjectProperties": {
+              "embeddedObject": {
+                "imageProperties": {
+                  "contentUri": "https://lh7-rt.googleusercontent.com/docsz/AD_4nXex8fS3LOGN9HwCkfCcWzC0quN6LPXDcDMMQdBdsfY4q2mfGTgno6fonSDwICAscXrc88ALUMztczJ0EKl2Q1xIvFl9YUKrkyswN91qDG3CXlOYk9AChcWr9bBukX0NDXzyIZeYGpxhkoBnLdBsr4SmI7QGUYjTMPiXveT1zxTtCOv1s6YORg=s2048?key=AgXf7HH8PwbqLmEWtjF7BQ",
+                  "cropProperties": {}
+                },
+                "description": "Dose to Data App Store screenshot 01: Turn daily check-ins into clear trends",
+                "embeddedObjectBorder": {
+                  "color": {
+                    "color": {
+                      "rgbColor": {}
+                    }
+                  },
+                  "width": {
+                    "unit": "PT"
+                  },
+                  "dashStyle": "SOLID",
+                  "propertyState": "NOT_RENDERED"
+                },
+                "size": {
+                  "height": {
+                    "magnitude": 484.9527559055118,
+                    "unit": "PT"
+                  },
+                  "width": {
+                    "magnitude": 223.2,
+                    "unit": "PT"
+                  }
+                },
+                "marginTop": {
+                  "unit": "PT"
+                },
+                "marginBottom": {
+                  "unit": "PT"
+                },
+                "marginRight": {
+                  "magnitude": 9,
+                  "unit": "PT"
+                },
+                "marginLeft": {
+                  "magnitude": 9,
+                  "unit": "PT"
+                }
+              }
+            }
+          },
+          "i.1": {
+            "objectId": "i.1",
+            "inlineObjectProperties": {
+              "embeddedObject": {
+                "imageProperties": {
+                  "contentUri": "https://lh7-rt.googleusercontent.com/docsz/AD_4nXfLA6UfrP4eQDmVbaYkxseYtxdOI0HPL-mK_gbGO3Rg7qDr0UI960AjpmkwEnWgZRVd1fQsf66X6PD6XIVprdOsILTWH8TsntShF96vnnzQwGNymNASYuAChEAHe3a1vavvvC5a9xYjwPWIMbkF31g2b64-KD2Jl7E1SLkuqiItd2I5rgs=s2048?key=AgXf7HH8PwbqLmEWtjF7BQ",
+                  "cropProperties": {}
+                },
+                "description": "Dose to Data App Store screenshot 02: Check in in under a minute",
+                "embeddedObjectBorder": {
+                  "color": {
+                    "color": {
+                      "rgbColor": {}
+                    }
+                  },
+                  "width": {
+                    "unit": "PT"
+                  },
+                  "dashStyle": "SOLID",
+                  "propertyState": "NOT_RENDERED"
+                },
+                "size": {
+                  "height": {
+                    "magnitude": 484.9527559055118,
+                    "unit": "PT"
+                  },
+                  "width": {
+                    "magnitude": 223.2,
+                    "unit": "PT"
+                  }
+                },
+                "marginTop": {
+                  "unit": "PT"
+                },
+                "marginBottom": {
+                  "unit": "PT"
+                },
+                "marginRight": {
+                  "magnitude": 9,
+                  "unit": "PT"
+                },
+                "marginLeft": {
+                  "magnitude": 9,
+                  "unit": "PT"
+                }
+              }
+            }
+          },
+          "i.2": {
+            "objectId": "i.2",
+            "inlineObjectProperties": {
+              "embeddedObject": {
+                "imageProperties": {
+                  "contentUri": "https://lh7-rt.googleusercontent.com/docsz/AD_4nXfszSwM2SgUKiALPp6KCiFFtO-yw9IpvqGMnCgMSQZHWkonmgtcRLexvGhjLOqcfdVxcW1-ShyfXdE6a8V6JNzWCNWpFsHe60QMexApDFWntb2Q5fDAnLm2f05h2iS3p1WcTKi_qnb4sSRE-nCBF-C4Dyfzs-X8YpwHmeXS5ajglKF_3-GUvw=s2048?key=AgXf7HH8PwbqLmEWtjF7BQ",
+                  "cropProperties": {}
+                },
+                "description": "Dose to Data App Store screenshot 03: Know exactly what changed",
+                "embeddedObjectBorder": {
+                  "color": {
+                    "color": {
+                      "rgbColor": {}
+                    }
+                  },
+                  "width": {
+                    "unit": "PT"
+                  },
+                  "dashStyle": "SOLID",
+                  "propertyState": "NOT_RENDERED"
+                },
+                "size": {
+                  "height": {
+                    "magnitude": 484.9527559055118,
+                    "unit": "PT"
+                  },
+                  "width": {
+                    "magnitude": 223.2,
+                    "unit": "PT"
+                  }
+                },
+                "marginTop": {
+                  "unit": "PT"
+                },
+                "marginBottom": {
+                  "unit": "PT"
+                },
+                "marginRight": {
+                  "magnitude": 9,
+                  "unit": "PT"
+                },
+                "marginLeft": {
+                  "magnitude": 9,
+                  "unit": "PT"
+                }
+              }
+            }
+          },
+          "i.3": {
+            "objectId": "i.3",
+            "inlineObjectProperties": {
+              "embeddedObject": {
+                "imageProperties": {
+                  "contentUri": "https://lh7-rt.googleusercontent.com/docsz/AD_4nXeL2DK9hjDx52CIUbzo8FSmlYZKF4SYUjWBFCrLDZd7h5VsMHY59mq-T6nctsjIm2T8xPLj14bymWIPqYMy3GY4hE5vnKeDeiqospvulHgIk6Efaw0gIpPUfvre5TTwxPsnwOfYL3AEoAEn11H8reRKqXbHKX7pnrg_ahdt00ilc68EWoEMlg=s2048?key=AgXf7HH8PwbqLmEWtjF7BQ",
+                  "cropProperties": {}
+                },
+                "description": "Dose to Data App Store screenshot 04: Every medication. Right on time.",
+                "embeddedObjectBorder": {
+                  "color": {
+                    "color": {
+                      "rgbColor": {}
+                    }
+                  },
+                  "width": {
+                    "unit": "PT"
+                  },
+                  "dashStyle": "SOLID",
+                  "propertyState": "NOT_RENDERED"
+                },
+                "size": {
+                  "height": {
+                    "magnitude": 484.9527559055118,
+                    "unit": "PT"
+                  },
+                  "width": {
+                    "magnitude": 223.2,
+                    "unit": "PT"
+                  }
+                },
+                "marginTop": {
+                  "unit": "PT"
+                },
+                "marginBottom": {
+                  "unit": "PT"
+                },
+                "marginRight": {
+                  "magnitude": 9,
+                  "unit": "PT"
+                },
+                "marginLeft": {
+                  "magnitude": 9,
+                  "unit": "PT"
+                }
+              }
+            }
+          },
+          "i.4": {
+            "objectId": "i.4",
+            "inlineObjectProperties": {
+              "embeddedObject": {
+                "imageProperties": {
+                  "contentUri": "https://lh7-rt.googleusercontent.com/docsz/AD_4nXdOQGoholW0sy3bP1L_S3IrAE4ow5CE_czeVrJWDE6h06T62Tw3E0eMSzpKkFy0Jm4qVOpljASpjAAh4Xxb9FlOT420-05jkEg2EMyT4y2Qb2fdg9Pvt96xMeCgjKMzrNWj3WfmK9QoqllG6eudd_YJ4ooWy_0l6vJQvmCCbt-VDsk6NHsF8w=s2048?key=AgXf7HH8PwbqLmEWtjF7BQ",
+                  "cropProperties": {}
+                },
+                "description": "Dose to Data App Store screenshot 05: Bring the full picture to appointments",
+                "embeddedObjectBorder": {
+                  "color": {
+                    "color": {
+                      "rgbColor": {}
+                    }
+                  },
+                  "width": {
+                    "unit": "PT"
+                  },
+                  "dashStyle": "SOLID",
+                  "propertyState": "NOT_RENDERED"
+                },
+                "size": {
+                  "height": {
+                    "magnitude": 484.9527559055118,
+                    "unit": "PT"
+                  },
+                  "width": {
+                    "magnitude": 223.2,
+                    "unit": "PT"
+                  }
+                },
+                "marginTop": {
+                  "unit": "PT"
+                },
+                "marginBottom": {
+                  "unit": "PT"
+                },
+                "marginRight": {
+                  "magnitude": 9,
+                  "unit": "PT"
+                },
+                "marginLeft": {
+                  "magnitude": 9,
+                  "unit": "PT"
+                }
+              }
+            }
+          }
+        },
+        "positionedObjects": null,
+        "documentId": "19mbTiUsfTweyxIUxvNZqiVtPJpo8208Lmreu1M7FBQs",
+        "document_url": "https://docs.google.com/document/d/19mbTiUsfTweyxIUxvNZqiVtPJpo8208Lmreu1M7FBQs"
+      }
+    ],
+    "document_url": "https://docs.google.com/document/d/19mbTiUsfTweyxIUxvNZqiVtPJpo8208Lmreu1M7FBQs"
+  },
+  "isError": false
+}

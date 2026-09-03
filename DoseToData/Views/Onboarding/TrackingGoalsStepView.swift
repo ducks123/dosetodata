@@ -81,6 +81,7 @@ struct TrackingGoalsStepView: View {
             AuthSheet()
                 .environment(auth)
         }
+        .onAppear { Analytics.onboardingStepViewed("goals") }
     }
 
     private func toggle(_ goal: TrackingGoal) {

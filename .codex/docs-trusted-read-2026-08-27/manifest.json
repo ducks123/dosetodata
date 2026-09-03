@@ -1,0 +1,59 @@
+{
+  "bridgeVersion": "3.6",
+  "kind": "google-docs-trusted-read",
+  "status": "complete",
+  "outputDir": "/Users/stewart/Desktop/Claude Code Projects/DoseToData/.codex/docs-trusted-read-2026-08-27",
+  "target": {
+    "documentId": "19mbTiUsfTweyxIUxvNZqiVtPJpo8208Lmreu1M7FBQs",
+    "title": "Dose to Data App Store Screenshot Gallery",
+    "revisionId": "AIroW37D-qo4Lt6WRO8FdQ3XvuvXaZzU30-VpS6aO1ST1GpZrz4Qhca5S1y4pmilPrwc5pflvscxphpWVUs4zKAGFI1Q9MefuOO2oa6aTjY",
+    "documentUrl": "https://docs.google.com/document/d/19mbTiUsfTweyxIUxvNZqiVtPJpo8208Lmreu1M7FBQs",
+    "selectedTabId": null
+  },
+  "dropdownMetadata": {
+    "status": "unavailable",
+    "resolvedTool": null,
+    "authoritative": false,
+    "count": 0
+  },
+  "controlAwareness": {
+    "hasProtectedControls": false,
+    "authoritativeDropdownCount": 0,
+    "opaqueControlCount": 0,
+    "affectedParagraphCount": 0,
+    "nativeElementCounts": {
+      "inlineObjectElement": 5
+    },
+    "preservationRequired": false,
+    "recommendedBehavior": "No protected controls were detected in the scanned scope."
+  },
+  "warnings": [],
+  "files": {
+    "document_result": {
+      "path": "/Users/stewart/Desktop/Claude Code Projects/DoseToData/.codex/docs-trusted-read-2026-08-27/document-result.json",
+      "bytes": 136409,
+      "sha256": "81c81eb6edb372227e88cad89816ff7bd9de4e330a2e051a4cbde5c4ef1804c7"
+    },
+    "control_inventory": {
+      "path": "/Users/stewart/Desktop/Claude Code Projects/DoseToData/.codex/docs-trusted-read-2026-08-27/control-inventory.json",
+      "bytes": 4136,
+      "sha256": "59fc30c0138a9f0582511bcb6d453d7212e97acfb6d00f5acbef7c6a952c47ef"
+    },
+    "document_outline": {
+      "path": "/Users/stewart/Desktop/Claude Code Projects/DoseToData/.codex/docs-trusted-read-2026-08-27/document-outline.json",
+      "bytes": 28996,
+      "sha256": "fbb1b997ac3b103c31b19eb60542d3b4b6e2f9783a1d331b33659ba93b497ee5"
+    },
+    "document_text": {
+      "path": "/Users/stewart/Desktop/Claude Code Projects/DoseToData/.codex/docs-trusted-read-2026-08-27/document-text.md",
+      "bytes": 6018,
+      "sha256": "9c940b12fe1233905487a3f966260198c8d36908771c09fafde1f866d7d69709"
+    },
+    "receipt": {
+      "path": "/Users/stewart/Desktop/Claude Code Projects/DoseToData/.codex/docs-trusted-read-2026-08-27/receipt.json",
+      "bytes": 1013,
+      "sha256": "48f5cf62c8f79dfeac27449d05ff06151e31750a7914956269228b9c7d7f5d19"
+    }
+  },
+  "error": null
+}

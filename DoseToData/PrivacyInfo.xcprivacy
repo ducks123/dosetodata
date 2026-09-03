@@ -51,6 +51,23 @@
                 <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
             </array>
         </dict>
+        <!-- Anonymous product-usage events (screens reached, funnel steps,
+             counts). Never health content: no medication names, doses, mood
+             scores, side effects, notes, or check-in dates. Not linked to an
+             identity - we never call identify() - and never used to track
+             the user across other companies' apps or websites. -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeProductInteraction</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAnalytics</string>
+            </array>
+        </dict>
         <!-- Email address, collected only when the user opts in to cloud backup/sync -->
         <dict>
             <key>NSPrivacyCollectedDataType</key>

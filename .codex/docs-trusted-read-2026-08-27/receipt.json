@@ -1,0 +1,31 @@
+{
+  "bridgeVersion": "3.6",
+  "kind": "google-docs-trusted-read-receipt",
+  "status": "complete",
+  "target": {
+    "documentId": "19mbTiUsfTweyxIUxvNZqiVtPJpo8208Lmreu1M7FBQs",
+    "title": "Dose to Data App Store Screenshot Gallery",
+    "revisionId": "AIroW37D-qo4Lt6WRO8FdQ3XvuvXaZzU30-VpS6aO1ST1GpZrz4Qhca5S1y4pmilPrwc5pflvscxphpWVUs4zKAGFI1Q9MefuOO2oa6aTjY",
+    "documentUrl": "https://docs.google.com/document/d/19mbTiUsfTweyxIUxvNZqiVtPJpo8208Lmreu1M7FBQs",
+    "selectedTabId": null
+  },
+  "dropdownMetadata": {
+    "status": "unavailable",
+    "resolvedTool": null,
+    "authoritative": false,
+    "count": 0
+  },
+  "controlAwareness": {
+    "hasProtectedControls": false,
+    "authoritativeDropdownCount": 0,
+    "opaqueControlCount": 0,
+    "affectedParagraphCount": 0,
+    "nativeElementCounts": {
+      "inlineObjectElement": 5
+    },
+    "preservationRequired": false,
+    "recommendedBehavior": "No protected controls were detected in the scanned scope."
+  },
+  "warnings": [],
+  "error": null
+}

@@ -79,6 +79,10 @@ struct DoseToDataApp: App {
                 .environment(auth)
                 .environment(subscriptionService)
                 .task {
+                    // Analytics first so the launch event isn't lost behind
+                    // the network calls below. No-op until the key is set.
+                    Analytics.configure()
+                    Analytics.appOpened()
                     await subscriptionService.refresh()
                     MedicationSeeder.seedIfNeeded(context: sharedModelContainer.mainContext)
                     // One-shot migration to retire the legacy Test feature:

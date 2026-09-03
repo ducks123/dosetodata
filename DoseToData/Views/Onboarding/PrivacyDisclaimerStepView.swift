@@ -45,6 +45,7 @@ struct PrivacyDisclaimerStepView: View {
             .padding(.horizontal, 24)
             .padding(.bottom, 32)
         }
+        .onAppear { Analytics.onboardingStepViewed("disclaimer") }
     }
 }
 

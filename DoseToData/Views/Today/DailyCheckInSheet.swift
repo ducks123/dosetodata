@@ -565,6 +565,10 @@ struct DailyCheckInSheet: View {
             return
         }
 
+        // Activation signal. Event name and a boolean only — no answers,
+        // scores, side effects, notes, or dates leave the device.
+        Analytics.checkInSaved(isFirstEver: existingCheckIn == nil && allCheckIns.isEmpty)
+
         // Celebrate every successful log, past / today / future. Dismiss
         // the sheet first so the confetti is visible on TodayView, then
         // trigger the burst after the dismiss animation. Streak milestone

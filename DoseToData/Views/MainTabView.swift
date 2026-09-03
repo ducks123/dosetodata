@@ -79,6 +79,9 @@ struct MainTabView: View {
             }
         }
         .animation(.easeInOut(duration: 0.25), value: prefs.onboardingTourStage)
+        .onChange(of: prefs.onboardingTourStage) { _, stage in
+            if stage > 0 { Analytics.tourStageReached(stage) }
+        }
         .onChange(of: hasCheckInToday) { _, checkedIn in
             if inTour, prefs.onboardingTourStage == 1, checkedIn {
                 prefs.onboardingTourStage = 2
@@ -162,6 +165,7 @@ struct MainTabView: View {
     }
 
     private func finishTour() {
+        Analytics.tourCompleted()
         prefs.hasCompletedOnboarding = true
         prefs.onboardingTourStage = 0
         showTourPaywall = false
