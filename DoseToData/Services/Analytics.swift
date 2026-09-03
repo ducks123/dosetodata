@@ -27,7 +27,7 @@ enum Analytics {
     /// Paste the key from PostHog → Project Settings → Project API Key.
     /// Until it is set, every call below is a no-op, so the app builds and
     /// runs normally with analytics simply switched off.
-    static let apiKey = ""
+    static let apiKey = "phc_uYvjehm39DAj4JLgzM4dTJADNDajscQ7BJAxfuS4SGeJ"
 
     /// PostHog Cloud region host. Use "https://eu.i.posthog.com" for the EU.
     static let host = "https://us.i.posthog.com"
@@ -46,6 +46,12 @@ enum Analytics {
         config.sessionReplay = false
         // No IDFA / IDFV collection.
         config.optOut = false
+
+        #if DEBUG
+        // Log captures/flushes to the console in debug builds so event
+        // wiring can be verified without waiting on the dashboard.
+        config.debug = true
+        #endif
 
         PostHogSDK.shared.setup(config)
         isEnabled = true
