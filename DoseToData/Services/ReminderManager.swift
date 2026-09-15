@@ -1,5 +1,19 @@
 import Foundation
+import SwiftData
 import UserNotifications
+
+struct MedicationReminderSchedule: Equatable {
+    let medicationID: UUID
+    let times: [String]
+    let weekdays: [Int]
+    let isEnabled: Bool
+}
+
+struct MedicationReminderSlot: Equatable {
+    let timeString: String
+    let weekday: Int
+    let medicationIDs: [UUID]
+}
 
 @Observable
 final class ReminderManager {
@@ -11,15 +25,20 @@ final class ReminderManager {
     static let medReminderCategoryID = "MED_REMINDER"
     static let tookItAction          = "TOOK_IT"
     static let skipTodayAction       = "SKIP_TODAY"
+    static let medicationReminderTitle = "Medication reminder"
+    static let medicationIDsUserInfoKey = "medicationIDs"
+
+    private static let medicationSlotPrefix = "medSlot-"
+    private static let legacyMedicationPrefix = "userMed-"
 
     private init() {}
 
-    /// Register the medication reminder category with "Took it" and "Skip today"
+    /// Register the medication reminder category with "Taken" and "Skip today"
     /// quick-actions. Call once at app launch.
     func setupNotificationCategories() {
         let tookIt = UNNotificationAction(
             identifier: Self.tookItAction,
-            title: "✓ Took it",
+            title: "Taken",
             options: []
         )
         let skip = UNNotificationAction(
@@ -61,37 +80,58 @@ final class ReminderManager {
         }
     }
 
-    func scheduleReminders(for userMed: UserMedication) async {
+    /// Rebuilds every medication reminder from the persisted schedule. A full
+    /// rebuild is intentional: grouping by weekday + time guarantees that two
+    /// medications due at 08:00 produce one private notification, while the
+    /// next distinct time remains a separate reminder.
+    @MainActor
+    func rescheduleMedicationReminders(in context: ModelContext) async {
+        let medications = (try? context.fetch(FetchDescriptor<UserMedication>())) ?? []
+        let schedules = medications
+            .filter { $0.endDate == nil }
+            .map {
+                MedicationReminderSchedule(
+                    medicationID: $0.id,
+                    times: $0.scheduledTimes,
+                    weekdays: $0.scheduledDays,
+                    isEnabled: $0.remindersEnabled
+                )
+            }
+        await scheduleMedicationReminders(schedules)
+    }
+
+    private func scheduleMedicationReminders(_ schedules: [MedicationReminderSchedule]) async {
+        await cancelAllMedicationReminders()
+
+        let slots = Self.medicationReminderSlots(from: schedules)
+        guard !slots.isEmpty else { return }
         let granted = await requestAuthorizationIfNeeded()
         guard granted else { return }
 
-        await clearReminders(for: userMed.id)
+        for slot in slots {
+            guard let (hour, minute) = Self.parse(slot.timeString) else { continue }
 
-        let medName = userMed.medication.brandName
-        let dose = userMed.currentDose
-        // Treat empty scheduledDays as every day (handles older records before the field existed).
-        let days = userMed.scheduledDays.isEmpty ? [1, 2, 3, 4, 5, 6, 7] : userMed.scheduledDays
+            var components = DateComponents()
+            components.hour = hour
+            components.minute = minute
+            components.weekday = slot.weekday
 
-        for timeString in userMed.scheduledTimes {
-            guard let (hour, minute) = parse(timeString) else { continue }
-            for weekday in days {
-                var components = DateComponents()
-                components.hour = hour
-                components.minute = minute
-                components.weekday = weekday   // fires only on this calendar weekday
+            let content = UNMutableNotificationContent()
+            content.title = Self.medicationReminderTitle
+            content.sound = .default
+            content.threadIdentifier = "medicationReminder"
+            content.categoryIdentifier = Self.medReminderCategoryID
+            content.userInfo = [
+                Self.medicationIDsUserInfoKey: slot.medicationIDs.map(\.uuidString)
+            ]
 
-                let content = UNMutableNotificationContent()
-                content.title = "Time for \(medName)"
-                content.body = dose.isEmpty ? "Tap to log this dose." : "\(dose). Tap to log this dose."
-                content.sound = .default
-                content.threadIdentifier = userMed.id.uuidString
-                content.categoryIdentifier = Self.medReminderCategoryID
-
-                let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
-                let id = identifier(userMedID: userMed.id, timeString: timeString, weekday: weekday)
-                let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
-                await addNotification(request, operation: "schedule reminder")
-            }
+            let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+            let id = Self.medicationSlotIdentifier(
+                timeString: slot.timeString,
+                weekday: slot.weekday
+            )
+            let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+            await addNotification(request, operation: "schedule medication reminder")
         }
     }
 
@@ -106,13 +146,20 @@ final class ReminderManager {
         }
     }
 
-    func clearReminders(for userMedID: UUID) async {
+    /// Removes both the grouped reminders and the pre-1.3.0 per-medication
+    /// requests, including already-delivered private-name notifications.
+    private func cancelAllMedicationReminders() async {
         let center = UNUserNotificationCenter.current()
         let pending = await center.pendingNotificationRequests()
-        let prefix = Self.reminderIdentifierPrefix(userMedID: userMedID)
-        let ids = pending.map(\.identifier).filter { $0.hasPrefix(prefix) }
-        if !ids.isEmpty {
-            center.removePendingNotificationRequests(withIdentifiers: ids)
+        let pendingIDs = pending.map(\.identifier).filter(Self.isMedicationReminderIdentifier)
+        if !pendingIDs.isEmpty {
+            center.removePendingNotificationRequests(withIdentifiers: pendingIDs)
+        }
+
+        let delivered = await center.deliveredNotifications()
+        let deliveredIDs = delivered.map(\.request.identifier).filter(Self.isMedicationReminderIdentifier)
+        if !deliveredIDs.isEmpty {
+            center.removeDeliveredNotifications(withIdentifiers: deliveredIDs)
         }
     }
 
@@ -222,27 +269,66 @@ final class ReminderManager {
         await addNotification(request, operation: "schedule reminder")
     }
 
-    private func identifier(userMedID: UUID, timeString: String, weekday: Int) -> String {
-        Self.reminderIdentifier(userMedID: userMedID, timeString: timeString, weekday: weekday)
+    static func medicationReminderSlots(
+        from schedules: [MedicationReminderSchedule]
+    ) -> [MedicationReminderSlot] {
+        struct SlotKey: Hashable {
+            let timeString: String
+            let weekday: Int
+        }
+
+        var grouped: [SlotKey: Set<UUID>] = [:]
+        for schedule in schedules where schedule.isEnabled {
+            let days = schedule.weekdays.isEmpty ? [1, 2, 3, 4, 5, 6, 7] : schedule.weekdays
+            for rawTime in schedule.times {
+                guard let (hour, minute) = parse(rawTime) else { continue }
+                let time = String(format: "%02d:%02d", hour, minute)
+                for weekday in days where (1...7).contains(weekday) {
+                    grouped[SlotKey(timeString: time, weekday: weekday), default: []]
+                        .insert(schedule.medicationID)
+                }
+            }
+        }
+
+        return grouped.map { key, medicationIDs in
+            MedicationReminderSlot(
+                timeString: key.timeString,
+                weekday: key.weekday,
+                medicationIDs: medicationIDs.sorted { $0.uuidString < $1.uuidString }
+            )
+        }
+        .sorted {
+            if $0.weekday != $1.weekday { return $0.weekday < $1.weekday }
+            return $0.timeString < $1.timeString
+        }
     }
 
-    /// Shared prefix for ALL of a medication's reminder request identifiers.
-    /// `clearReminders(for:)` removes exactly the requests with this prefix, so
-    /// scheduling and clearing must agree on it — these statics are the single
-    /// source of truth (and are unit-tested).
+    static func medicationSlotIdentifier(timeString: String, weekday: Int) -> String {
+        "\(medicationSlotPrefix)\(weekday)-\(timeString)"
+    }
+
+    private static func isMedicationReminderIdentifier(_ identifier: String) -> Bool {
+        identifier.hasPrefix(medicationSlotPrefix)
+            || identifier.hasPrefix(legacyMedicationPrefix)
+    }
+
+    /// Legacy identifiers remain readable so quick actions from notifications
+    /// delivered by older builds can still be recorded after an update.
     static func reminderIdentifierPrefix(userMedID: UUID) -> String {
-        "userMed-\(userMedID.uuidString)"
+        "\(legacyMedicationPrefix)\(userMedID.uuidString)"
     }
 
     static func reminderIdentifier(userMedID: UUID, timeString: String, weekday: Int) -> String {
         "\(reminderIdentifierPrefix(userMedID: userMedID))-\(timeString)-\(weekday)"
     }
 
-    private func parse(_ timeString: String) -> (hour: Int, minute: Int)? {
+    private static func parse(_ timeString: String) -> (hour: Int, minute: Int)? {
         let parts = timeString.split(separator: ":")
         guard parts.count == 2,
               let hour = Int(parts[0]),
-              let minute = Int(parts[1])
+              let minute = Int(parts[1]),
+              (0...23).contains(hour),
+              (0...59).contains(minute)
         else { return nil }
         return (hour, minute)
     }

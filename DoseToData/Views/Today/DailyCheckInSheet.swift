@@ -30,6 +30,11 @@ struct DailyCheckInSheet: View {
     @State private var saveError: String? = nil
     /// UserMedication IDs the user has marked as skipped for this day.
     @State private var skippedMedIDs: Set<UUID> = []
+    /// Explicit confirmations and their automatic timestamps. Keeping this
+    /// separate from skipped IDs gives every medication a truthful third
+    /// state: not answered yet.
+    @State private var takenMedIDs: Set<UUID> = []
+    @State private var takenAtByMedID: [UUID: Date] = [:]
 
     struct PendingSideEffect: Identifiable, Hashable {
         let id = UUID()
@@ -151,6 +156,8 @@ struct DailyCheckInSheet: View {
             // Pre-fill med status from any notification quick-actions taken earlier.
             if let log = existingAdherenceLog {
                 skippedMedIDs = Set(log.skippedMedIDs)
+                takenMedIDs = Set(log.takenMedIDs)
+                takenAtByMedID = log.takenAtByMedicationID
             }
         }
     }
@@ -164,6 +171,7 @@ struct DailyCheckInSheet: View {
     private var hasAnyAnswer: Bool {
         !answers.isEmpty
             || textAnswers.values.contains { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+            || !takenMedIDs.isEmpty
             || !skippedMedIDs.isEmpty
             || !sideEffectsToday.isEmpty
             || !note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -205,6 +213,13 @@ struct DailyCheckInSheet: View {
         adherenceLogs.first { calendar.isDate($0.date, inSameDayAs: targetDate) }
     }
 
+    private var allScheduledMedsTaken: Bool {
+        let scheduledIDs = Set(scheduledMedsForDate.map(\.id))
+        return !scheduledIDs.isEmpty
+            && scheduledIDs.isSubset(of: takenMedIDs)
+            && skippedMedIDs.isDisjoint(with: scheduledIDs)
+    }
+
     private var medStatusSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(isToday ? "Medications today" : "Medications on this day")
@@ -213,26 +228,33 @@ struct DailyCheckInSheet: View {
                 .padding(.leading, 4)
 
             VStack(spacing: 0) {
-                // "Took everything" quick row
+                // One-tap convenience while preserving a timestamp for every med.
                 Button {
-                    skippedMedIDs.removeAll()
+                    let timestamp = automaticTakenTimestamp
+                    for med in scheduledMedsForDate {
+                        takenMedIDs.insert(med.id)
+                        skippedMedIDs.remove(med.id)
+                        if takenAtByMedID[med.id] == nil {
+                            takenAtByMedID[med.id] = timestamp
+                        }
+                    }
                 } label: {
                     HStack(spacing: 12) {
                         ZStack {
                             Circle()
-                                .fill(skippedMedIDs.isEmpty
+                                .fill(allScheduledMedsTaken
                                       ? Theme.Palette.success
                                       : Theme.Palette.lavenderTint)
                                 .frame(width: 32, height: 32)
-                            Image(systemName: skippedMedIDs.isEmpty ? "checkmark" : "pills.fill")
+                            Image(systemName: allScheduledMedsTaken ? "checkmark" : "pills.fill")
                                 .font(.system(size: 13, weight: .bold))
-                                .foregroundStyle(skippedMedIDs.isEmpty ? Theme.Palette.onAccent : Theme.Palette.accent)
+                                .foregroundStyle(allScheduledMedsTaken ? Theme.Palette.onAccent : Theme.Palette.accent)
                         }
-                        Text("Took everything")
+                        Text(allScheduledMedsTaken ? "Everything taken" : "Mark everything taken")
                             .font(Theme.Font.bodyEmphasis)
                             .foregroundStyle(Theme.Palette.textPrimary)
                         Spacer()
-                        if skippedMedIDs.isEmpty {
+                        if allScheduledMedsTaken {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundStyle(Theme.Palette.success)
                         }
@@ -245,17 +267,12 @@ struct DailyCheckInSheet: View {
 
                 Divider().padding(.leading, 60)
 
-                // Individual med rows — tap to mark as skipped / restore
+                // Individual medication rows with explicit, non-ambiguous states.
                 ForEach(scheduledMedsForDate) { med in
                     let isSkipped = skippedMedIDs.contains(med.id)
-                    Button {
-                        if isSkipped {
-                            skippedMedIDs.remove(med.id)
-                        } else {
-                            skippedMedIDs.insert(med.id)
-                        }
-                    } label: {
-                        HStack(spacing: 12) {
+                    let isTaken = takenMedIDs.contains(med.id)
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack(alignment: .top, spacing: 12) {
                             ZStack {
                                 Circle()
                                     .fill(isSkipped
@@ -271,30 +288,60 @@ struct DailyCheckInSheet: View {
                             VStack(alignment: .leading, spacing: 1) {
                                 Text(med.medication.brandName)
                                     .font(Theme.Font.bodyEmphasis)
-                                    .foregroundStyle(isSkipped
-                                                     ? Theme.Palette.textSecondary
-                                                     : Theme.Palette.textPrimary)
-                                    .strikethrough(isSkipped, color: Theme.Palette.textSecondary)
-                                Text(isSkipped ? "Didn't take" : med.currentDose)
+                                    .foregroundStyle(Theme.Palette.textPrimary)
+                                Text(med.currentDose)
                                     .monospacedDigit()
                                     .font(Theme.Font.caption)
-                                    .foregroundStyle(isSkipped
-                                                     ? Theme.Palette.error
-                                                     : Theme.Palette.textSecondary)
+                                    .foregroundStyle(Theme.Palette.textSecondary)
+                                if isTaken, let takenAt = takenAtByMedID[med.id] {
+                                    Label(
+                                        "Taken at \(takenAt.formatted(date: .omitted, time: .shortened))",
+                                        systemImage: "clock"
+                                    )
+                                    .monospacedDigit()
+                                    .font(Theme.Font.caption)
+                                    .foregroundStyle(Theme.Palette.success)
+                                    .padding(.top, 2)
+                                }
                             }
                             Spacer()
-                            Image(systemName: isSkipped
-                                  ? "xmark.circle.fill"
-                                  : "checkmark.circle.fill")
-                                .foregroundStyle(isSkipped
-                                                 ? Theme.Palette.error
-                                                 : Theme.Palette.success)
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                        .background(Theme.Palette.surfaceRaised)
+
+                        HStack(spacing: 8) {
+                            medicationStatusButton(
+                                title: "Taken",
+                                systemImage: "checkmark",
+                                color: Theme.Palette.success,
+                                isSelected: isTaken
+                            ) {
+                                if isTaken {
+                                    takenMedIDs.remove(med.id)
+                                    takenAtByMedID.removeValue(forKey: med.id)
+                                } else {
+                                    takenMedIDs.insert(med.id)
+                                    skippedMedIDs.remove(med.id)
+                                    takenAtByMedID[med.id] = automaticTakenTimestamp
+                                }
+                            }
+                            medicationStatusButton(
+                                title: "Didn't take",
+                                systemImage: "xmark",
+                                color: Theme.Palette.error,
+                                isSelected: isSkipped
+                            ) {
+                                if isSkipped {
+                                    skippedMedIDs.remove(med.id)
+                                } else {
+                                    skippedMedIDs.insert(med.id)
+                                    takenMedIDs.remove(med.id)
+                                    takenAtByMedID.removeValue(forKey: med.id)
+                                }
+                            }
+                        }
                     }
-                    .buttonStyle(.plain)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(Theme.Palette.surfaceRaised)
 
                     if med.id != scheduledMedsForDate.last?.id {
                         Divider().padding(.leading, 60)
@@ -305,6 +352,39 @@ struct DailyCheckInSheet: View {
             .shadow(color: Theme.cardShadow.color, radius: Theme.cardShadow.radius,
                     x: Theme.cardShadow.x, y: Theme.cardShadow.y)
         }
+    }
+
+    private func medicationStatusButton(
+        title: String,
+        systemImage: String,
+        color: Color,
+        isSelected: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Label(title, systemImage: systemImage)
+                .font(.system(size: 13, weight: .semibold))
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .foregroundStyle(isSelected ? Theme.Palette.onAccent : Theme.Palette.textSecondary)
+                .background(isSelected ? color : Theme.Palette.surfaceSunken)
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    /// A status logged today uses the exact current instant. When editing a
+    /// different day, preserve that target day and apply the current clock
+    /// time so the timestamp remains part of the check-in being edited.
+    private var automaticTakenTimestamp: Date {
+        guard !isToday else { return Date() }
+        let time = calendar.dateComponents([.hour, .minute, .second], from: Date())
+        return calendar.date(
+            bySettingHour: time.hour ?? 0,
+            minute: time.minute ?? 0,
+            second: time.second ?? 0,
+            of: targetDate
+        ) ?? targetDate
     }
 
     /// Standard questions the user hasn't hidden, in `activeCases` order.
@@ -554,10 +634,15 @@ struct DailyCheckInSheet: View {
         // duplicate same-day logs (e.g. one created by a notification quick
         // action on another context) into one before we write (M3).
         if !scheduledMedsForDate.isEmpty {
-            let takenIDs = scheduledMedsForDate.map(\.id).filter { !skippedMedIDs.contains($0) }
+            let scheduledIDs = Set(scheduledMedsForDate.map(\.id))
+            let takenIDs = takenMedIDs.intersection(scheduledIDs)
+            let skippedIDs = skippedMedIDs.intersection(scheduledIDs)
             let log = AdherenceLogStore.upsert(for: targetDate, in: modelContext)
-            log.takenMedIDs = takenIDs
-            log.skippedMedIDs = Array(skippedMedIDs)
+            log.takenMedIDs = Array(takenIDs)
+            log.skippedMedIDs = Array(skippedIDs)
+            log.replaceTakenTimestamps(
+                takenAtByMedID.filter { takenIDs.contains($0.key) }
+            )
         }
 
         do {

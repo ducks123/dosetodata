@@ -108,7 +108,7 @@ struct MedicationsOnboardingStepView: View {
                 modelContext.insert(userMed)
                 modelContext.saveChanges("onboarding medication")
                 if userMed.remindersEnabled && !userMed.scheduledTimes.isEmpty {
-                    Task { await ReminderManager.shared.scheduleReminders(for: userMed) }
+                    Task { await ReminderManager.shared.rescheduleMedicationReminders(in: modelContext) }
                 }
             }
         }
@@ -130,7 +130,7 @@ struct MedicationsOnboardingStepView: View {
                 modelContext.insert(userMed)
                 modelContext.saveChanges("onboarding medication")
                 if userMed.remindersEnabled && !userMed.scheduledTimes.isEmpty {
-                    Task { await ReminderManager.shared.scheduleReminders(for: userMed) }
+                    Task { await ReminderManager.shared.rescheduleMedicationReminders(in: modelContext) }
                 }
             }
         }
@@ -144,12 +144,9 @@ struct MedicationsOnboardingStepView: View {
                     .foregroundStyle(Theme.Palette.textSecondary)
                 ForEach(userMedications) { userMed in
                     AddedMedRow(userMed: userMed) {
-                        // Clear pending reminders for the med being
-                        // removed so notifications don't outlive it (H2).
-                        let removedID = userMed.id
                         modelContext.delete(userMed)
                         modelContext.saveChanges("onboarding medication")
-                        Task { await ReminderManager.shared.clearReminders(for: removedID) }
+                        Task { await ReminderManager.shared.rescheduleMedicationReminders(in: modelContext) }
                     }
                 }
             }

@@ -37,34 +37,55 @@ final class DoseToDataTests: XCTestCase {
         XCTAssertTrue(SubscriptionService.effectiveCanWrite(status: .loading, lastKnownCanWrite: nil))
     }
 
-    // MARK: - H2: reminder identifier / clear contract
+    // MARK: - H2: private, time-slot-grouped medication reminders
 
-    func testReminderIdentifierMatchesClearPrefix() {
-        // clearReminders(for:) removes requests whose id has this prefix, so
-        // every scheduled identifier for a med MUST start with that prefix —
-        // otherwise stop/delete would leak notifications.
-        let id = UUID()
-        let prefix = ReminderManager.reminderIdentifierPrefix(userMedID: id)
-        let scheduled = ReminderManager.reminderIdentifier(userMedID: id, timeString: "08:00", weekday: 2)
-        XCTAssertTrue(scheduled.hasPrefix(prefix),
-                      "A scheduled reminder id must match the clear prefix, or stop/delete leaks it")
+    func testMedicationRemindersAtTheSameTimeShareOneSlot() {
+        let first = UUID()
+        let second = UUID()
+        let slots = ReminderManager.medicationReminderSlots(from: [
+            MedicationReminderSchedule(
+                medicationID: first, times: ["08:00"], weekdays: [2], isEnabled: true
+            ),
+            MedicationReminderSchedule(
+                medicationID: second, times: ["08:00"], weekdays: [2], isEnabled: true
+            ),
+        ])
+
+        XCTAssertEqual(slots.count, 1)
+        XCTAssertEqual(Set(slots[0].medicationIDs), [first, second])
     }
 
-    func testReminderPrefixDoesNotMatchOtherMedications() {
-        // Clearing one med must not remove another med's reminders.
-        let a = UUID()
-        let b = UUID()
-        let prefixA = ReminderManager.reminderIdentifierPrefix(userMedID: a)
-        let scheduledB = ReminderManager.reminderIdentifier(userMedID: b, timeString: "08:00", weekday: 2)
-        XCTAssertFalse(scheduledB.hasPrefix(prefixA),
-                       "Clearing med A must not match med B's reminder ids")
+    func testNextMedicationTimeCreatesTheNextDistinctSlot() {
+        let medicationID = UUID()
+        let slots = ReminderManager.medicationReminderSlots(from: [
+            MedicationReminderSchedule(
+                medicationID: medicationID,
+                times: ["08:00", "20:00"],
+                weekdays: [2],
+                isEnabled: true
+            ),
+        ])
+
+        XCTAssertEqual(slots.map(\.timeString), ["08:00", "20:00"])
     }
 
-    func testReminderIdentifierIsUniquePerTimeAndWeekday() {
-        let id = UUID()
-        let monday8 = ReminderManager.reminderIdentifier(userMedID: id, timeString: "08:00", weekday: 2)
-        let monday8pm = ReminderManager.reminderIdentifier(userMedID: id, timeString: "20:00", weekday: 2)
-        let tuesday8 = ReminderManager.reminderIdentifier(userMedID: id, timeString: "08:00", weekday: 3)
+    func testDisabledMedicationDoesNotCreateReminderSlots() {
+        let slots = ReminderManager.medicationReminderSlots(from: [
+            MedicationReminderSchedule(
+                medicationID: UUID(), times: ["08:00"], weekdays: [2], isEnabled: false
+            ),
+        ])
+        XCTAssertTrue(slots.isEmpty)
+    }
+
+    func testMedicationReminderCopyContainsNoMedicationDetails() {
+        XCTAssertEqual(ReminderManager.medicationReminderTitle, "Medication reminder")
+    }
+
+    func testMedicationSlotIdentifierIsUniquePerTimeAndWeekday() {
+        let monday8 = ReminderManager.medicationSlotIdentifier(timeString: "08:00", weekday: 2)
+        let monday8pm = ReminderManager.medicationSlotIdentifier(timeString: "20:00", weekday: 2)
+        let tuesday8 = ReminderManager.medicationSlotIdentifier(timeString: "08:00", weekday: 3)
         XCTAssertNotEqual(monday8, monday8pm)
         XCTAssertNotEqual(monday8, tuesday8)
     }
@@ -192,6 +213,18 @@ final class DoseToDataTests: XCTestCase {
         XCTAssertEqual(Set(result.skipped), [c])
     }
 
+    func testTakenTimestampRoundTripsAndClears() {
+        let medicationID = UUID()
+        let timestamp = Date(timeIntervalSince1970: 1_789_123_456)
+        let log = MedAdherenceLog(date: timestamp)
+
+        log.recordTaken([medicationID], at: timestamp)
+        XCTAssertEqual(log.takenAt(for: medicationID), timestamp)
+
+        log.clearTakenTimestamp(for: medicationID)
+        XCTAssertNil(log.takenAt(for: medicationID))
+    }
+
     func testUpsertCollapsesDuplicateSameDayLogs() throws {
         let schema = Schema([MedAdherenceLog.self])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
@@ -200,7 +233,9 @@ final class DoseToDataTests: XCTestCase {
 
         let day = Date()
         let medTaken = UUID(); let medSkipped = UUID()
+        let takenAt = Date(timeIntervalSince1970: 1_789_123_456)
         let log1 = MedAdherenceLog(date: day); log1.takenMedIDs = [medTaken]
+        log1.recordTaken([medTaken], at: takenAt)
         let log2 = MedAdherenceLog(date: day); log2.skippedMedIDs = [medSkipped]
         context.insert(log1); context.insert(log2)
         try context.save()
@@ -212,6 +247,7 @@ final class DoseToDataTests: XCTestCase {
         XCTAssertEqual(all.count, 1, "Duplicate same-day logs must collapse to one")
         XCTAssertEqual(Set(canonical.takenMedIDs), [medTaken])
         XCTAssertEqual(Set(canonical.skippedMedIDs), [medSkipped])
+        XCTAssertEqual(canonical.takenAt(for: medTaken), takenAt)
     }
 
     func testUpsertCreatesWhenNoneExist() throws {

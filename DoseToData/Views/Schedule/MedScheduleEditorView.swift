@@ -84,11 +84,7 @@ struct MedScheduleEditorView: View {
                 userMed.remindersEnabled = newValue
                 modelContext.saveChanges("edit schedule")
                 Task {
-                    if newValue {
-                        await ReminderManager.shared.scheduleReminders(for: userMed)
-                    } else {
-                        await ReminderManager.shared.clearReminders(for: userMed.id)
-                    }
+                    await ReminderManager.shared.rescheduleMedicationReminders(in: modelContext)
                 }
             }
         )) {
@@ -117,7 +113,7 @@ struct MedScheduleEditorView: View {
         .onChange(of: userMed.scheduledTimes) { _, _ in
             if userMed.remindersEnabled {
                 Task {
-                    await ReminderManager.shared.scheduleReminders(for: userMed)
+                    await ReminderManager.shared.rescheduleMedicationReminders(in: modelContext)
                 }
             }
         }
@@ -257,7 +253,7 @@ struct MedScheduleEditorView: View {
         userMed.scheduledDays = days
         modelContext.saveChanges("edit schedule")
         if userMed.remindersEnabled {
-            Task { await ReminderManager.shared.scheduleReminders(for: userMed) }
+            Task { await ReminderManager.shared.rescheduleMedicationReminders(in: modelContext) }
         }
     }
 

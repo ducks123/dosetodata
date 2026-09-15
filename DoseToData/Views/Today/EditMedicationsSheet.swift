@@ -153,10 +153,9 @@ struct EditMedicationsSheet: View {
         )
         modelContext.insert(event)
         modelContext.saveChanges("edit medications")
-        // A stopped medication must stop reminding (H2). Clear its pending
-        // notifications after the save commits.
-        let stoppedID = userMed.id
-        Task { await ReminderManager.shared.clearReminders(for: stoppedID) }
+        // Rebuild grouped slots so a stopped medication is removed without
+        // disturbing another medication due at the same time.
+        Task { await ReminderManager.shared.rescheduleMedicationReminders(in: modelContext) }
         medToStop = nil
     }
 }
@@ -250,7 +249,7 @@ struct AddMedicationFlow: View {
                 }
                 onCommit(userMed)
                 if userMed.remindersEnabled && !userMed.scheduledTimes.isEmpty {
-                    Task { await ReminderManager.shared.scheduleReminders(for: userMed) }
+                    Task { await ReminderManager.shared.rescheduleMedicationReminders(in: modelContext) }
                 }
                 dismiss()
             }
@@ -424,7 +423,7 @@ struct AddMedicationFlow: View {
         onCommit(userMed)
         if userMed.remindersEnabled && !userMed.scheduledTimes.isEmpty {
             Task {
-                await ReminderManager.shared.scheduleReminders(for: userMed)
+                await ReminderManager.shared.rescheduleMedicationReminders(in: modelContext)
             }
         }
         dismiss()

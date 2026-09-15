@@ -49,6 +49,7 @@ struct CheckInDetailView: View {
         let dose: String
         let taken: Bool
         let skipped: Bool
+        let takenAt: Date?
         var status: String { skipped ? "Skipped" : taken ? "Taken" : "Unknown" }
     }
 
@@ -70,7 +71,8 @@ struct CheckInDetailView: View {
                 name: med.medication.brandName,
                 dose: med.currentDose,
                 taken:   takenIDs.contains(med.id),
-                skipped: skippedIDs.contains(med.id)
+                skipped: skippedIDs.contains(med.id),
+                takenAt: log?.takenAt(for: med.id)
             )
         }
     }
@@ -325,6 +327,15 @@ struct CheckInDetailView: View {
                                 .monospacedDigit()
                                 .font(Theme.Font.caption)
                                 .foregroundStyle(Theme.Palette.textSecondary)
+                            if med.taken, let takenAt = med.takenAt {
+                                Label(
+                                    "Taken at \(takenAt.formatted(date: .omitted, time: .shortened))",
+                                    systemImage: "clock"
+                                )
+                                .monospacedDigit()
+                                .font(Theme.Font.caption)
+                                .foregroundStyle(Theme.Palette.success)
+                            }
                         }
                         Spacer()
                         Text(med.status)

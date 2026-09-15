@@ -2,7 +2,7 @@ import Foundation
 import UserNotifications
 import SwiftData
 
-/// Handles notification presentation and quick-action responses (Took it / Skip today).
+/// Handles notification presentation and quick-action responses (Taken / Skip today).
 /// Set as `UNUserNotificationCenter.current().delegate` at app launch.
 final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationDelegate()
@@ -22,7 +22,7 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         completionHandler([.banner, .sound])
     }
 
-    // Called when the user taps "Took it" or "Skip today" from the lock screen.
+    // Called when the user taps "Taken" or "Skip today" from the lock screen.
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
@@ -42,14 +42,13 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         guard actionID == ReminderManager.tookItAction ||
               actionID == ReminderManager.skipTodayAction else { return }
 
-        // Notification identifier format: "userMed-{36-char-UUID}-{timeString}-{weekday}"
-        let identifier = response.notification.request.identifier
-        guard identifier.hasPrefix("userMed-") else { return }
-        let afterPrefix = String(identifier.dropFirst("userMed-".count))
-        guard afterPrefix.count >= 36,
-              let medID = UUID(uuidString: String(afterPrefix.prefix(36))),
-              let container = modelContainer
-        else { return }
+        let request = response.notification.request
+        let groupedIDs = (request.content.userInfo[ReminderManager.medicationIDsUserInfoKey] as? [String])?
+            .compactMap(UUID.init(uuidString:)) ?? []
+        let medicationIDs = groupedIDs.isEmpty
+            ? Self.legacyMedicationIDs(from: request.identifier)
+            : groupedIDs
+        guard !medicationIDs.isEmpty, let container = modelContainer else { return }
 
         let context = ModelContext(container)
 
@@ -59,15 +58,35 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
 
         switch actionID {
         case ReminderManager.tookItAction:
-            if !log.takenMedIDs.contains(medID) { log.takenMedIDs.append(medID) }
-            log.skippedMedIDs.removeAll { $0 == medID }
+            for medicationID in medicationIDs where !log.takenMedIDs.contains(medicationID) {
+                log.takenMedIDs.append(medicationID)
+            }
+            log.skippedMedIDs.removeAll { medicationIDs.contains($0) }
+            log.recordTaken(medicationIDs, at: Date())
         case ReminderManager.skipTodayAction:
-            if !log.skippedMedIDs.contains(medID) { log.skippedMedIDs.append(medID) }
-            log.takenMedIDs.removeAll { $0 == medID }
+            for medicationID in medicationIDs where !log.skippedMedIDs.contains(medicationID) {
+                log.skippedMedIDs.append(medicationID)
+            }
+            for medicationID in medicationIDs {
+                log.clearTakenTimestamp(for: medicationID)
+            }
+            log.takenMedIDs.removeAll { medicationIDs.contains($0) }
         default:
             break
         }
 
         context.saveChanges("adherence quick action")
+    }
+
+    /// Notifications delivered by an older build may still use the original
+    /// per-medication identifier. Keep those quick actions functional during
+    /// the transition without ever displaying the medication name.
+    private static func legacyMedicationIDs(from identifier: String) -> [UUID] {
+        guard identifier.hasPrefix("userMed-") else { return [] }
+        let suffix = String(identifier.dropFirst("userMed-".count))
+        guard suffix.count >= 36,
+              let medicationID = UUID(uuidString: String(suffix.prefix(36)))
+        else { return [] }
+        return [medicationID]
     }
 }

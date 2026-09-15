@@ -46,6 +46,14 @@ enum AdherenceLogStore {
             )
             canonical.takenMedIDs = resolved.taken
             canonical.skippedMedIDs = resolved.skipped
+            let takenIDs = Set(resolved.taken)
+            let timestamps = ([canonical] + dups)
+                .flatMap { $0.takenAtByMedicationID }
+                .reduce(into: [UUID: Date]()) { result, entry in
+                    guard takenIDs.contains(entry.key) else { return }
+                    result[entry.key] = max(result[entry.key] ?? .distantPast, entry.value)
+                }
+            canonical.replaceTakenTimestamps(timestamps)
             for dup in dups { context.delete(dup) }
         }
         return canonical

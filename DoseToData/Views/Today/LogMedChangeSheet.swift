@@ -440,6 +440,10 @@ struct LogMedChangeSheet: View {
             return
         }
 
+        Task {
+            await ReminderManager.shared.rescheduleMedicationReminders(in: modelContext)
+        }
+
         dismiss()
     }
 
@@ -486,20 +490,12 @@ struct LogMedChangeSheet: View {
             // reminders so a stopped med doesn't keep notifying (H2).
             if let active = userMedications.first(where: { $0.medication.id == med.id && $0.endDate == nil }) {
                 active.endDate = eventDate
-                let stoppedID = active.id
-                Task { await ReminderManager.shared.clearReminders(for: stoppedID) }
             }
         case .doseChange:
             if let active = userMedications.first(where: { $0.medication.id == med.id && $0.endDate == nil }) {
                 let newDose = draft.dose.trimmingCharacters(in: .whitespaces)
                 if !newDose.isEmpty {
                     active.currentDose = newDose
-                    // Reschedule so the notification body shows the new dose,
-                    // not the old one (H2). scheduleReminders clears first.
-                    if active.remindersEnabled && !active.scheduledTimes.isEmpty {
-                        let updated = active
-                        Task { await ReminderManager.shared.scheduleReminders(for: updated) }
-                    }
                 }
             }
         }

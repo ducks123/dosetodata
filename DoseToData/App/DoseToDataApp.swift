@@ -97,7 +97,6 @@ struct DoseToDataApp: App {
                     // the network calls below. No-op until the key is set.
                     Analytics.configure()
                     Analytics.appOpened()
-                    await subscriptionService.refresh()
                     MedicationSeeder.seedIfNeeded(context: sharedModelContainer.mainContext)
                     // One-shot migration to retire the legacy Test feature:
                     // any test still marked active gets ended as of today.
@@ -113,6 +112,12 @@ struct DoseToDataApp: App {
                     NotificationDelegate.shared.modelContainer = sharedModelContainer
                     UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
                     ReminderManager.shared.setupNotificationCategories()
+                    // Rebuild legacy per-medication requests as private,
+                    // time-slot-grouped reminders on every launch.
+                    await ReminderManager.shared.rescheduleMedicationReminders(
+                        in: sharedModelContainer.mainContext
+                    )
+                    await subscriptionService.refresh()
                 }
                 // Google OAuth returns via the `dosetodata://` scheme. We
                 // hand the URL to AuthService which passes it to the
