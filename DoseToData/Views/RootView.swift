@@ -14,6 +14,5 @@ struct RootView: View {
                 OnboardingContainerView()
             }
         }
-        .preferredColorScheme(.light)
     }
 }

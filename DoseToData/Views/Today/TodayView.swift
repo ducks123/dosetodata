@@ -150,7 +150,7 @@ struct TodayView: View {
             }
             .padding(20)
         }
-        .background(Theme.Palette.background.ignoresSafeArea())
+        .background(Theme.Palette.surface.ignoresSafeArea())
         .onAppear { consumePendingTodayDate() }
         .onChange(of: appState.pendingTodayDate) { _, _ in consumePendingTodayDate() }
         .overlay(alignment: .top) {
@@ -302,7 +302,7 @@ struct TodayView: View {
                 HStack(spacing: 5) {
                     Text("🔥")
                         .font(.system(size: 14))
-                    Text("\(currentStreak)-day streak")
+                    Text("\(currentStreak)-day streak").monospacedDigit()
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(Theme.Palette.textSecondary)
                 }
@@ -314,7 +314,7 @@ struct TodayView: View {
 
             if let avg = averageScore(for: checkIn) {
                 HStack(alignment: .lastTextBaseline, spacing: 4) {
-                    Text(String(format: "%.1f", avg))
+                    Text(String(format: "%.1f", avg)).monospacedDigit()
                         .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundStyle(Theme.Palette.textPrimary)
                     Text("/ 5 today")
@@ -324,7 +324,7 @@ struct TodayView: View {
                         Spacer()
                         let isUp = delta >= 0
                         let symbol = isUp ? "↑" : "↓"
-                        let color: Color = isUp ? Theme.Palette.success : Theme.Palette.negative
+                        let color: Color = isUp ? Theme.Palette.success : Theme.Palette.error
                         Text("\(symbol) \(String(format: "%.1f", abs(delta)))% vs 7d")
                             .font(Theme.Font.caption)
                             .foregroundStyle(color)
@@ -348,10 +348,10 @@ struct TodayView: View {
                         Text("View check-in")
                     }
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(Theme.Palette.primary)
+                    .foregroundStyle(Theme.Palette.accent)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(Theme.Palette.primary.opacity(0.08))
+                    .background(Theme.Palette.surfaceSunken)
                     .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
                 }
                 .buttonStyle(.plain)
@@ -371,17 +371,11 @@ struct TodayView: View {
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white)
+        .background(Theme.Palette.surfaceRaised)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
-                .strokeBorder(
-                    AngularGradient(
-                        colors: [.red, .orange, .yellow, .green, .cyan, .blue, .purple, .pink, .red],
-                        center: .center
-                    ),
-                    lineWidth: 2
-                )
+                .strokeBorder(Theme.Palette.success, lineWidth: 2)
                 .opacity(hasEntry ? 1 : 0)
                 .animation(.easeInOut(duration: 0.4), value: hasEntry)
         )
@@ -415,7 +409,7 @@ struct TodayView: View {
                     }
                     .padding(.vertical, 4)
                     .padding(.horizontal, 8)
-                    .background(Color.white)
+                    .background(Theme.Palette.surfaceRaised)
                     .clipShape(Capsule())
                 }
             }
@@ -456,8 +450,20 @@ struct TodayView: View {
                     Image(systemName: "plus.circle.fill")
                     Text("Log a medication change")
                 }
+                .font(Theme.Font.bodyEmphasis)
+                .foregroundStyle(Theme.Palette.textPrimary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(Theme.Palette.surfaceRaised)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
+                        .stroke(Theme.Palette.separator, lineWidth: 1)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
             }
-            .buttonStyle(PrimaryButtonStyle())
+            // Secondary treatment (spec §5): "View your progress" in the
+            // check-in card is this screen's one primary button.
+            .buttonStyle(.plain)
 
             // Note: the previous "Edit medications" secondary link was removed
             // here per product feedback. Medication management is still
@@ -474,7 +480,7 @@ struct TodayView: View {
             .multilineTextAlignment(.leading)
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
     }
 
@@ -508,7 +514,7 @@ struct TodayView: View {
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
         }
         .buttonStyle(.plain)
@@ -549,7 +555,7 @@ private struct ActionRow: View {
             }
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
             .shadow(
                 color: Theme.cardShadow.color,

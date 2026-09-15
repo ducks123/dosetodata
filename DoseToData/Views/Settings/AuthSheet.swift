@@ -85,11 +85,11 @@ struct AuthSheet: View {
                         }
                         .frame(maxWidth: .infinity)
                         .frame(minHeight: 50)
-                        .background(Color(UIColor.secondarySystemGroupedBackground))
+                        .background(Theme.Palette.surfaceSunken)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color(UIColor.separator), lineWidth: 0.5)
+                                .stroke(Theme.Palette.separator, lineWidth: 0.5)
                         )
                     }
                     .foregroundStyle(Theme.Palette.textPrimary)
@@ -131,7 +131,7 @@ struct AuthSheet: View {
                 Section {
                     Text(message)
                         .font(Theme.Font.caption)
-                        .foregroundStyle(Theme.Palette.negative)
+                        .foregroundStyle(Theme.Palette.error)
                 }
             }
 
@@ -194,7 +194,7 @@ struct AuthSheet: View {
                 Section {
                     Text(message)
                         .font(Theme.Font.caption)
-                        .foregroundStyle(Theme.Palette.negative)
+                        .foregroundStyle(Theme.Palette.error)
                 }
             }
 
@@ -248,7 +248,7 @@ struct AuthSheet: View {
                 .padding(.horizontal, 24)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Theme.Palette.background)
+        .background(Theme.Palette.surface)
     }
 
     // MARK: - Actions

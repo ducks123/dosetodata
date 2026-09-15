@@ -182,11 +182,11 @@ struct MedicationsOnboardingStepView: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
-        .background(Color.white)
+        .background(Theme.Palette.surfaceRaised)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
-                .stroke(Theme.Palette.divider, lineWidth: 1)
+                .stroke(Theme.Palette.separator, lineWidth: 1)
         )
     }
 }
@@ -205,7 +205,7 @@ private struct MedLibraryRow: View {
                         .fill(med.category.pastelColor)
                         .frame(width: 40, height: 40)
                     Image(systemName: med.category.iconSystemName)
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                         .font(.system(size: 16, weight: .semibold))
                 }
                 VStack(alignment: .leading, spacing: 2) {
@@ -223,7 +223,7 @@ private struct MedLibraryRow: View {
                     .foregroundStyle(Theme.Palette.textSecondary)
             }
             .padding(12)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
         }
         .buttonStyle(.plain)
@@ -243,7 +243,7 @@ private struct CantFindItRow: View {
                         .fill(MedCategory.other.pastelColor)
                         .frame(width: 40, height: 40)
                     Image(systemName: "plus")
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                         .font(.system(size: 16, weight: .semibold))
                 }
                 VStack(alignment: .leading, spacing: 2) {
@@ -260,12 +260,12 @@ private struct CantFindItRow: View {
                     .foregroundStyle(Theme.Palette.textSecondary)
             }
             .padding(12)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
                     .strokeBorder(
-                        Theme.Palette.primary.opacity(0.4),
+                        Theme.Palette.accent.opacity(0.4),
                         style: StrokeStyle(lineWidth: 1, dash: [4, 3])
                     )
             )
@@ -287,7 +287,7 @@ private struct AddedMedRow: View {
                     .fill(userMed.medication.category.pastelColor)
                     .frame(width: 40, height: 40)
                 Image(systemName: userMed.medication.category.iconSystemName)
-                    .foregroundStyle(Theme.Palette.primary)
+                    .foregroundStyle(Theme.Palette.accent)
                     .font(.system(size: 16, weight: .semibold))
             }
             VStack(alignment: .leading, spacing: 2) {
@@ -306,7 +306,7 @@ private struct AddedMedRow: View {
             }
         }
         .padding(12)
-        .background(Theme.Palette.heroAccent)
+        .background(Theme.Palette.lavenderTint)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
     }
 
@@ -365,7 +365,7 @@ private struct OnboardingMedDetailsSheet: View {
                                 .fill(medication.category.pastelColor)
                                 .frame(width: 44, height: 44)
                             Image(systemName: medication.category.iconSystemName)
-                                .foregroundStyle(Theme.Palette.primary)
+                                .foregroundStyle(Theme.Palette.accent)
                                 .font(.system(size: 18, weight: .semibold))
                         }
                         VStack(alignment: .leading, spacing: 2) {
@@ -378,7 +378,7 @@ private struct OnboardingMedDetailsSheet: View {
                         Spacer()
                     }
                     .padding(14)
-                    .background(Color.white)
+                    .background(Theme.Palette.surfaceRaised)
                     .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
 
                     MedDoseAndTimesPicker(
@@ -412,7 +412,7 @@ private struct OnboardingMedDetailsSheet: View {
             }
             .scrollDismissesKeyboard(.immediately)
             .dismissKeyboardOnTap()
-            .background(Theme.Palette.background)
+            .background(Theme.Palette.surface)
             .navigationTitle("Add medication")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

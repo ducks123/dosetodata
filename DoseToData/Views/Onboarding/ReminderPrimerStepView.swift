@@ -55,7 +55,7 @@ struct ReminderPrimerStepView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
             .shadow(
                 color: Theme.cardShadow.color,

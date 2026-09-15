@@ -45,7 +45,7 @@ struct MedScheduleEditorView: View {
             }
             .padding(20)
         }
-        .background(Theme.Palette.background.ignoresSafeArea())
+        .background(Theme.Palette.surface.ignoresSafeArea())
         .navigationTitle("Schedule")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showingTimePicker) {
@@ -64,7 +64,7 @@ struct MedScheduleEditorView: View {
                     .buttonStyle(PrimaryButtonStyle())
                     .padding(20)
                 }
-                .background(Theme.Palette.background)
+                .background(Theme.Palette.surface)
                 .navigationTitle("Pick a time")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -103,10 +103,10 @@ struct MedScheduleEditorView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .tint(Theme.Palette.primary)
+        .tint(Theme.Palette.data1)
         .disabled(userMed.scheduledTimes.isEmpty)
         .padding(14)
-        .background(Color.white)
+        .background(Theme.Palette.surfaceRaised)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
         .shadow(
             color: Theme.cardShadow.color,
@@ -130,7 +130,7 @@ struct MedScheduleEditorView: View {
                     .fill(userMed.medication.category.pastelColor)
                     .frame(width: 52, height: 52)
                 Image(systemName: userMed.medication.category.iconSystemName)
-                    .foregroundStyle(Theme.Palette.primary)
+                    .foregroundStyle(Theme.Palette.accent)
                     .font(.system(size: 20, weight: .semibold))
             }
             VStack(alignment: .leading, spacing: 2) {
@@ -161,7 +161,7 @@ struct MedScheduleEditorView: View {
                 ForEach(sortedTimes, id: \.self) { timeString in
                     HStack {
                         Image(systemName: "clock")
-                            .foregroundStyle(Theme.Palette.primary)
+                            .foregroundStyle(Theme.Palette.accent)
                         Text(ScheduleTime.displayString(from: timeString))
                             .font(Theme.Font.bodyEmphasis)
                         Spacer()
@@ -173,7 +173,7 @@ struct MedScheduleEditorView: View {
                         }
                     }
                     .padding(16)
-                    .background(Color.white)
+                    .background(Theme.Palette.surfaceRaised)
                     .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
                     .shadow(
                         color: Theme.cardShadow.color,
@@ -196,7 +196,7 @@ struct MedScheduleEditorView: View {
                 let allSelected = activeDays.count == 7
                 Text(allSelected ? "Every day" : daysSummary(activeDays))
                     .font(Theme.Font.caption)
-                    .foregroundStyle(Theme.Palette.primary)
+                    .foregroundStyle(Theme.Palette.accent)
             }
             .padding(.horizontal, 4)
 
@@ -210,13 +210,13 @@ struct MedScheduleEditorView: View {
                             .font(.system(size: 13, weight: .semibold))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 10)
-                            .background(isOn ? Theme.Palette.primary : Color.white)
-                            .foregroundStyle(isOn ? Color.white : Theme.Palette.textSecondary)
+                            .background(isOn ? Theme.Palette.actionPrimary : Theme.Palette.surfaceSunken)
+                            .foregroundStyle(isOn ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                                     .stroke(
-                                        isOn ? Theme.Palette.primary : Theme.Palette.divider,
+                                        isOn ? Color.clear : Theme.Palette.separator,
                                         lineWidth: 1
                                     )
                             )
@@ -225,7 +225,7 @@ struct MedScheduleEditorView: View {
                 }
             }
             .padding(14)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
             .shadow(
                 color: Theme.cardShadow.color,
@@ -295,7 +295,7 @@ struct MedScheduleEditorView: View {
             HStack {
                 HStack(spacing: 8) {
                     Image(systemName: "plus.circle.fill")
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                     Text("Add a custom time")
                         .font(Theme.Font.body)
                         .foregroundStyle(Theme.Palette.textPrimary)
@@ -305,12 +305,12 @@ struct MedScheduleEditorView: View {
                     .foregroundStyle(Theme.Palette.textSecondary)
             }
             .padding(14)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
                     .strokeBorder(
-                        Theme.Palette.primary.opacity(0.4),
+                        Theme.Palette.accent.opacity(0.4),
                         style: StrokeStyle(lineWidth: 1, dash: [4, 3])
                     )
             )
@@ -330,18 +330,18 @@ struct MedScheduleEditorView: View {
                 Spacer()
                 if Set(userMed.scheduledTimes) == Set(times) {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                 } else {
                     Image(systemName: "arrow.right")
                         .foregroundStyle(Theme.Palette.textSecondary)
                 }
             }
             .padding(14)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
-                    .stroke(Theme.Palette.divider, lineWidth: 1)
+                    .stroke(Theme.Palette.separator, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

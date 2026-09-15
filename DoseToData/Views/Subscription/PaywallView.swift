@@ -168,7 +168,7 @@ struct PaywallView: View {
                     } label: {
                         Label("Could not load prices. Tap to retry", systemImage: "arrow.clockwise")
                             .font(.system(size: 13))
-                            .foregroundStyle(Theme.Palette.negative)
+                            .foregroundStyle(Theme.Palette.error)
                     }
                     .padding(.top, 12)
                 }
@@ -268,7 +268,7 @@ struct PaywallView: View {
         .onChange(of: sub.errorMessage) { _, msg in
             if msg != nil { showError = true }
         }
-        .background(Color(UIColor.systemGroupedBackground).ignoresSafeArea())
+        .background(Theme.Palette.surface.ignoresSafeArea())
         .task {
             Analytics.paywallShown(context: isDismissible ? "in_app" : "onboarding")
             sub.errorMessage = nil  // clear any stale error before presenting
@@ -292,12 +292,7 @@ struct PaywallView: View {
         VStack(spacing: 8) {
             Image(systemName: "sparkles")
                 .font(.system(size: 44))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [Color(red: 0.49, green: 0.30, blue: 0.94), Theme.Palette.primary],
-                        startPoint: .topLeading, endPoint: .bottomTrailing
-                    )
-                )
+                .foregroundStyle(Theme.Palette.accent)
             // Onboarding mode with a real trial available: the trial is the
             // hero, not "Premium" — a brand-new user hasn't seen the product
             // yet, so "upgrade" framing reads wrong. The trial claim is gated
@@ -347,7 +342,7 @@ struct PaywallView: View {
                 HStack(spacing: 12) {
                     Image(systemName: icon)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                         .frame(width: 24)
                     Text(title)
                         .font(.system(size: 15))
@@ -357,7 +352,7 @@ struct PaywallView: View {
             }
         }
         .padding(20)
-        .background(Color.white)
+        .background(Theme.Palette.surfaceRaised)
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
     }
@@ -430,18 +425,18 @@ struct PaywallView: View {
                 if let badge {
                     Text(badge)
                         .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.Palette.onAccent)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(Theme.Palette.success)
+                        .background(Theme.Palette.accent)
                         .clipShape(Capsule())
                 }
             }
             .padding(16)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(isSelected ? Theme.Palette.primary : Color.clear, lineWidth: 2)
+                    .stroke(isSelected ? Theme.Palette.accent : Color.clear, lineWidth: 2)
             )
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
@@ -485,7 +480,7 @@ struct PaywallView: View {
                     Spacer()
                     Image(systemName: "gift.fill")
                         .font(.system(size: 15))
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                 }
                 .padding(16)
             }
@@ -527,10 +522,10 @@ struct PaywallView: View {
                 .padding(.vertical, 6)
             }
         }
-        .background(Color.white)
+        .background(Theme.Palette.surfaceRaised)
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(isTrialSelected ? Theme.Palette.primary : Color.clear, lineWidth: 2)
+                .stroke(isTrialSelected ? Theme.Palette.accent : Color.clear, lineWidth: 2)
         )
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
@@ -543,8 +538,8 @@ struct PaywallView: View {
             VStack(spacing: 3) {
                 HStack(spacing: 6) {
                     Circle()
-                        .fill(isSelected ? Theme.Palette.primary : Color.clear)
-                        .overlay(Circle().stroke(isSelected ? Theme.Palette.primary : Theme.Palette.divider, lineWidth: 1.5))
+                        .fill(isSelected ? Theme.Palette.accent : Color.clear)
+                        .overlay(Circle().stroke(isSelected ? Theme.Palette.accent : Theme.Palette.separator, lineWidth: 1.5))
                         .frame(width: 14, height: 14)
                     Text(label)
                         .font(.system(size: 11))
@@ -566,10 +561,10 @@ struct PaywallView: View {
                 if let badge {
                     Text(badge)
                         .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.Palette.onAccent)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
-                        .background(Theme.Palette.success)
+                        .background(Theme.Palette.accent)
                         .clipShape(Capsule())
                 }
             }
@@ -583,11 +578,11 @@ struct PaywallView: View {
     private func radioCircle(selected: Bool) -> some View {
         ZStack {
             Circle()
-                .stroke(selected ? Theme.Palette.primary : Theme.Palette.divider, lineWidth: 2)
+                .stroke(selected ? Theme.Palette.accent : Theme.Palette.separator, lineWidth: 2)
                 .frame(width: 22, height: 22)
             if selected {
                 Circle()
-                    .fill(Theme.Palette.primary)
+                    .fill(Theme.Palette.accent)
                     .frame(width: 12, height: 12)
             }
         }
@@ -721,19 +716,11 @@ Any unused portion of a free trial will be forfeited upon purchase of a subscrip
                         .font(.system(size: 16, weight: .bold))
                 }
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(packagesLoaded ? Theme.Palette.onActionPrimary : Theme.Palette.textDisabled)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
-            .background(
-                LinearGradient(
-                    colors: packagesLoaded
-                        ? [Theme.Palette.primary, Color(red: 0.35, green: 0.20, blue: 0.80)]
-                        : [Color.gray, Color.gray.opacity(0.8)],
-                    startPoint: .leading, endPoint: .trailing
-                )
-            )
+            .background(packagesLoaded ? Theme.Palette.actionPrimary : Theme.Palette.surfaceSunken)
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .shadow(color: Theme.Palette.primary.opacity(packagesLoaded ? 0.35 : 0), radius: 8, y: 4)
         }
         .disabled(sub.isLoading || sub.isRefreshing || !packagesLoaded)
     }
@@ -819,10 +806,10 @@ struct TrialBanner: View {
                     Text("Upgrade →")
                         .font(.system(size: 12, weight: .bold))
                 }
-                .foregroundStyle(Color(red: 0.55, green: 0.38, blue: 0.0))
+                .foregroundStyle(Theme.Palette.textPrimary)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
-                .background(Theme.Palette.pastelYellow)
+                .background(Theme.Palette.callout)
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
             .buttonStyle(.plain)
@@ -857,10 +844,10 @@ struct ExpiredBanner: View {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 12, weight: .bold))
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.Palette.onAccent)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
-                .background(Theme.Palette.primary)
+                .background(Theme.Palette.error)
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
             .buttonStyle(.plain)

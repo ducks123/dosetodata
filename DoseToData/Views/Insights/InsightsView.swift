@@ -80,10 +80,10 @@ struct InsightsView: View {
                                 Text(event.date.formatted(date: .abbreviated, time: .omitted))
                                     .font(.system(size: 11, weight: .semibold))
                             }
-                            .foregroundStyle(Theme.Palette.primary)
+                            .foregroundStyle(Theme.Palette.accent)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 5)
-                            .background(Theme.Palette.primary.opacity(0.10))
+                            .background(Theme.Palette.lavenderTint)
                             .clipShape(Capsule())
                         }
                         .buttonStyle(.plain)
@@ -124,7 +124,7 @@ struct InsightsView: View {
                 .padding(.top, 4)
                 .padding(.bottom, 40)
             }
-            .background(Theme.Palette.background.ignoresSafeArea())
+            .background(Theme.Palette.surface.ignoresSafeArea())
             .navigationTitle("Insights")
             .navigationBarTitleDisplayMode(.inline)
             // NOTE: removed the global horizontal-swipe-to-switch-range
@@ -173,11 +173,11 @@ struct InsightsView: View {
             VStack(spacing: 16) {
                 ZStack {
                     Circle()
-                        .fill(Theme.Palette.primary.opacity(0.10))
+                        .fill(Theme.Palette.lavenderTint)
                         .frame(width: 88, height: 88)
                     Image(systemName: "chart.xyaxis.line")
                         .font(.system(size: 38, weight: .semibold))
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                 }
 
                 VStack(spacing: 8) {
@@ -266,7 +266,7 @@ struct InsightsView: View {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(windowOffset == 0
-                            ? Theme.Palette.divider : Theme.Palette.primary)
+                            ? Theme.Palette.separator : Theme.Palette.accent)
                 }
                 .disabled(windowOffset == 0)
 
@@ -283,7 +283,7 @@ struct InsightsView: View {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(windowOffset >= maxWindowOffset
-                            ? Theme.Palette.divider : Theme.Palette.primary)
+                            ? Theme.Palette.separator : Theme.Palette.accent)
                 }
                 .disabled(windowOffset >= maxWindowOffset)
             }
@@ -304,10 +304,10 @@ struct InsightsView: View {
                 .font(Theme.Font.caption)
                 .padding(.vertical, 8)
                 .padding(.horizontal, 12)
-                .background(isOn ? Theme.Palette.primary : Color.white)
-                .foregroundStyle(isOn ? Color.white : Theme.Palette.textPrimary)
+                .background(isOn ? Theme.Palette.actionPrimary : Theme.Palette.surfaceSunken)
+                .foregroundStyle(isOn ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                 .clipShape(Capsule())
-                .overlay(Capsule().stroke(Theme.Palette.divider, lineWidth: isOn ? 0 : 1))
+                .overlay(Capsule().stroke(Theme.Palette.separator, lineWidth: isOn ? 0 : 1))
         }
         .buttonStyle(.plain)
     }
@@ -367,7 +367,7 @@ struct InsightsView: View {
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 8)
-        .background(Theme.Palette.background)
+        .background(Theme.Palette.surface)
         .clipShape(Capsule())
     }
 
@@ -427,7 +427,7 @@ struct InsightsView: View {
                         )
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [Theme.Palette.primary.opacity(0.35), Theme.Palette.primary.opacity(0.02)],
+                                colors: [Theme.Palette.data1.opacity(0.20), Theme.Palette.data1.opacity(0.0)],
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
@@ -437,26 +437,44 @@ struct InsightsView: View {
                             x: .value("Day", point.date),
                             y: .value("Score", point.value)
                         )
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.data1)
+                        .lineStyle(StrokeStyle(lineWidth: 2.5))
                         .interpolationMethod(.monotone)
                         .symbol(.circle)
+                    }
+                    // Current value — Signal Orange, exactly once per chart,
+                    // ringed with dataMarker because the orange alone reads
+                    // 1.93:1 on a light surface (spec §6).
+                    if let current = points.last {
+                        PointMark(
+                            x: .value("Day", current.date),
+                            y: .value("Score", current.value)
+                        )
+                        .foregroundStyle(Theme.Palette.dataMarker)
+                        .symbolSize(190)
+                        PointMark(
+                            x: .value("Day", current.date),
+                            y: .value("Score", current.value)
+                        )
+                        .foregroundStyle(Theme.Palette.dataCurrent)
+                        .symbolSize(110)
                     }
                     // Selection mark — drawn before amber dots so amber stays on top
                     if let sel = selPoint {
                         RuleMark(x: .value("Day", sel.date))
-                            .foregroundStyle(Theme.Palette.primary.opacity(0.25))
+                            .foregroundStyle(Theme.Palette.dataMarker.opacity(0.25))
                             .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
                         PointMark(
                             x: .value("Day", sel.date),
                             y: .value("Score", sel.value)
                         )
                         .foregroundStyle(missedPoints.contains(where: { $0.date == sel.date })
-                            ? Theme.Palette.attention : Theme.Palette.primary)
+                            ? Theme.Palette.error : Theme.Palette.dataMarker)
                         .symbolSize(200)
                         .annotation(position: .top, spacing: 4) {
-                            Text(String(format: "%.1f", sel.value))
+                            Text(String(format: "%.1f", sel.value)).monospacedDigit()
                                 .font(.system(size: 10, weight: .bold))
-                                .foregroundStyle(Theme.Palette.primary)
+                                .foregroundStyle(Theme.Palette.accent)
                         }
                     }
                     // Amber dots rendered last so they always appear on top
@@ -465,7 +483,7 @@ struct InsightsView: View {
                             x: .value("Day", point.date),
                             y: .value("Score", point.value)
                         )
-                        .foregroundStyle(Theme.Palette.attention)
+                        .foregroundStyle(Theme.Palette.error)
                         .symbolSize(110)
                     }
                     // Vertical dashed markers at every MedChangeEvent date.
@@ -475,7 +493,7 @@ struct InsightsView: View {
                     // the pill icon is back at the top of each marker.
                     ForEach(visibleMedChangeEvents) { event in
                         RuleMark(x: .value("Med change", markerX(for: event)))
-                            .foregroundStyle(Theme.Palette.textSecondary.opacity(0.55))
+                            .foregroundStyle(Theme.Palette.dataMarker.opacity(0.55))
                             .lineStyle(StrokeStyle(lineWidth: 1.2, dash: [3, 3]))
                             .annotation(position: .top, alignment: .center, spacing: 2) {
                                 Image(systemName: "pill.fill")
@@ -487,9 +505,9 @@ struct InsightsView: View {
                 .chartYScale(domain: 0...5)
                 .chartYAxis {
                     AxisMarks(position: .leading, values: [1, 2, 3, 4, 5]) { value in
-                        AxisGridLine()
+                        AxisGridLine().foregroundStyle(Theme.Palette.separator)
                         AxisValueLabel {
-                            if let v = value.as(Int.self) { Text("\(v)") }
+                            if let v = value.as(Int.self) { Text("\(v)").foregroundStyle(Theme.Palette.textTertiary) }
                         }
                     }
                 }
@@ -516,8 +534,8 @@ struct InsightsView: View {
 
                 if !missedPoints.isEmpty {
                     HStack(spacing: 5) {
-                        Circle().fill(Theme.Palette.attention).frame(width: 7, height: 7)
-                        Text("Amber dot = missed medication that day")
+                        Circle().fill(Theme.Palette.error).frame(width: 7, height: 7)
+                        Text("Red dot = missed medication that day")
                             .font(.system(size: 10))
                             .foregroundStyle(Theme.Palette.textSecondary)
                     }
@@ -596,7 +614,7 @@ struct InsightsView: View {
                         )
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [Theme.Palette.primary.opacity(0.35), Theme.Palette.primary.opacity(0.02)],
+                                colors: [Theme.Palette.data1.opacity(0.20), Theme.Palette.data1.opacity(0.0)],
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
@@ -606,26 +624,44 @@ struct InsightsView: View {
                             x: .value("Day", point.date),
                             y: .value("Level", point.value)
                         )
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.data1)
+                        .lineStyle(StrokeStyle(lineWidth: 2.5))
                         .interpolationMethod(.monotone)
                         .symbol(.circle)
+                    }
+                    // Current value — Signal Orange, exactly once per chart,
+                    // ringed with dataMarker because the orange alone reads
+                    // 1.93:1 on a light surface (spec §6).
+                    if let current = points.last {
+                        PointMark(
+                            x: .value("Day", current.date),
+                            y: .value("Score", current.value)
+                        )
+                        .foregroundStyle(Theme.Palette.dataMarker)
+                        .symbolSize(190)
+                        PointMark(
+                            x: .value("Day", current.date),
+                            y: .value("Score", current.value)
+                        )
+                        .foregroundStyle(Theme.Palette.dataCurrent)
+                        .symbolSize(110)
                     }
                     // Selection mark — drawn before amber dots so amber stays on top
                     if let sel = selPoint {
                         RuleMark(x: .value("Day", sel.date))
-                            .foregroundStyle(Theme.Palette.primary.opacity(0.25))
+                            .foregroundStyle(Theme.Palette.dataMarker.opacity(0.25))
                             .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
                         PointMark(
                             x: .value("Day", sel.date),
                             y: .value("Level", sel.value)
                         )
                         .foregroundStyle(missedPoints.contains(where: { $0.date == sel.date })
-                            ? Theme.Palette.attention : Theme.Palette.primary)
+                            ? Theme.Palette.error : Theme.Palette.dataMarker)
                         .symbolSize(200)
                         .annotation(position: .top, spacing: 4) {
-                            Text(String(format: "%.1f", sel.value))
+                            Text(String(format: "%.1f", sel.value)).monospacedDigit()
                                 .font(.system(size: 10, weight: .bold))
-                                .foregroundStyle(Theme.Palette.primary)
+                                .foregroundStyle(Theme.Palette.accent)
                         }
                     }
                     // Amber dots rendered last so they always appear on top
@@ -634,13 +670,13 @@ struct InsightsView: View {
                             x: .value("Day", point.date),
                             y: .value("Level", point.value)
                         )
-                        .foregroundStyle(Theme.Palette.attention)
+                        .foregroundStyle(Theme.Palette.error)
                         .symbolSize(110)
                     }
                     // Vertical dashed markers at every MedChangeEvent date.
                     ForEach(visibleMedChangeEvents) { event in
                         RuleMark(x: .value("Med change", markerX(for: event)))
-                            .foregroundStyle(Theme.Palette.textSecondary.opacity(0.55))
+                            .foregroundStyle(Theme.Palette.dataMarker.opacity(0.55))
                             .lineStyle(StrokeStyle(lineWidth: 1.2, dash: [3, 3]))
                             .annotation(position: .top, alignment: .center, spacing: 2) {
                                 Image(systemName: "pill.fill")
@@ -652,9 +688,9 @@ struct InsightsView: View {
                 .chartYScale(domain: 0...5)
                 .chartYAxis {
                     AxisMarks(position: .leading, values: [1, 2, 3, 4, 5]) { value in
-                        AxisGridLine()
+                        AxisGridLine().foregroundStyle(Theme.Palette.separator)
                         AxisValueLabel {
-                            if let v = value.as(Int.self) { Text("\(v)") }
+                            if let v = value.as(Int.self) { Text("\(v)").foregroundStyle(Theme.Palette.textTertiary) }
                         }
                     }
                 }
@@ -681,8 +717,8 @@ struct InsightsView: View {
 
                 if !missedPoints.isEmpty {
                     HStack(spacing: 5) {
-                        Circle().fill(Theme.Palette.attention).frame(width: 7, height: 7)
-                        Text("Amber dot = missed medication that day")
+                        Circle().fill(Theme.Palette.error).frame(width: 7, height: 7)
+                        Text("Red dot = missed medication that day")
                             .font(.system(size: 10))
                             .foregroundStyle(Theme.Palette.textSecondary)
                     }
@@ -710,7 +746,7 @@ struct InsightsView: View {
         }
         .frame(height: 140)
         .frame(maxWidth: .infinity)
-        .background(Theme.Palette.background)
+        .background(Theme.Palette.surface)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
     }
 
@@ -724,15 +760,15 @@ struct InsightsView: View {
                 Spacer()
             }
             .font(Theme.Font.bodyEmphasis)
-            .foregroundStyle(Theme.Palette.primary)
+            .foregroundStyle(Theme.Palette.accent)
             .padding(16)
             .frame(maxWidth: .infinity)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.card)
                     .strokeBorder(
-                        Theme.Palette.primary.opacity(0.4),
+                        Theme.Palette.accent.opacity(0.4),
                         style: StrokeStyle(lineWidth: 1, dash: [4, 3])
                     )
             )
@@ -884,7 +920,7 @@ struct InsightsView: View {
         if let pct = percent {
             let isUp = pct >= 0
             let label = "\(isUp ? "↑" : "↓") \(String(format: "%.1f", abs(pct)))%"
-            let color: Color = isUp ? Theme.Palette.success : Theme.Palette.negative
+            let color: Color = isUp ? Theme.Palette.success : Theme.Palette.error
             Text(label)
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(color)
@@ -943,25 +979,25 @@ struct InsightsView: View {
             // ~10 daily ticks once trailing headroom is added → label every
             // other day ("Wed 28") so labels never collide.
             AxisMarks(values: .stride(by: .day, count: 2)) { _ in
-                AxisGridLine()
+                AxisGridLine().foregroundStyle(Theme.Palette.separator)
                 AxisValueLabel(format: .dateTime.weekday(.abbreviated).day())
             }
         case .week:
             // 4 weekly dots → label each week's start in "M/d" form.
             AxisMarks(values: .stride(by: .weekOfYear)) { _ in
-                AxisGridLine()
+                AxisGridLine().foregroundStyle(Theme.Palette.separator)
                 AxisValueLabel(format: .dateTime.month(.defaultDigits).day())
             }
         case .month:
             // 3 monthly dots → label each as abbreviated month name.
             AxisMarks(values: .stride(by: .month)) { _ in
-                AxisGridLine()
+                AxisGridLine().foregroundStyle(Theme.Palette.separator)
                 AxisValueLabel(format: .dateTime.month(.abbreviated))
             }
         case .year:
             // 12 monthly dots — label every other month to avoid clutter.
             AxisMarks(values: .stride(by: .month, count: 2)) { _ in
-                AxisGridLine()
+                AxisGridLine().foregroundStyle(Theme.Palette.separator)
                 AxisValueLabel(format: .dateTime.month(.narrow))
             }
         }
@@ -1040,14 +1076,14 @@ struct InsightsView: View {
                         Image(systemName: "arrow.right")
                     }
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Theme.Palette.primary)
+                    .foregroundStyle(Theme.Palette.accent)
                 }
                 .buttonStyle(.plain)
             }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(Theme.Palette.primary.opacity(0.07))
+        .background(Theme.Palette.surfaceSunken)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
@@ -1122,7 +1158,7 @@ struct AddGraphSheet: View {
                 }
                 .padding(20)
             }
-            .background(Theme.Palette.background)
+            .background(Theme.Palette.surface)
             .navigationTitle("Add a graph")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -1157,9 +1193,9 @@ struct AddGraphSheet: View {
                 }
             }
         }
-        .tint(Theme.Palette.primary)
+        .tint(Theme.Palette.accent)
         .padding(14)
-        .background(Color.white)
+        .background(Theme.Palette.surfaceRaised)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
     }
 }

@@ -25,7 +25,7 @@ struct SettingsView: View {
                             .foregroundStyle(Theme.Palette.textSecondary)
                     } icon: {
                         Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundStyle(Theme.Palette.attention)
+                            .foregroundStyle(Theme.Palette.error)
                     }
                 }
 
@@ -92,12 +92,12 @@ struct SettingsView: View {
                         Button("Upgrade to Premium") {
                             showPaywall = true
                         }
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                     case .trial, .loading:
                         Button("View Plans") {
                             showPaywall = true
                         }
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                     case .active:
                         EmptyView()
                     }
@@ -109,12 +109,12 @@ struct SettingsView: View {
                         Button("Cancel free trial") {
                             Task { await openManageSubscriptions() }
                         }
-                        .foregroundStyle(Theme.Palette.negative)
+                        .foregroundStyle(Theme.Palette.error)
                     } else if case .active = sub.status {
                         Button("Manage subscription") {
                             Task { await openManageSubscriptions() }
                         }
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                     }
 
                     Button("Restore purchases") {
@@ -261,8 +261,8 @@ struct SettingsView: View {
         switch sub.status {
         case .loading:  return Theme.Palette.textSecondary
         case .active:   return Theme.Palette.success
-        case .expired:  return Theme.Palette.negative
-        case .trial:    return Theme.Palette.attention
+        case .expired:  return Theme.Palette.error
+        case .trial:    return Theme.Palette.accent
         }
     }
 }

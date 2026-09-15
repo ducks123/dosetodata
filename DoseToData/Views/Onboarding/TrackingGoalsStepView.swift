@@ -18,7 +18,7 @@ struct TrackingGoalsStepView: View {
                     showSignIn = true
                 }
                 .font(.system(size: 14, weight: .medium))
-                .foregroundStyle(Theme.Palette.primary)
+                .foregroundStyle(Theme.Palette.accent)
             }
             .padding(.horizontal, 24)
             .padding(.top, 16)
@@ -103,10 +103,10 @@ private struct GoalRow: View {
             HStack(spacing: 14) {
                 ZStack {
                     Circle()
-                        .fill(Theme.Palette.heroAccent)
+                        .fill(Theme.Palette.lavenderTint)
                         .frame(width: 44, height: 44)
                     Image(systemName: goal.icon)
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                         .font(.system(size: 18, weight: .semibold))
                 }
                 Text(goal.title)
@@ -115,14 +115,14 @@ private struct GoalRow: View {
                 Spacer()
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 22))
-                    .foregroundStyle(isSelected ? Theme.Palette.primary : Theme.Palette.divider)
+                    .foregroundStyle(isSelected ? Theme.Palette.accent : Theme.Palette.separator)
             }
             .padding(16)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
-                    .stroke(isSelected ? Theme.Palette.primary : Color.clear, lineWidth: 2)
+                    .stroke(isSelected ? Theme.Palette.accent : Color.clear, lineWidth: 2)
             )
             .shadow(
                 color: Theme.cardShadow.color,

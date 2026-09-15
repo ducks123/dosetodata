@@ -29,7 +29,7 @@ struct MedChangeMarkerDetailSheet: View {
                 .padding(20)
                 .padding(.bottom, 30)
             }
-            .background(Theme.Palette.background)
+            .background(Theme.Palette.surface)
             .navigationTitle(event.date.formatted(date: .abbreviated, time: .omitted))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -90,7 +90,7 @@ struct MedChangeMarkerDetailSheet: View {
                             .fill(action.medication.category.pastelColor)
                             .frame(width: 32, height: 32)
                         Image(systemName: action.medication.category.iconSystemName)
-                            .foregroundStyle(Theme.Palette.primary)
+                            .foregroundStyle(Theme.Palette.accent)
                             .font(.system(size: 14, weight: .semibold))
                     }
                     Text(action.summaryLine)
@@ -99,7 +99,7 @@ struct MedChangeMarkerDetailSheet: View {
                     Spacer(minLength: 0)
                 }
                 .padding(12)
-                .background(Color.white)
+                .background(Theme.Palette.surfaceRaised)
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
             }
         }
@@ -116,7 +116,7 @@ struct MedChangeMarkerDetailSheet: View {
                 .foregroundStyle(Theme.Palette.textPrimary)
                 .padding(14)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Theme.Palette.heroAccent)
+                .background(Theme.Palette.lavenderTint)
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
         }
     }

@@ -44,11 +44,11 @@ struct CheckInReminderSheet: View {
                             HStack(spacing: 14) {
                                 ZStack {
                                     Circle()
-                                        .fill(isOn ? Theme.Palette.primary : Theme.Palette.primary.opacity(0.10))
+                                        .fill(isOn ? Theme.Palette.accent : Theme.Palette.lavenderTint)
                                         .frame(width: 36, height: 36)
                                     Image(systemName: preset.icon)
                                         .font(.system(size: 14, weight: .semibold))
-                                        .foregroundStyle(isOn ? .white : Theme.Palette.primary)
+                                        .foregroundStyle(isOn ? Theme.Palette.onAccent : Theme.Palette.accent)
                                 }
                                 Text(preset.label)
                                     .font(Theme.Font.bodyEmphasis)
@@ -58,11 +58,11 @@ struct CheckInReminderSheet: View {
                                     .font(Theme.Font.caption)
                                     .foregroundStyle(Theme.Palette.textSecondary)
                                 Image(systemName: isOn ? "checkmark.circle.fill" : "circle")
-                                    .foregroundStyle(isOn ? Theme.Palette.primary : Theme.Palette.divider)
+                                    .foregroundStyle(isOn ? Color.clear : Theme.Palette.separator)
                             }
                             .padding(.horizontal, 20)
                             .padding(.vertical, 14)
-                            .background(Color.white)
+                            .background(Theme.Palette.surfaceRaised)
                         }
                         .buttonStyle(.plain)
                         Divider().padding(.leading, 70)
@@ -73,11 +73,11 @@ struct CheckInReminderSheet: View {
                         HStack(spacing: 14) {
                             ZStack {
                                 Circle()
-                                    .fill(Theme.Palette.primary)
+                                    .fill(Theme.Palette.accent)
                                     .frame(width: 36, height: 36)
                                 Image(systemName: "clock.fill")
                                     .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(Theme.Palette.onAccent)
                             }
                             Text(formattedTime(timeString))
                                 .font(Theme.Font.bodyEmphasis)
@@ -87,14 +87,14 @@ struct CheckInReminderSheet: View {
                                 selectedTimes.remove(timeString)
                             } label: {
                                 Image(systemName: "minus.circle.fill")
-                                    .foregroundStyle(Theme.Palette.negative)
+                                    .foregroundStyle(Theme.Palette.error)
                                     .font(.system(size: 20))
                             }
                             .buttonStyle(.plain)
                         }
                         .padding(.horizontal, 20)
                         .padding(.vertical, 14)
-                        .background(Color.white)
+                        .background(Theme.Palette.surfaceRaised)
                         Divider().padding(.leading, 70)
                     }
 
@@ -105,11 +105,11 @@ struct CheckInReminderSheet: View {
                         HStack(spacing: 14) {
                             ZStack {
                                 Circle()
-                                    .fill(Theme.Palette.primary.opacity(0.10))
+                                    .fill(Theme.Palette.lavenderTint)
                                     .frame(width: 36, height: 36)
                                 Image(systemName: showCustomPicker ? "minus" : "plus")
                                     .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(Theme.Palette.primary)
+                                    .foregroundStyle(Theme.Palette.accent)
                             }
                             Text("Add custom time")
                                 .font(Theme.Font.bodyEmphasis)
@@ -118,7 +118,7 @@ struct CheckInReminderSheet: View {
                         }
                         .padding(.horizontal, 20)
                         .padding(.vertical, 14)
-                        .background(Color.white)
+                        .background(Theme.Palette.surfaceRaised)
                     }
                     .buttonStyle(.plain)
 
@@ -140,11 +140,11 @@ struct CheckInReminderSheet: View {
                             .padding(.horizontal, 20)
                             .padding(.bottom, 12)
                         }
-                        .background(Color.white)
+                        .background(Theme.Palette.surfaceRaised)
                     }
                 }
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
-                .overlay(RoundedRectangle(cornerRadius: Theme.Radius.card).stroke(Theme.Palette.divider, lineWidth: 1))
+                .overlay(RoundedRectangle(cornerRadius: Theme.Radius.card).stroke(Theme.Palette.separator, lineWidth: 1))
                 .padding(.horizontal, 20)
 
                 // "No reminders" option
@@ -154,25 +154,25 @@ struct CheckInReminderSheet: View {
                     HStack {
                         Text("No reminders")
                             .font(Theme.Font.body)
-                            .foregroundStyle(selectedTimes.isEmpty ? Theme.Palette.negative : Theme.Palette.textSecondary)
+                            .foregroundStyle(selectedTimes.isEmpty ? Theme.Palette.error : Theme.Palette.textSecondary)
                         Spacer()
                         if selectedTimes.isEmpty {
                             Image(systemName: "checkmark.circle.fill")
-                                .foregroundStyle(Theme.Palette.negative)
+                                .foregroundStyle(Theme.Palette.error)
                         }
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 14)
-                    .background(Color.white)
+                    .background(Theme.Palette.surfaceRaised)
                     .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
-                    .overlay(RoundedRectangle(cornerRadius: Theme.Radius.card).stroke(Theme.Palette.divider, lineWidth: 1))
+                    .overlay(RoundedRectangle(cornerRadius: Theme.Radius.card).stroke(Theme.Palette.separator, lineWidth: 1))
                     .padding(.horizontal, 20)
                 }
                 .buttonStyle(.plain)
 
                 Spacer()
             }
-            .background(Theme.Palette.background.ignoresSafeArea())
+            .background(Theme.Palette.surface.ignoresSafeArea())
             .navigationTitle("Check-in reminders")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

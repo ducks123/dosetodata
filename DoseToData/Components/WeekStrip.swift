@@ -96,18 +96,18 @@ private struct ScrollDayCell: View {
     var body: some View {
         VStack(spacing: 3) {
             Circle()
-                .fill(isToday ? Theme.Palette.primary : Color.clear)
+                .fill(isToday ? Theme.Palette.accent : Color.clear)
                 .frame(width: 6, height: 6)
 
             Text(String(date.formatted(.dateTime.weekday(.abbreviated)).prefix(3)))
                 .font(.system(size: 11, weight: isSelected ? .bold : .semibold))
-                .foregroundStyle(isSelected ? Theme.Palette.primary : Theme.Palette.textSecondary)
+                .foregroundStyle(isSelected ? Theme.Palette.accent : Theme.Palette.textSecondary)
 
             ZStack {
                 stateBackground
                 if isSelected {
                     Circle()
-                        .stroke(Theme.Palette.primary, lineWidth: 2.5)
+                        .stroke(Theme.Palette.accent, lineWidth: 2.5)
                         .frame(width: 34, height: 34)
                 }
                 stateContent
@@ -121,16 +121,16 @@ private struct ScrollDayCell: View {
     @ViewBuilder private var stateBackground: some View {
         switch state {
         case .empty:
-            Circle().fill(Color.white).frame(width: 34, height: 34)
+            Circle().fill(Theme.Palette.surfaceRaised).frame(width: 34, height: 34)
         case .medsTaken:
-            Circle().fill(Color.white)
+            Circle().fill(Theme.Palette.surfaceRaised)
                 .overlay(Circle().stroke(Theme.Palette.success, lineWidth: 2.5))
                 .frame(width: 34, height: 34)
         case .complete:
             Circle().fill(Theme.Palette.success).frame(width: 34, height: 34)
         case .medsMissed:
-            Circle().fill(Color.white)
-                .overlay(Circle().stroke(Theme.Palette.attention, lineWidth: 2.5))
+            Circle().fill(Theme.Palette.surfaceRaised)
+                .overlay(Circle().stroke(Theme.Palette.error, lineWidth: 2.5))
                 .frame(width: 34, height: 34)
         }
     }
@@ -142,21 +142,21 @@ private struct ScrollDayCell: View {
         let dayNum = calendar.component(.day, from: date)
         switch state {
         case .empty:
-            Text("\(dayNum)")
+            Text("\(dayNum)").monospacedDigit()
                 .font(.system(size: 13, weight: isSelected ? .bold : .semibold))
                 .foregroundStyle(Theme.Palette.textPrimary)
         case .medsTaken:
-            Text("\(dayNum)")
+            Text("\(dayNum)").monospacedDigit()
                 .font(.system(size: 13, weight: isSelected ? .bold : .semibold))
                 .foregroundStyle(Theme.Palette.success)
         case .complete:
-            Text("\(dayNum)")
+            Text("\(dayNum)").monospacedDigit()
                 .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.Palette.onAccent)
         case .medsMissed:
-            Text("\(dayNum)")
+            Text("\(dayNum)").monospacedDigit()
                 .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(Theme.Palette.attention)
+                .foregroundStyle(Theme.Palette.error)
         }
     }
 }
@@ -192,15 +192,15 @@ struct DateStripLegend: View {
 
     private var medsMissedSwatch: some View {
         Circle()
-            .fill(Color.white)
-            .overlay(Circle().stroke(Theme.Palette.attention, lineWidth: 2))
+            .fill(Theme.Palette.surfaceRaised)
+            .overlay(Circle().stroke(Theme.Palette.error, lineWidth: 2))
             .frame(width: 14, height: 14)
     }
 
     private var emptySwatch: some View {
         Circle()
-            .fill(Color.white)
-            .overlay(Circle().stroke(Theme.Palette.divider, lineWidth: 1))
+            .fill(Theme.Palette.surfaceRaised)
+            .overlay(Circle().stroke(Theme.Palette.separator, lineWidth: 1))
             .frame(width: 14, height: 14)
     }
 }
@@ -286,12 +286,12 @@ private struct DayCell: View {
         VStack(spacing: 2) {
             // Small dot above the label — visible only for today
             Circle()
-                .fill(day.isToday ? Theme.Palette.primary : Color.clear)
+                .fill(day.isToday ? Theme.Palette.accent : Color.clear)
                 .frame(width: 6, height: 6)
 
             Text(day.weekdayShort.prefix(3).uppercased())
                 .font(.system(size: 11, weight: day.isSelected ? .bold : .semibold))
-                .foregroundStyle(day.isSelected ? Theme.Palette.primary : Theme.Palette.textSecondary)
+                .foregroundStyle(day.isSelected ? Theme.Palette.accent : Theme.Palette.textSecondary)
                 .padding(.bottom, 2)
 
             ZStack {
@@ -299,7 +299,7 @@ private struct DayCell: View {
                 // Blue selection ring — sits on top of the state circle
                 if day.isSelected {
                     Circle()
-                        .stroke(Theme.Palette.primary, lineWidth: 2.5)
+                        .stroke(Theme.Palette.accent, lineWidth: 2.5)
                         .frame(width: 36, height: 36)
                 }
                 icon
@@ -315,12 +315,12 @@ private struct DayCell: View {
         switch day.state {
         case .empty:
             Circle()
-                .fill(Color.white)
+                .fill(Theme.Palette.surfaceRaised)
                 .frame(width: 36, height: 36)
 
         case .medsTaken:
             Circle()
-                .fill(Color.white)
+                .fill(Theme.Palette.surfaceRaised)
                 .overlay(Circle().stroke(Theme.Palette.success, lineWidth: 2.5))
                 .frame(width: 36, height: 36)
 
@@ -331,8 +331,8 @@ private struct DayCell: View {
 
         case .medsMissed:
             Circle()
-                .fill(Color.white)
-                .overlay(Circle().stroke(Theme.Palette.attention, lineWidth: 2.5))
+                .fill(Theme.Palette.surfaceRaised)
+                .overlay(Circle().stroke(Theme.Palette.error, lineWidth: 2.5))
                 .frame(width: 36, height: 36)
         }
     }
@@ -343,24 +343,24 @@ private struct DayCell: View {
     private var icon: some View {
         switch day.state {
         case .empty:
-            Text("\(day.dayNumber)")
+            Text("\(day.dayNumber)").monospacedDigit()
                 .font(.system(size: 15, weight: day.isSelected ? .bold : .semibold))
                 .foregroundStyle(day.isFuture ? Theme.Palette.textSecondary.opacity(0.4) : Theme.Palette.textPrimary)
 
         case .medsTaken:
-            Text("\(day.dayNumber)")
+            Text("\(day.dayNumber)").monospacedDigit()
                 .font(.system(size: 15, weight: day.isSelected ? .bold : .semibold))
                 .foregroundStyle(Theme.Palette.success)
 
         case .complete:
-            Text("\(day.dayNumber)")
+            Text("\(day.dayNumber)").monospacedDigit()
                 .font(.system(size: 15, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.Palette.onAccent)
 
         case .medsMissed:
-            Text("\(day.dayNumber)")
+            Text("\(day.dayNumber)").monospacedDigit()
                 .font(.system(size: 15, weight: .bold))
-                .foregroundStyle(Theme.Palette.attention)
+                .foregroundStyle(Theme.Palette.error)
         }
     }
 }

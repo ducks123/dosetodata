@@ -58,10 +58,10 @@ private struct DisclaimerPoint: View {
         HStack(alignment: .top, spacing: 14) {
             ZStack {
                 Circle()
-                    .fill(Theme.Palette.heroAccent)
+                    .fill(Theme.Palette.lavenderTint)
                     .frame(width: 40, height: 40)
                 Image(systemName: icon)
-                    .foregroundStyle(Theme.Palette.primary)
+                    .foregroundStyle(Theme.Palette.accent)
                     .font(.system(size: 16, weight: .semibold))
             }
             VStack(alignment: .leading, spacing: 4) {
@@ -75,7 +75,7 @@ private struct DisclaimerPoint: View {
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white)
+        .background(Theme.Palette.surfaceRaised)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
         .shadow(
             color: Theme.cardShadow.color,

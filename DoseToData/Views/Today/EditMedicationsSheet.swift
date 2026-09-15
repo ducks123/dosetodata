@@ -34,7 +34,7 @@ struct EditMedicationsSheet: View {
                 }
                 .padding(20)
             }
-            .background(Theme.Palette.background)
+            .background(Theme.Palette.surface)
             .navigationTitle("Edit medications")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -96,7 +96,7 @@ struct EditMedicationsSheet: View {
                                 .fill(userMed.medication.category.pastelColor)
                                 .frame(width: 40, height: 40)
                             Image(systemName: userMed.medication.category.iconSystemName)
-                                .foregroundStyle(Theme.Palette.primary)
+                                .foregroundStyle(Theme.Palette.accent)
                                 .font(.system(size: 16, weight: .semibold))
                         }
                         VStack(alignment: .leading, spacing: 2) {
@@ -113,12 +113,12 @@ struct EditMedicationsSheet: View {
                         } label: {
                             Image(systemName: "minus.circle.fill")
                                 .font(.system(size: 22))
-                                .foregroundStyle(Theme.Palette.negative)
+                                .foregroundStyle(Theme.Palette.error)
                         }
                         .buttonStyle(.plain)
                     }
                     .padding(14)
-                    .background(Color.white)
+                    .background(Theme.Palette.surfaceRaised)
                     .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
                     .shadow(
                         color: Theme.cardShadow.color,
@@ -212,7 +212,7 @@ struct AddMedicationFlow: View {
             }
             .scrollDismissesKeyboard(.immediately)
             .dismissKeyboardOnTap()
-            .background(Theme.Palette.background)
+            .background(Theme.Palette.surface)
             .navigationTitle("Add medication")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -267,9 +267,9 @@ struct AddMedicationFlow: View {
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 12)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
-            .overlay(RoundedRectangle(cornerRadius: Theme.Radius.button).stroke(Theme.Palette.divider, lineWidth: 1))
+            .overlay(RoundedRectangle(cornerRadius: Theme.Radius.button).stroke(Theme.Palette.separator, lineWidth: 1))
 
             // No match for the search: Add-custom leads so the escape hatch
             // is the first thing under the field, not buried below.
@@ -288,7 +288,7 @@ struct AddMedicationFlow: View {
                                 .fill(med.category.pastelColor)
                                 .frame(width: 40, height: 40)
                             Image(systemName: med.category.iconSystemName)
-                                .foregroundStyle(Theme.Palette.primary)
+                                .foregroundStyle(Theme.Palette.accent)
                                 .font(.system(size: 16, weight: .semibold))
                         }
                         VStack(alignment: .leading, spacing: 2) {
@@ -304,7 +304,7 @@ struct AddMedicationFlow: View {
                             .foregroundStyle(Theme.Palette.textSecondary)
                     }
                     .padding(12)
-                    .background(Color.white)
+                    .background(Theme.Palette.surfaceRaised)
                     .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
                 }
                 .buttonStyle(.plain)
@@ -326,7 +326,7 @@ struct AddMedicationFlow: View {
                         .fill(MedCategory.other.pastelColor)
                         .frame(width: 40, height: 40)
                     Image(systemName: "plus")
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                         .font(.system(size: 16, weight: .semibold))
                 }
                 VStack(alignment: .leading, spacing: 2) {
@@ -341,12 +341,12 @@ struct AddMedicationFlow: View {
                     .foregroundStyle(Theme.Palette.textSecondary)
             }
             .padding(12)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.card)
                     .strokeBorder(
-                        Theme.Palette.primary.opacity(0.4),
+                        Theme.Palette.accent.opacity(0.4),
                         style: StrokeStyle(lineWidth: 1, dash: [4, 3])
                     )
             )
@@ -363,7 +363,7 @@ struct AddMedicationFlow: View {
                             .fill(med.category.pastelColor)
                             .frame(width: 44, height: 44)
                         Image(systemName: med.category.iconSystemName)
-                            .foregroundStyle(Theme.Palette.primary)
+                            .foregroundStyle(Theme.Palette.accent)
                             .font(.system(size: 18, weight: .semibold))
                     }
                     VStack(alignment: .leading, spacing: 2) {
@@ -473,10 +473,10 @@ struct MedDoseAndTimesPicker: View {
                         .foregroundStyle(Theme.Palette.textSecondary)
                     Text("Required")
                         .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(Theme.Palette.negative)
+                        .foregroundStyle(Theme.Palette.error)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
-                        .background(Theme.Palette.negative.opacity(0.12))
+                        .background(Theme.Palette.error.opacity(0.12))
                         .clipShape(Capsule())
                 }
                 // Preset dose chips were removed to comply with App Store
@@ -489,18 +489,18 @@ struct MedDoseAndTimesPicker: View {
                     .autocorrectionDisabled()
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
-                    .background(Color.white)
+                    .background(Theme.Palette.surfaceRaised)
                     .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
                     .overlay(RoundedRectangle(cornerRadius: Theme.Radius.button).stroke(
                         dose.trimmingCharacters(in: .whitespaces).isEmpty
-                            ? Theme.Palette.negative.opacity(0.5)
-                            : Theme.Palette.divider,
+                            ? Theme.Palette.error.opacity(0.5)
+                            : Theme.Palette.separator,
                         lineWidth: 1
                     ))
                 if dose.trimmingCharacters(in: .whitespaces).isEmpty {
                     Text("Enter a dose to enable Add.")
                         .font(.system(size: 11))
-                        .foregroundStyle(Theme.Palette.negative)
+                        .foregroundStyle(Theme.Palette.error)
                         .padding(.leading, 4)
                 }
             }
@@ -515,9 +515,9 @@ struct MedDoseAndTimesPicker: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            .tint(Theme.Palette.primary)
+            .tint(Theme.Palette.data1)
             .padding(14)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
 
             if addToSchedule {
@@ -543,7 +543,7 @@ struct MedDoseAndTimesPicker: View {
                         Spacer()
                         Text(activeDays.count == 7 ? "Every day" : "\(activeDays.count) days/week")
                             .font(Theme.Font.caption)
-                            .foregroundStyle(Theme.Palette.primary)
+                            .foregroundStyle(Theme.Palette.accent)
                     }
                     .padding(.horizontal, 4)
                     .padding(.top, 4)
@@ -558,12 +558,12 @@ struct MedDoseAndTimesPicker: View {
                                     .font(.system(size: 13, weight: .semibold))
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 10)
-                                    .background(isOn ? Theme.Palette.primary : Color.white)
-                                    .foregroundStyle(isOn ? Color.white : Theme.Palette.textSecondary)
+                                    .background(isOn ? Theme.Palette.actionPrimary : Theme.Palette.surfaceSunken)
+                                    .foregroundStyle(isOn ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                                     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                            .stroke(isOn ? Theme.Palette.primary : Theme.Palette.divider, lineWidth: 1)
+                                            .stroke(isOn ? Color.clear : Theme.Palette.separator, lineWidth: 1)
                                     )
                             }
                             .buttonStyle(.plain)
@@ -575,7 +575,7 @@ struct MedDoseAndTimesPicker: View {
                         ForEach(scheduledTimes, id: \.self) { timeString in
                             HStack {
                                 Image(systemName: "clock")
-                                    .foregroundStyle(Theme.Palette.primary)
+                                    .foregroundStyle(Theme.Palette.accent)
                                 Text(ScheduleTime.displayString(from: timeString))
                                     .font(Theme.Font.bodyEmphasis)
                                 Spacer()
@@ -609,7 +609,7 @@ struct MedDoseAndTimesPicker: View {
             HStack {
                 HStack(spacing: 8) {
                     Image(systemName: "plus.circle.fill")
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                     Text("Add a custom time")
                         .font(Theme.Font.body)
                         .foregroundStyle(Theme.Palette.textPrimary)
@@ -619,12 +619,12 @@ struct MedDoseAndTimesPicker: View {
                     .foregroundStyle(Theme.Palette.textSecondary)
             }
             .padding(12)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.button)
                     .strokeBorder(
-                        Theme.Palette.primary.opacity(0.4),
+                        Theme.Palette.accent.opacity(0.4),
                         style: StrokeStyle(lineWidth: 1, dash: [4, 3])
                     )
             )
@@ -643,18 +643,18 @@ struct MedDoseAndTimesPicker: View {
                 Spacer()
                 if Set(scheduledTimes) == Set(times) {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                 } else {
                     Image(systemName: "arrow.right")
                         .foregroundStyle(Theme.Palette.textSecondary)
                 }
             }
             .padding(12)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.button)
-                    .stroke(Theme.Palette.divider, lineWidth: 1)
+                    .stroke(Theme.Palette.separator, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -726,10 +726,10 @@ struct CustomMedicationForm: View {
                                             .font(Theme.Font.bodyEmphasis)
                                             .padding(.vertical, 8)
                                             .padding(.horizontal, 14)
-                                            .background(category == cat ? Theme.Palette.primary : Color.white)
-                                            .foregroundStyle(category == cat ? Color.white : Theme.Palette.textPrimary)
+                                            .background(category == cat ? Theme.Palette.actionPrimary : Theme.Palette.surfaceSunken)
+                                            .foregroundStyle(category == cat ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                                             .clipShape(Capsule())
-                                            .overlay(Capsule().stroke(Theme.Palette.divider, lineWidth: category == cat ? 0 : 1))
+                                            .overlay(Capsule().stroke(Theme.Palette.separator, lineWidth: category == cat ? 0 : 1))
                                     }
                                 }
                             }
@@ -765,7 +765,7 @@ struct CustomMedicationForm: View {
             }
             .scrollDismissesKeyboard(.immediately)
             .dismissKeyboardOnTap()
-            .background(Theme.Palette.background)
+            .background(Theme.Palette.surface)
             .navigationTitle("Custom medication")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -796,9 +796,9 @@ struct CustomMedicationForm: View {
                 .autocorrectionDisabled()
                 .padding(.horizontal, 14)
                 .padding(.vertical, 12)
-                .background(Color.white)
+                .background(Theme.Palette.surfaceRaised)
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
-                .overlay(RoundedRectangle(cornerRadius: Theme.Radius.button).stroke(Theme.Palette.divider, lineWidth: 1))
+                .overlay(RoundedRectangle(cornerRadius: Theme.Radius.button).stroke(Theme.Palette.separator, lineWidth: 1))
         }
     }
 
@@ -852,7 +852,7 @@ struct TimePickerSheet: View {
                 .buttonStyle(PrimaryButtonStyle())
                 .padding(20)
             }
-            .background(Theme.Palette.background)
+            .background(Theme.Palette.surface)
             .navigationTitle("Pick a time")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

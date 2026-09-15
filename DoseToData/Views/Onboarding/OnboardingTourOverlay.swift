@@ -18,22 +18,22 @@ struct TourGuideBanner: View {
         VStack(spacing: 0) {
             Image(systemName: "arrowtriangle.up.fill")
                 .font(.system(size: 18))
-                .foregroundStyle(Theme.Palette.primary)
+                .foregroundStyle(Theme.Palette.accent)
                 .offset(y: 3)
             HStack(spacing: 10) {
                 Image(systemName: "hand.point.up.left.fill")
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.9))
+                    .foregroundStyle(Theme.Palette.onActionPrimary.opacity(0.9))
                 Text(text)
                     .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.Palette.onActionPrimary)
                     .fixedSize(horizontal: false, vertical: true)
             }
             .padding(.horizontal, 18)
             .padding(.vertical, 14)
-            .background(Theme.Palette.primary)
+            .background(Theme.Palette.actionPrimary)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
-            .shadow(color: Theme.Palette.primary.opacity(0.4), radius: 12, y: 4)
+            .shadow(color: Theme.Palette.accent.opacity(0.4), radius: 12, y: 4)
         }
         .offset(y: bounce ? -7 : 2)
         .animation(.easeInOut(duration: 0.7).repeatForever(autoreverses: true), value: bounce)
@@ -57,16 +57,16 @@ struct TourTabTooltip: View {
         VStack(spacing: 0) {
             Text(text)
                 .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.Palette.onActionPrimary)
                 .padding(.horizontal, 18)
                 .padding(.vertical, 13)
-                .background(Theme.Palette.primary)
+                .background(Theme.Palette.actionPrimary)
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .shadow(color: Theme.Palette.primary.opacity(0.45), radius: 10, y: 4)
+                .shadow(color: Theme.Palette.accent.opacity(0.45), radius: 10, y: 4)
 
             Image(systemName: "arrowtriangle.down.fill")
                 .font(.system(size: 18))
-                .foregroundStyle(Theme.Palette.primary)
+                .foregroundStyle(Theme.Palette.accent)
                 .offset(y: -3)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, UIScreen.main.bounds.width * arrowFraction - 9)
@@ -123,7 +123,7 @@ struct TourInsightsCard: View {
             .buttonStyle(PrimaryButtonStyle())
         }
         .padding(18)
-        .background(Color.white)
+        .background(Theme.Palette.surfaceRaised)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
         .shadow(color: .black.opacity(0.25), radius: 24, y: 8)
         .padding(.horizontal, 24)
@@ -156,12 +156,12 @@ struct TourInsightsCard: View {
                     x: .value("Day", 0),
                     y: .value("Score", score)
                 )
-                .foregroundStyle(Theme.Palette.primary)
+                .foregroundStyle(Theme.Palette.accent)
                 .symbolSize(180)
                 .annotation(position: .topTrailing, alignment: .leading) {
                     Text("You, today")
                         .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                 }
             }
         }

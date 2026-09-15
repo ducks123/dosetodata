@@ -55,7 +55,7 @@ struct MainTabView: View {
                 }
                 .tag(Tab.insights)
         }
-        .tint(Theme.Palette.primary)
+        .tint(Theme.Palette.accent)
         .onChange(of: appState.pendingInsightsTestID) { _, newValue in
             if newValue != nil {
                 selectedTab = .insights
@@ -108,7 +108,7 @@ struct MainTabView: View {
         .fullScreenCover(isPresented: $showTourPaywall) {
             if tourShowsPrimer {
                 ReminderPrimerStepView(onDone: finishTour)
-                    .background(Theme.Palette.background.ignoresSafeArea())
+                    .background(Theme.Palette.surface.ignoresSafeArea())
             } else {
                 PaywallView(
                     isDismissible: false,

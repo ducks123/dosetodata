@@ -17,7 +17,7 @@ struct OnboardingContainerView: View {
 
     var body: some View {
         ZStack {
-            Theme.Palette.background.ignoresSafeArea()
+            Theme.Palette.surface.ignoresSafeArea()
 
             switch step {
             case 0:

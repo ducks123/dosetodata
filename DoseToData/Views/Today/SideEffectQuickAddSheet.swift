@@ -32,11 +32,11 @@ struct SideEffectQuickAddSheet: View {
                                         .font(Theme.Font.caption)
                                         .padding(.vertical, 8)
                                         .padding(.horizontal, 12)
-                                        .background(selectedLabel == label ? Theme.Palette.primary : Color.white)
-                                        .foregroundStyle(selectedLabel == label ? Color.white : Theme.Palette.textPrimary)
+                                        .background(selectedLabel == label ? Theme.Palette.actionPrimary : Theme.Palette.surfaceSunken)
+                                        .foregroundStyle(selectedLabel == label ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                                         .clipShape(Capsule())
                                         .overlay(
-                                            Capsule().stroke(Theme.Palette.divider, lineWidth: selectedLabel == label ? 0 : 1)
+                                            Capsule().stroke(Theme.Palette.separator, lineWidth: selectedLabel == label ? 0 : 1)
                                         )
                                 }
                             }
@@ -67,12 +67,12 @@ struct SideEffectQuickAddSheet: View {
                                         .font(Theme.Font.bodyEmphasis)
                                         .frame(maxWidth: .infinity)
                                         .padding(.vertical, 10)
-                                        .background(severity == option ? Theme.Palette.primary : Color.white)
-                                        .foregroundStyle(severity == option ? Color.white : Theme.Palette.textPrimary)
+                                        .background(severity == option ? Theme.Palette.actionPrimary : Theme.Palette.surfaceSunken)
+                                        .foregroundStyle(severity == option ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                                         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
                                         .overlay(
                                             RoundedRectangle(cornerRadius: Theme.Radius.button)
-                                                .stroke(Theme.Palette.divider, lineWidth: severity == option ? 0 : 1)
+                                                .stroke(Theme.Palette.separator, lineWidth: severity == option ? 0 : 1)
                                         )
                                 }
                             }
@@ -99,7 +99,7 @@ struct SideEffectQuickAddSheet: View {
                 }
                 .padding(20)
             }
-            .background(Theme.Palette.background)
+            .background(Theme.Palette.surface)
             .navigationTitle("Side effect")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

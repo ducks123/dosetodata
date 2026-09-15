@@ -32,7 +32,7 @@ struct ScheduleView: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 24)
             }
-            .background(Theme.Palette.background.ignoresSafeArea())
+            .background(Theme.Palette.surface.ignoresSafeArea())
             .navigationTitle("Schedule")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showingEditMeds) {
@@ -109,10 +109,10 @@ struct ScheduleView: View {
                 Text("Edit list")
                     .font(.system(size: 13, weight: .semibold))
             }
-            .foregroundStyle(Theme.Palette.primary)
+            .foregroundStyle(Theme.Palette.accent)
             .padding(.vertical, 6)
             .padding(.horizontal, 12)
-            .background(Theme.Palette.primary.opacity(0.12))
+            .background(Theme.Palette.surfaceSunken)
             .clipShape(Capsule())
         }
         .buttonStyle(.plain)
@@ -126,11 +126,11 @@ struct ScheduleView: View {
             HStack(spacing: 12) {
                 ZStack {
                     Circle()
-                        .fill(Theme.Palette.primary.opacity(0.15))
+                        .fill(Theme.Palette.lavenderTint)
                         .frame(width: 36, height: 36)
                     Image(systemName: "plus")
                         .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Add medication")
@@ -143,12 +143,12 @@ struct ScheduleView: View {
                 Spacer()
             }
             .padding(14)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
                     .strokeBorder(
-                        Theme.Palette.primary.opacity(0.45),
+                        Theme.Palette.accent.opacity(0.45),
                         style: StrokeStyle(lineWidth: 1.25, dash: [5, 4])
                     )
             )
@@ -171,7 +171,7 @@ private struct MedScheduleRow: View {
                     .fill(userMed.scheduleColor)
                     .frame(width: 44, height: 44)
                 Image(systemName: userMed.medication.category.iconSystemName)
-                    .foregroundStyle(Theme.Palette.primary)
+                    .foregroundStyle(Theme.Palette.accent)
                     .font(.system(size: 18, weight: .semibold))
             }
             VStack(alignment: .leading, spacing: 2) {
@@ -330,7 +330,7 @@ struct TimelineStrip: View {
                     }
                 }
             }
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
             .shadow(
                 color: Theme.cardShadow.color,
@@ -349,7 +349,7 @@ struct TimelineStrip: View {
                     path.move(to: CGPoint(x: x, y: topPaddingForHours - 4))
                     path.addLine(to: CGPoint(x: x, y: contentHeight - 8))
                 }
-                .stroke(Theme.Palette.divider.opacity(0.7), lineWidth: 1)
+                .stroke(Theme.Palette.separator.opacity(0.7), lineWidth: 1)
 
                 Text(hourLabel(for: hour))
                     .font(.system(size: 11, weight: .medium))
@@ -365,10 +365,10 @@ struct TimelineStrip: View {
                 path.move(to: CGPoint(x: x, y: topPaddingForHours - 4))
                 path.addLine(to: CGPoint(x: x, y: contentHeight - 8))
             }
-            .stroke(Theme.Palette.primary, lineWidth: 2)
+            .stroke(Theme.Palette.accent, lineWidth: 2)
 
             Circle()
-                .fill(Theme.Palette.primary)
+                .fill(Theme.Palette.accent)
                 .frame(width: 8, height: 8)
                 .position(x: x, y: topPaddingForHours - 4)
         }
@@ -390,7 +390,7 @@ private struct EventPill: View {
         HStack(spacing: 8) {
             Image(systemName: userMed.medication.category.iconSystemName)
                 .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(Theme.Palette.primary)
+                .foregroundStyle(Theme.Palette.accent)
             VStack(alignment: .leading, spacing: 1) {
                 Text(userMed.medication.brandName)
                     .font(.system(size: 13, weight: .semibold))
@@ -411,7 +411,7 @@ private struct EventPill: View {
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(Theme.Palette.primary.opacity(0.25), lineWidth: 1)
+                .stroke(Theme.Palette.accent.opacity(0.25), lineWidth: 1)
         )
     }
 }

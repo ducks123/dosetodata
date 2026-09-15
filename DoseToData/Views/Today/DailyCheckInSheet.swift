@@ -73,7 +73,7 @@ struct DailyCheckInSheet: View {
                 .padding(20)
                 .padding(.bottom, 100)
             }
-            .background(Theme.Palette.background)
+            .background(Theme.Palette.surface)
             .navigationTitle(isToday ? "Today's check-in" : "Check-in")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -90,7 +90,7 @@ struct DailyCheckInSheet: View {
                 .buttonStyle(PrimaryButtonStyle())
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
-                .background(Theme.Palette.background.opacity(0.96))
+                .background(Theme.Palette.surface.opacity(0.96))
                 .disabled(!hasAnyAnswer)
                 .opacity(hasAnyAnswer ? 1 : 0.5)
             }
@@ -222,11 +222,11 @@ struct DailyCheckInSheet: View {
                             Circle()
                                 .fill(skippedMedIDs.isEmpty
                                       ? Theme.Palette.success
-                                      : Theme.Palette.primary.opacity(0.10))
+                                      : Theme.Palette.lavenderTint)
                                 .frame(width: 32, height: 32)
                             Image(systemName: skippedMedIDs.isEmpty ? "checkmark" : "pills.fill")
                                 .font(.system(size: 13, weight: .bold))
-                                .foregroundStyle(skippedMedIDs.isEmpty ? Color.white : Theme.Palette.primary)
+                                .foregroundStyle(skippedMedIDs.isEmpty ? Theme.Palette.onAccent : Theme.Palette.accent)
                         }
                         Text("Took everything")
                             .font(Theme.Font.bodyEmphasis)
@@ -239,7 +239,7 @@ struct DailyCheckInSheet: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
-                    .background(Color.white)
+                    .background(Theme.Palette.surfaceRaised)
                 }
                 .buttonStyle(.plain)
 
@@ -259,14 +259,14 @@ struct DailyCheckInSheet: View {
                             ZStack {
                                 Circle()
                                     .fill(isSkipped
-                                          ? Theme.Palette.attention.opacity(0.15)
+                                          ? Theme.Palette.error.opacity(0.12)
                                           : med.scheduleColor)
                                     .frame(width: 32, height: 32)
                                 Image(systemName: med.medication.category.iconSystemName)
                                     .font(.system(size: 13, weight: .semibold))
                                     .foregroundStyle(isSkipped
-                                                     ? Theme.Palette.attention
-                                                     : Theme.Palette.primary)
+                                                     ? Theme.Palette.error
+                                                     : Theme.Palette.textPrimary)
                             }
                             VStack(alignment: .leading, spacing: 1) {
                                 Text(med.medication.brandName)
@@ -278,7 +278,7 @@ struct DailyCheckInSheet: View {
                                 Text(isSkipped ? "Didn't take" : med.currentDose)
                                     .font(Theme.Font.caption)
                                     .foregroundStyle(isSkipped
-                                                     ? Theme.Palette.attention
+                                                     ? Theme.Palette.error
                                                      : Theme.Palette.textSecondary)
                             }
                             Spacer()
@@ -286,12 +286,12 @@ struct DailyCheckInSheet: View {
                                   ? "xmark.circle.fill"
                                   : "checkmark.circle.fill")
                                 .foregroundStyle(isSkipped
-                                                 ? Theme.Palette.attention
+                                                 ? Theme.Palette.error
                                                  : Theme.Palette.success)
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
-                        .background(Color.white)
+                        .background(Theme.Palette.surfaceRaised)
                     }
                     .buttonStyle(.plain)
 
@@ -325,7 +325,7 @@ struct DailyCheckInSheet: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(12)
-                    .background(Theme.Palette.heroAccent)
+                    .background(Theme.Palette.lavenderTint)
                     .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
             }
             ForEach(visibleStandardQuestions) { question in
@@ -406,15 +406,15 @@ struct DailyCheckInSheet: View {
                     Spacer()
                 }
                 .font(Theme.Font.bodyEmphasis)
-                .foregroundStyle(Theme.Palette.primary)
+                .foregroundStyle(Theme.Palette.accent)
                 .padding(16)
                 .frame(maxWidth: .infinity)
-                .background(Color.white)
+                .background(Theme.Palette.surfaceRaised)
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
                         .strokeBorder(
-                            Theme.Palette.primary.opacity(0.4),
+                            Theme.Palette.accent.opacity(0.4),
                             style: StrokeStyle(lineWidth: 1, dash: [4, 3])
                         )
                 )
@@ -448,7 +448,7 @@ struct DailyCheckInSheet: View {
                         }
                         .padding(.vertical, 6)
                         .padding(.horizontal, 10)
-                        .background(Theme.Palette.negative.opacity(0.15))
+                        .background(Theme.Palette.error.opacity(0.15))
                         .clipShape(Capsule())
                     }
                 }
@@ -463,15 +463,15 @@ struct DailyCheckInSheet: View {
                     Spacer()
                 }
                 .font(Theme.Font.bodyEmphasis)
-                .foregroundStyle(Theme.Palette.negative)
+                .foregroundStyle(Theme.Palette.error)
                 .padding(16)
                 .frame(maxWidth: .infinity)
-                .background(Color.white)
+                .background(Theme.Palette.surfaceRaised)
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
                         .strokeBorder(
-                            Theme.Palette.negative.opacity(0.4),
+                            Theme.Palette.error.opacity(0.4),
                             style: StrokeStyle(lineWidth: 1, dash: [4, 3])
                         )
                 )
@@ -489,11 +489,11 @@ struct DailyCheckInSheet: View {
             TextEditor(text: $note)
                 .padding(8)
                 .frame(minHeight: 100)
-                .background(Color.white)
+                .background(Theme.Palette.surfaceRaised)
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
-                        .stroke(Theme.Palette.divider, lineWidth: 1)
+                        .stroke(Theme.Palette.separator, lineWidth: 1)
                 )
         }
     }
@@ -634,7 +634,7 @@ private struct QuestionCard: View {
                                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
-                                        .stroke(Theme.Palette.divider, lineWidth: selected == level ? 0 : 1)
+                                        .stroke(Theme.Palette.separator, lineWidth: selected == level ? 0 : 1)
                                 )
                         }
                         .buttonStyle(.plain)
@@ -659,7 +659,7 @@ private struct QuestionCard: View {
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white)
+        .background(Theme.Palette.surfaceRaised)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
         .shadow(
             color: Theme.cardShadow.color,
@@ -670,11 +670,11 @@ private struct QuestionCard: View {
     }
 
     private func backgroundColor(for level: CheckInLevel) -> Color {
-        selected == level ? Theme.Palette.primary : Color.white
+        selected == level ? Theme.Palette.actionPrimary : Theme.Palette.surfaceSunken
     }
 
     private func foregroundColor(for level: CheckInLevel) -> Color {
-        selected == level ? Color.white : Theme.Palette.textPrimary
+        selected == level ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary
     }
 }
 
@@ -703,10 +703,10 @@ struct InlineSideEffectPicker: View {
                                     .font(Theme.Font.caption)
                                     .padding(.vertical, 8)
                                     .padding(.horizontal, 12)
-                                    .background(label == s ? Theme.Palette.primary : Color.white)
-                                    .foregroundStyle(label == s ? Color.white : Theme.Palette.textPrimary)
+                                    .background(label == s ? Theme.Palette.actionPrimary : Theme.Palette.surfaceSunken)
+                                    .foregroundStyle(label == s ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                                     .clipShape(Capsule())
-                                    .overlay(Capsule().stroke(Theme.Palette.divider, lineWidth: label == s ? 0 : 1))
+                                    .overlay(Capsule().stroke(Theme.Palette.separator, lineWidth: label == s ? 0 : 1))
                             }
                         }
                     }
@@ -726,12 +726,12 @@ struct InlineSideEffectPicker: View {
                                     .font(Theme.Font.bodyEmphasis)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 10)
-                                    .background(severity == s ? Theme.Palette.primary : Color.white)
-                                    .foregroundStyle(severity == s ? Color.white : Theme.Palette.textPrimary)
+                                    .background(severity == s ? Theme.Palette.actionPrimary : Theme.Palette.surfaceSunken)
+                                    .foregroundStyle(severity == s ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                                     .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
                                     .overlay(
                                         RoundedRectangle(cornerRadius: Theme.Radius.button)
-                                            .stroke(Theme.Palette.divider, lineWidth: severity == s ? 0 : 1)
+                                            .stroke(Theme.Palette.separator, lineWidth: severity == s ? 0 : 1)
                                     )
                             }
                         }
@@ -751,7 +751,7 @@ struct InlineSideEffectPicker: View {
                 }
                 .padding(20)
             }
-            .background(Theme.Palette.background)
+            .background(Theme.Palette.surface)
             .navigationTitle("Side effect")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -799,16 +799,16 @@ private struct TextQuestionCard: View {
             TextEditor(text: $text)
                 .padding(8)
                 .frame(minHeight: 80)
-                .background(Theme.Palette.background)
+                .background(Theme.Palette.surface)
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
-                        .stroke(Theme.Palette.divider, lineWidth: 1)
+                        .stroke(Theme.Palette.separator, lineWidth: 1)
                 )
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white)
+        .background(Theme.Palette.surfaceRaised)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
         .shadow(
             color: Theme.cardShadow.color,
@@ -888,7 +888,7 @@ struct AddCustomQuestionSheet: View {
                 }
                 .padding(20)
             }
-            .background(Theme.Palette.background)
+            .background(Theme.Palette.surface)
             .navigationTitle("Add a question")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -938,10 +938,10 @@ struct AddCustomQuestionSheet: View {
                             onRestoreStandard?(q)
                         }
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                     }
                     .padding(12)
-                    .background(Color.white)
+                    .background(Theme.Palette.surfaceRaised)
                     .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
                 }
             }
@@ -964,17 +964,17 @@ struct AddCustomQuestionSheet: View {
                                 .font(Theme.Font.bodyEmphasis)
                             Text(hint(for: option))
                                 .font(.system(size: 11, weight: .medium))
-                                .foregroundStyle(kind == option ? Color.white.opacity(0.8) : Theme.Palette.textSecondary)
+                                .foregroundStyle(kind == option ? Theme.Palette.onActionPrimary.opacity(0.8) : Theme.Palette.textSecondary)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(12)
-                        .background(kind == option ? Theme.Palette.primary : Color.white)
-                        .foregroundStyle(kind == option ? Color.white : Theme.Palette.textPrimary)
+                        .background(kind == option ? Theme.Palette.actionPrimary : Theme.Palette.surfaceSunken)
+                        .foregroundStyle(kind == option ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
                         .overlay(
                             RoundedRectangle(cornerRadius: Theme.Radius.button)
-                                .stroke(Theme.Palette.divider, lineWidth: kind == option ? 0 : 1)
+                                .stroke(Theme.Palette.separator, lineWidth: kind == option ? 0 : 1)
                         )
                     }
                     .buttonStyle(.plain)
@@ -993,11 +993,11 @@ struct AddCustomQuestionSheet: View {
                 .lineLimit(1...3)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 12)
-                .background(Color.white)
+                .background(Theme.Palette.surfaceRaised)
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
                 .overlay(
                     RoundedRectangle(cornerRadius: Theme.Radius.button)
-                        .stroke(Theme.Palette.divider, lineWidth: 1)
+                        .stroke(Theme.Palette.separator, lineWidth: 1)
                 )
         }
     }
@@ -1022,7 +1022,7 @@ struct AddCustomQuestionSheet: View {
                         Text("Swap labels")
                     }
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Theme.Palette.primary)
+                    .foregroundStyle(Theme.Palette.accent)
                 }
                 .buttonStyle(.plain)
                 .disabled(trimmedLeft.isEmpty && trimmedRight.isEmpty)
@@ -1054,11 +1054,11 @@ struct AddCustomQuestionSheet: View {
             TextField(placeholder, text: text)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
-                .background(Color.white)
+                .background(Theme.Palette.surfaceRaised)
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
                 .overlay(
                     RoundedRectangle(cornerRadius: Theme.Radius.button)
-                        .stroke(Theme.Palette.divider, lineWidth: 1)
+                        .stroke(Theme.Palette.separator, lineWidth: 1)
                 )
         }
         .frame(maxWidth: .infinity)
@@ -1069,7 +1069,7 @@ struct AddCustomQuestionSheet: View {
     private var conventionCallout: some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "arrow.up.right.circle.fill")
-                .foregroundStyle(Theme.Palette.primary)
+                .foregroundStyle(Theme.Palette.accent)
                 .font(.system(size: 16))
             VStack(alignment: .leading, spacing: 2) {
                 Text("Keep 1 as the harder state, 5 as the better.")
@@ -1083,7 +1083,7 @@ struct AddCustomQuestionSheet: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.Palette.heroAccent)
+        .background(Theme.Palette.lavenderTint)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
     }
 
@@ -1092,7 +1092,7 @@ struct AddCustomQuestionSheet: View {
     private var backwardsWarning: some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(Theme.Palette.attention)
+                .foregroundStyle(Theme.Palette.error)
                 .font(.system(size: 16))
             VStack(alignment: .leading, spacing: 2) {
                 Text("These look flipped.")
@@ -1106,7 +1106,7 @@ struct AddCustomQuestionSheet: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.Palette.attention.opacity(0.18))
+        .background(Theme.Palette.error.opacity(0.12))
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
     }
 
@@ -1168,11 +1168,11 @@ private struct QuestionPreviewCard: View {
                             .foregroundStyle(Theme.Palette.textPrimary)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
-                            .background(Color.white)
+                            .background(Theme.Palette.surfaceRaised)
                             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
                             .overlay(
                                 RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
-                                    .stroke(Theme.Palette.divider, lineWidth: 1)
+                                    .stroke(Theme.Palette.separator, lineWidth: 1)
                             )
                     }
                 }
@@ -1192,7 +1192,7 @@ private struct QuestionPreviewCard: View {
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white)
+        .background(Theme.Palette.surfaceRaised)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
         .shadow(
             color: Theme.cardShadow.color,

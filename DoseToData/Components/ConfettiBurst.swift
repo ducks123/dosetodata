@@ -7,14 +7,15 @@ struct ConfettiBurst: View {
 
     @State private var activeBurst: Burst? = nil
 
+    // Brand hues only (spec §1.5): Signal Orange, Iris Deep, Iris, Sky,
+    // and the two tints. Celebration stays in the identity's palette.
     private static let colors: [Color] = [
-        Color(red: 0.95, green: 0.30, blue: 0.37), // red
-        Color(red: 0.98, green: 0.57, blue: 0.20), // orange
-        Color(red: 0.98, green: 0.82, blue: 0.22), // yellow
-        Color(red: 0.40, green: 0.78, blue: 0.42), // green
-        Color(red: 0.30, green: 0.65, blue: 0.95), // blue
-        Color(red: 0.64, green: 0.40, blue: 0.90), // purple
-        Color(red: 0.96, green: 0.52, blue: 0.78)  // pink
+        Theme.Palette.dataCurrent,   // Signal Orange
+        Theme.Palette.accent,        // Iris Deep / orange on dark
+        Theme.Palette.data1,         // Iris
+        Theme.Palette.data2,         // Sky family
+        Theme.Palette.lavenderTint,
+        Theme.Palette.peachTint
     ]
 
     var body: some View {

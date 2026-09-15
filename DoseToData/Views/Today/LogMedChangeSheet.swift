@@ -81,7 +81,7 @@ struct LogMedChangeSheet: View {
                 .padding(20)
                 .padding(.bottom, 80)
             }
-            .background(Theme.Palette.background)
+            .background(Theme.Palette.surface)
             .navigationTitle(isEditing ? "Edit medication change" : "Log medication change")
             .navigationBarTitleDisplayMode(.inline)
             .task {
@@ -103,7 +103,7 @@ struct LogMedChangeSheet: View {
                 .opacity(canSave ? 1 : 0.5)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
-                .background(Theme.Palette.background.opacity(0.96))
+                .background(Theme.Palette.surface.opacity(0.96))
             }
         }
         .sheet(item: Binding(
@@ -137,7 +137,7 @@ struct LogMedChangeSheet: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.Palette.heroAccent)
+        .background(Theme.Palette.lavenderTint)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
     }
 
@@ -152,7 +152,7 @@ struct LogMedChangeSheet: View {
                 .labelsHidden()
                 .padding(14)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.white)
+                .background(Theme.Palette.surfaceRaised)
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
         }
     }
@@ -194,7 +194,7 @@ struct LogMedChangeSheet: View {
                                 .fill(med.category.pastelColor)
                                 .frame(width: 32, height: 32)
                             Image(systemName: med.category.iconSystemName)
-                                .foregroundStyle(Theme.Palette.primary)
+                                .foregroundStyle(Theme.Palette.accent)
                                 .font(.system(size: 14, weight: .semibold))
                         }
                         VStack(alignment: .leading, spacing: 2) {
@@ -217,10 +217,10 @@ struct LogMedChangeSheet: View {
                         Text("Choose a medication")
                             .font(.system(size: 15, weight: .semibold))
                     }
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.Palette.onActionPrimary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(Theme.Palette.primary)
+                    .background(Theme.Palette.actionPrimary)
                     .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
                 }
             }
@@ -236,10 +236,10 @@ struct LogMedChangeSheet: View {
                             .font(.system(size: 13, weight: .semibold))
                             .padding(.vertical, 8)
                             .padding(.horizontal, 12)
-                            .background(draft.wrappedValue.kind == k ? Theme.Palette.primary : Color.white)
-                            .foregroundStyle(draft.wrappedValue.kind == k ? Color.white : Theme.Palette.textPrimary)
+                            .background(draft.wrappedValue.kind == k ? Theme.Palette.actionPrimary : Theme.Palette.surfaceSunken)
+                            .foregroundStyle(draft.wrappedValue.kind == k ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                             .clipShape(Capsule())
-                            .overlay(Capsule().stroke(Theme.Palette.divider, lineWidth: draft.wrappedValue.kind == k ? 0 : 1))
+                            .overlay(Capsule().stroke(Theme.Palette.separator, lineWidth: draft.wrappedValue.kind == k ? 0 : 1))
                     }
                 }
             }
@@ -266,7 +266,7 @@ struct LogMedChangeSheet: View {
                      ? "Enter a dose to save this change."
                      : "Enter the new dose to save this change.")
                     .font(.system(size: 11))
-                    .foregroundStyle(Theme.Palette.negative)
+                    .foregroundStyle(Theme.Palette.error)
             }
 
             // Remove row button (only if more than one)
@@ -283,7 +283,7 @@ struct LogMedChangeSheet: View {
             }
         }
         .padding(14)
-        .background(Color.white)
+        .background(Theme.Palette.surfaceRaised)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
     }
 
@@ -297,9 +297,9 @@ struct LogMedChangeSheet: View {
                 .autocorrectionDisabled()
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
-                .background(Color.white)
+                .background(Theme.Palette.surfaceRaised)
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
-                .overlay(RoundedRectangle(cornerRadius: Theme.Radius.button).stroke(Theme.Palette.divider, lineWidth: 1))
+                .overlay(RoundedRectangle(cornerRadius: Theme.Radius.button).stroke(Theme.Palette.separator, lineWidth: 1))
         }
     }
 
@@ -312,7 +312,7 @@ struct LogMedChangeSheet: View {
                 Text("Add another change")
             }
             .font(.system(size: 14, weight: .semibold))
-            .foregroundStyle(Theme.Palette.primary)
+            .foregroundStyle(Theme.Palette.accent)
         }
         .padding(.top, 2)
     }
@@ -330,7 +330,7 @@ struct LogMedChangeSheet: View {
             )
             .lineLimit(3...6)
             .padding(14)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
         }
         .padding(.top, 10)
@@ -357,7 +357,7 @@ struct LogMedChangeSheet: View {
                     }
                 }
                 .padding(14)
-                .background(Theme.Palette.heroAccent)
+                .background(Theme.Palette.lavenderTint)
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
             }
             .padding(.top, 10)
@@ -570,7 +570,7 @@ private struct MedPickerSheet: View {
                 }
                 .padding(20)
             }
-            .background(Theme.Palette.background)
+            .background(Theme.Palette.surface)
             .navigationTitle("Choose a medication")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -591,9 +591,9 @@ private struct MedPickerSheet: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
-        .background(Color.white)
+        .background(Theme.Palette.surfaceRaised)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button))
-        .overlay(RoundedRectangle(cornerRadius: Theme.Radius.button).stroke(Theme.Palette.divider, lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: Theme.Radius.button).stroke(Theme.Palette.separator, lineWidth: 1))
     }
 
     @ViewBuilder
@@ -614,7 +614,7 @@ private struct MedPickerSheet: View {
                         .fill(med.category.pastelColor)
                         .frame(width: 36, height: 36)
                     Image(systemName: med.category.iconSystemName)
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                         .font(.system(size: 14, weight: .semibold))
                 }
                 VStack(alignment: .leading, spacing: 2) {
@@ -632,7 +632,7 @@ private struct MedPickerSheet: View {
                     .foregroundStyle(Theme.Palette.textSecondary)
             }
             .padding(12)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
         }
         .buttonStyle(.plain)

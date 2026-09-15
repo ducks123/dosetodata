@@ -104,13 +104,13 @@ struct CheckInDetailView: View {
                 .padding(.top, 8)
                 .padding(.bottom, 40)
             }
-            .background(Theme.Palette.background.ignoresSafeArea())
+            .background(Theme.Palette.surface.ignoresSafeArea())
             .navigationTitle(checkIn.date.formatted(.dateTime.weekday(.wide).month().day()))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
-                        .foregroundStyle(Theme.Palette.primary)
+                        .foregroundStyle(Theme.Palette.accent)
                 }
             }
             .sheet(isPresented: $showingEditSheet) {
@@ -153,17 +153,11 @@ struct CheckInDetailView: View {
             }
         }
         .padding(20)
-        .background(Color.white)
+        .background(Theme.Palette.surfaceRaised)
         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
-                .strokeBorder(
-                    AngularGradient(
-                        colors: [.red, .orange, .yellow, .green, .cyan, .blue, .purple, .pink, .red],
-                        center: .center
-                    ),
-                    lineWidth: 2
-                )
+                .strokeBorder(Theme.Palette.success, lineWidth: 2)
         )
         .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
     }
@@ -171,7 +165,7 @@ struct CheckInDetailView: View {
     private func scoreRing(_ avg: Double) -> some View {
         ZStack {
             Circle()
-                .stroke(Theme.Palette.divider, lineWidth: 5)
+                .stroke(Theme.Palette.separator, lineWidth: 5)
                 .frame(width: 60, height: 60)
             Circle()
                 .trim(from: 0, to: avg / 5.0)
@@ -205,7 +199,7 @@ struct CheckInDetailView: View {
                     }
                 }
             }
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
             .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
         }
@@ -221,7 +215,7 @@ struct CheckInDetailView: View {
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
                         Capsule()
-                            .fill(Theme.Palette.divider)
+                            .fill(Theme.Palette.separator)
                             .frame(height: 6)
                         Capsule()
                             .fill(barColor(for: level.numericValue))
@@ -244,8 +238,8 @@ struct CheckInDetailView: View {
         switch score {
         case 5:    return Theme.Palette.success
         case 4:    return Theme.Palette.success.opacity(0.75)
-        case 3:    return Theme.Palette.attention
-        case 1, 2: return Theme.Palette.negative
+        case 3:    return Theme.Palette.textSecondary
+        case 1, 2: return Theme.Palette.error
         default:   return Theme.Palette.textSecondary
         }
     }
@@ -272,7 +266,7 @@ struct CheckInDetailView: View {
                     }
                     .padding(16)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.white)
+                    .background(Theme.Palette.surfaceRaised)
                     .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
                     .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
                 }
@@ -295,7 +289,7 @@ struct CheckInDetailView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.white)
+                .background(Theme.Palette.surfaceRaised)
                 .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
                 .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
         }
@@ -316,7 +310,7 @@ struct CheckInDetailView: View {
                         // Icon
                         Image(systemName: med.skipped ? "xmark.circle.fill" : med.taken ? "checkmark.circle.fill" : "circle.dotted")
                             .font(.system(size: 20))
-                            .foregroundStyle(med.skipped ? Theme.Palette.negative : med.taken ? Theme.Palette.success : Theme.Palette.textSecondary)
+                            .foregroundStyle(med.skipped ? Theme.Palette.error : med.taken ? Theme.Palette.success : Theme.Palette.textSecondary)
                             .frame(width: 28)
 
                         VStack(alignment: .leading, spacing: 2) {
@@ -330,10 +324,10 @@ struct CheckInDetailView: View {
                         Spacer()
                         Text(med.status)
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(med.skipped ? Theme.Palette.negative : med.taken ? Theme.Palette.success : Theme.Palette.textSecondary)
+                            .foregroundStyle(med.skipped ? Theme.Palette.error : med.taken ? Theme.Palette.success : Theme.Palette.textSecondary)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background((med.skipped ? Theme.Palette.negative : med.taken ? Theme.Palette.success : Theme.Palette.textSecondary).opacity(0.10))
+                            .background((med.skipped ? Theme.Palette.error : med.taken ? Theme.Palette.success : Theme.Palette.textSecondary).opacity(0.10))
                             .clipShape(Capsule())
                     }
                     .padding(.horizontal, 16)
@@ -343,7 +337,7 @@ struct CheckInDetailView: View {
                     }
                 }
             }
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
             .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
         }
@@ -387,7 +381,7 @@ struct CheckInDetailView: View {
                     }
                 }
             }
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
             .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
         }
@@ -395,9 +389,9 @@ struct CheckInDetailView: View {
 
     private func severityColor(_ severity: SideEffectSeverity) -> Color {
         switch severity {
-        case .mild:     return Theme.Palette.attention
-        case .moderate: return Theme.Palette.negative.opacity(0.85)
-        case .severe:   return Theme.Palette.negative
+        case .mild:     return Theme.Palette.textSecondary
+        case .moderate: return Theme.Palette.error.opacity(0.85)
+        case .severe:   return Theme.Palette.error
         }
     }
 
@@ -426,11 +420,11 @@ struct CheckInDetailView: View {
             .foregroundStyle(Theme.Palette.textSecondary)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(Color.white)
+            .background(Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
-                    .stroke(Theme.Palette.divider, lineWidth: 1)
+                    .stroke(Theme.Palette.separator, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
