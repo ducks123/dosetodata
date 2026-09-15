@@ -105,7 +105,11 @@ private struct ScrollDayCell: View {
                 .font(.system(size: 11, weight: isSelected ? .bold : .semibold))
                 .foregroundStyle(isSelected ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
 
-            ZStack(alignment: .bottomTrailing) {
+            // Circle + number stay centered; the little state badge hangs off
+            // the circle's corner via an alignment overlay. (Putting the badge
+            // in a .bottomTrailing ZStack pinned the WHOLE stack, clipping the
+            // day numbers out of their circles.)
+            ZStack {
                 stateBackground
                 if isSelected {
                     Circle()
@@ -113,8 +117,8 @@ private struct ScrollDayCell: View {
                         .frame(width: 34, height: 34)
                 }
                 stateContent
-                stateBadge
             }
+            .overlay(alignment: .bottomTrailing) { stateBadge }
             .padding(.bottom, 2)
         }
         .frame(width: 44)
