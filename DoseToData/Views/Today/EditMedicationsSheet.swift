@@ -103,6 +103,7 @@ struct EditMedicationsSheet: View {
                             Text(userMed.medication.brandName)
                                 .font(Theme.Font.bodyEmphasis)
                             Text(scheduleSummary(for: userMed))
+                                .monospacedDigit()
                                 .font(Theme.Font.caption)
                                 .foregroundStyle(Theme.Palette.textSecondary)
                                 .lineLimit(1)
@@ -114,6 +115,7 @@ struct EditMedicationsSheet: View {
                             Image(systemName: "minus.circle.fill")
                                 .font(.system(size: 22))
                                 .foregroundStyle(Theme.Palette.error)
+                                .minimumTapTarget()
                         }
                         .buttonStyle(.plain)
                     }
@@ -203,7 +205,6 @@ struct AddMedicationFlow: View {
                         }
                         .buttonStyle(PrimaryButtonStyle())
                         .disabled(dose.isEmpty)
-                        .opacity(dose.isEmpty ? 0.5 : 1)
                         .padding(.top, 8)
                     }
                 }
@@ -295,6 +296,7 @@ struct AddMedicationFlow: View {
                             Text(med.brandName)
                                 .font(Theme.Font.bodyEmphasis)
                             Text("\(med.genericName) · \(med.medClass)")
+                                .monospacedDigit()
                                 .font(Theme.Font.caption)
                                 .foregroundStyle(Theme.Palette.textSecondary)
                                 .lineLimit(1)
@@ -542,6 +544,7 @@ struct MedDoseAndTimesPicker: View {
                             .foregroundStyle(Theme.Palette.textSecondary)
                         Spacer()
                         Text(activeDays.count == 7 ? "Every day" : "\(activeDays.count) days/week")
+                            .monospacedDigit()
                             .font(Theme.Font.caption)
                             .foregroundStyle(Theme.Palette.accent)
                     }
@@ -565,6 +568,8 @@ struct MedDoseAndTimesPicker: View {
                                         RoundedRectangle(cornerRadius: 8, style: .continuous)
                                             .stroke(isOn ? Color.clear : Theme.Palette.separator, lineWidth: 1)
                                     )
+                                    .frame(minHeight: 44)
+                                    .contentShape(Rectangle())
                             }
                             .buttonStyle(.plain)
                         }
@@ -577,6 +582,7 @@ struct MedDoseAndTimesPicker: View {
                                 Image(systemName: "clock")
                                     .foregroundStyle(Theme.Palette.accent)
                                 Text(ScheduleTime.displayString(from: timeString))
+                                    .monospacedDigit()
                                     .font(Theme.Font.bodyEmphasis)
                                 Spacer()
                                 Button {
@@ -584,6 +590,7 @@ struct MedDoseAndTimesPicker: View {
                                 } label: {
                                     Image(systemName: "xmark.circle.fill")
                                         .foregroundStyle(Theme.Palette.textSecondary)
+                                        .minimumTapTarget()
                                 }
                             }
                             .padding(.horizontal, 4)
@@ -730,6 +737,7 @@ struct CustomMedicationForm: View {
                                             .foregroundStyle(category == cat ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                                             .clipShape(Capsule())
                                             .overlay(Capsule().stroke(Theme.Palette.separator, lineWidth: category == cat ? 0 : 1))
+                                            .minimumTapTarget()
                                     }
                                 }
                             }
@@ -757,7 +765,6 @@ struct CustomMedicationForm: View {
                     }
                     .buttonStyle(PrimaryButtonStyle())
                     .disabled(!canSave)
-                    .opacity(canSave ? 1 : 0.5)
                     .padding(.top, 8)
                 }
                 .padding(20)

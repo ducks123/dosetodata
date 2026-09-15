@@ -92,7 +92,6 @@ struct DailyCheckInSheet: View {
                 .padding(.vertical, 12)
                 .background(Theme.Palette.surface.opacity(0.96))
                 .disabled(!hasAnyAnswer)
-                .opacity(hasAnyAnswer ? 1 : 0.5)
             }
         }
         .sheet(isPresented: $showingAddSideEffect) {
@@ -173,6 +172,7 @@ struct DailyCheckInSheet: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(targetDate.formatted(.dateTime.weekday(.wide).month().day()))
+                .monospacedDigit()
                 .font(Theme.Font.heroLabel)
                 .foregroundStyle(Theme.Palette.textSecondary)
             Text(headerTitle)
@@ -276,6 +276,7 @@ struct DailyCheckInSheet: View {
                                                      : Theme.Palette.textPrimary)
                                     .strikethrough(isSkipped, color: Theme.Palette.textSecondary)
                                 Text(isSkipped ? "Didn't take" : med.currentDose)
+                                    .monospacedDigit()
                                     .font(Theme.Font.caption)
                                     .foregroundStyle(isSkipped
                                                      ? Theme.Palette.error
@@ -437,6 +438,7 @@ struct DailyCheckInSheet: View {
                             Text(se.label)
                                 .font(Theme.Font.caption)
                             Text("· \(se.severity.rawValue)")
+                                .monospacedDigit()
                                 .font(Theme.Font.caption)
                                 .foregroundStyle(Theme.Palette.textSecondary)
                             Button {
@@ -615,6 +617,7 @@ private struct QuestionCard: View {
                     } label: {
                         Image(systemName: "ellipsis")
                             .foregroundStyle(Theme.Palette.textSecondary)
+                            .minimumTapTarget()
                     }
                 }
             }
@@ -636,6 +639,7 @@ private struct QuestionCard: View {
                                     RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
                                         .stroke(Theme.Palette.separator, lineWidth: selected == level ? 0 : 1)
                                 )
+                                .minimumTapTarget()
                         }
                         .buttonStyle(.plain)
                     }
@@ -707,12 +711,17 @@ struct InlineSideEffectPicker: View {
                                     .foregroundStyle(label == s ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                                     .clipShape(Capsule())
                                     .overlay(Capsule().stroke(Theme.Palette.separator, lineWidth: label == s ? 0 : 1))
+                                    .minimumTapTarget()
                             }
                         }
                     }
 
-                    TextField("Or type your own", text: $label)
-                        .textFieldStyle(.roundedBorder)
+                    TextField(
+                        "",
+                        text: $label,
+                        prompt: Text("Or type your own").foregroundStyle(Theme.Palette.textDisabled)
+                    )
+                        .textFieldStyle(BrandedTextFieldStyle())
 
                     Text("How strong?")
                         .font(Theme.Font.caption)
@@ -733,6 +742,7 @@ struct InlineSideEffectPicker: View {
                                         RoundedRectangle(cornerRadius: Theme.Radius.button)
                                             .stroke(Theme.Palette.separator, lineWidth: severity == s ? 0 : 1)
                                     )
+                                    .minimumTapTarget()
                             }
                         }
                     }
@@ -747,7 +757,6 @@ struct InlineSideEffectPicker: View {
                     }
                     .buttonStyle(PrimaryButtonStyle())
                     .disabled(label.trimmingCharacters(in: .whitespaces).isEmpty)
-                    .opacity(label.trimmingCharacters(in: .whitespaces).isEmpty ? 0.5 : 1)
                 }
                 .padding(20)
             }
@@ -793,6 +802,7 @@ private struct TextQuestionCard: View {
                     } label: {
                         Image(systemName: "ellipsis")
                             .foregroundStyle(Theme.Palette.textSecondary)
+                            .minimumTapTarget()
                     }
                 }
             }
@@ -1073,6 +1083,7 @@ struct AddCustomQuestionSheet: View {
                 .font(.system(size: 16))
             VStack(alignment: .leading, spacing: 2) {
                 Text("Keep 1 as the harder state, 5 as the better.")
+                    .monospacedDigit()
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(Theme.Palette.textPrimary)
                 Text("That way, higher averages always mean a better day.")
@@ -1099,6 +1110,7 @@ struct AddCustomQuestionSheet: View {
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(Theme.Palette.textPrimary)
                 Text("1 should describe the harder state and 5 the better state. Tap Swap labels.")
+                    .monospacedDigit()
                     .font(.system(size: 12))
                     .foregroundStyle(Theme.Palette.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)

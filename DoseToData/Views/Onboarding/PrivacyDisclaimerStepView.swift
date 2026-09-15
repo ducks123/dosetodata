@@ -7,6 +7,7 @@ struct PrivacyDisclaimerStepView: View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 10) {
                 Text("Before you start · Step 2 of 3")
+                    .monospacedDigit()
                     .font(Theme.Font.heroLabel)
                     .foregroundStyle(Theme.Palette.textSecondary)
                 Text("A few things\nto know.")

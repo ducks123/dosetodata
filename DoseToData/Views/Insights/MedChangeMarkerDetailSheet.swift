@@ -77,6 +77,7 @@ struct MedChangeMarkerDetailSheet: View {
 
     private var headerSection: some View {
         Text("\(event.actions.count) change\(event.actions.count == 1 ? "" : "s")")
+            .monospacedDigit()
             .font(Theme.Font.caption)
             .foregroundStyle(Theme.Palette.textSecondary)
     }
@@ -94,6 +95,7 @@ struct MedChangeMarkerDetailSheet: View {
                             .font(.system(size: 14, weight: .semibold))
                     }
                     Text(action.summaryLine)
+                        .monospacedDigit()
                         .font(Theme.Font.bodyEmphasis)
                         .foregroundStyle(Theme.Palette.textPrimary)
                     Spacer(minLength: 0)

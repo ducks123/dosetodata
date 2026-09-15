@@ -28,6 +28,7 @@ struct SettingsView: View {
                             .foregroundStyle(Theme.Palette.error)
                     }
                 }
+                .listRowBackground(Theme.Palette.surfaceRaised)
 
                 // MARK: - Account
                 Section("Account") {
@@ -51,6 +52,7 @@ struct SettingsView: View {
                         }
                     }
                 }
+                .listRowBackground(Theme.Palette.surfaceRaised)
 
                 // MARK: - Sign out / Delete (only when signed in)
                 if case .signedIn = auth.state {
@@ -62,6 +64,7 @@ struct SettingsView: View {
                             showDeleteConfirm = true
                         }
                     }
+                    .listRowBackground(Theme.Palette.surfaceRaised)
                 }
 
                 // MARK: - Subscription
@@ -70,6 +73,7 @@ struct SettingsView: View {
                         Text("Status")
                         Spacer()
                         Text(subscriptionStatusLabel)
+                            .monospacedDigit()
                             .foregroundStyle(subscriptionStatusColor)
                             .font(.system(size: 14, weight: .medium))
                     }
@@ -82,6 +86,7 @@ struct SettingsView: View {
                             Text(dateLine.label)
                             Spacer()
                             Text(dateLine.value)
+                                .monospacedDigit()
                                 .foregroundStyle(Theme.Palette.textSecondary)
                                 .font(.system(size: 14))
                         }
@@ -129,6 +134,7 @@ struct SettingsView: View {
                     }
                     .foregroundStyle(Theme.Palette.textSecondary)
                 }
+                .listRowBackground(Theme.Palette.surfaceRaised)
 
                 // MARK: - About
                 Section("About") {
@@ -146,7 +152,11 @@ struct SettingsView: View {
                         Label("Terms of service", systemImage: "doc.text")
                     }
                 }
+                .listRowBackground(Theme.Palette.surfaceRaised)
             }
+            .scrollContentBackground(.hidden)
+            .background(Theme.Palette.surface)
+            .tint(Theme.Palette.accent)
             .navigationTitle("Settings")
             .sheet(isPresented: $showAuthSheet) {
                 AuthSheet()

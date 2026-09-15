@@ -137,6 +137,7 @@ struct MedScheduleEditorView: View {
                 Text(userMed.medication.brandName)
                     .font(Theme.Font.sectionTitle)
                 Text("\(userMed.currentDose) · \(userMed.medication.genericName)")
+                    .monospacedDigit()
                     .font(Theme.Font.caption)
                     .foregroundStyle(Theme.Palette.textSecondary)
             }
@@ -163,6 +164,7 @@ struct MedScheduleEditorView: View {
                         Image(systemName: "clock")
                             .foregroundStyle(Theme.Palette.accent)
                         Text(ScheduleTime.displayString(from: timeString))
+                            .monospacedDigit()
                             .font(Theme.Font.bodyEmphasis)
                         Spacer()
                         Button {
@@ -170,6 +172,7 @@ struct MedScheduleEditorView: View {
                         } label: {
                             Image(systemName: "xmark.circle.fill")
                                 .foregroundStyle(Theme.Palette.textSecondary)
+                                .minimumTapTarget()
                         }
                     }
                     .padding(16)
@@ -220,6 +223,8 @@ struct MedScheduleEditorView: View {
                                         lineWidth: 1
                                     )
                             )
+                            .frame(minHeight: 44)
+                            .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                 }

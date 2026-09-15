@@ -214,6 +214,7 @@ struct TodayView: View {
                         .foregroundStyle(Theme.Palette.textSecondary)
                 }
                 Text(selectedDate.formatted(.dateTime.weekday(.wide).month().day().year()))
+                    .monospacedDigit()
                     .font(Theme.Font.sectionTitle)
             }
             Spacer()
@@ -318,6 +319,7 @@ struct TodayView: View {
                         .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundStyle(Theme.Palette.textPrimary)
                     Text("/ 5 today")
+                        .monospacedDigit()
                         .font(Theme.Font.caption)
                         .foregroundStyle(Theme.Palette.textSecondary)
                     if isToday, let delta = sevenDayPercentDelta {
@@ -326,6 +328,7 @@ struct TodayView: View {
                         let symbol = isUp ? "↑" : "↓"
                         let color: Color = isUp ? Theme.Palette.success : Theme.Palette.error
                         Text("\(symbol) \(String(format: "%.1f", abs(delta)))% vs 7d")
+                            .monospacedDigit()
                             .font(Theme.Font.caption)
                             .foregroundStyle(color)
                     }
@@ -404,6 +407,7 @@ struct TodayView: View {
                         Text(shortLabel(for: answer.questionKey))
                             .font(.system(size: 11, weight: .semibold))
                         Text("\(level.displayName)/5")
+                            .monospacedDigit()
                             .font(.system(size: 11, weight: .regular))
                             .foregroundStyle(Theme.Palette.textSecondary)
                     }
@@ -492,17 +496,20 @@ struct TodayView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text(event.date.formatted(date: .abbreviated, time: .omitted))
+                            .monospacedDigit()
                             .font(Theme.Font.bodyEmphasis)
                             .foregroundStyle(Theme.Palette.textPrimary)
                         Text("·")
                             .foregroundStyle(Theme.Palette.textSecondary)
                         Text("\(event.actions.count) change\(event.actions.count == 1 ? "" : "s")")
+                            .monospacedDigit()
                             .font(Theme.Font.caption)
                             .foregroundStyle(Theme.Palette.textSecondary)
                         Spacer()
                     }
                     ForEach(event.actions) { action in
                         Text(action.summaryLine)
+                            .monospacedDigit()
                             .font(.system(size: 13))
                             .foregroundStyle(Theme.Palette.textPrimary)
                     }

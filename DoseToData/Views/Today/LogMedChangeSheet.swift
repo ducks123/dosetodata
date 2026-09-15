@@ -100,7 +100,6 @@ struct LogMedChangeSheet: View {
                 }
                 .buttonStyle(PrimaryButtonStyle())
                 .disabled(!canSave)
-                .opacity(canSave ? 1 : 0.5)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
                 .background(Theme.Palette.surface.opacity(0.96))
@@ -240,6 +239,7 @@ struct LogMedChangeSheet: View {
                             .foregroundStyle(draft.wrappedValue.kind == k ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                             .clipShape(Capsule())
                             .overlay(Capsule().stroke(Theme.Palette.separator, lineWidth: draft.wrappedValue.kind == k ? 0 : 1))
+                            .minimumTapTarget()
                     }
                 }
             }
@@ -315,6 +315,8 @@ struct LogMedChangeSheet: View {
             .foregroundStyle(Theme.Palette.accent)
         }
         .padding(.top, 2)
+        .frame(minHeight: 44, alignment: .leading)
+        .contentShape(Rectangle())
     }
 
     private var watchingForSection: some View {
@@ -347,10 +349,12 @@ struct LogMedChangeSheet: View {
                     .padding(.leading, 4)
                 VStack(alignment: .leading, spacing: 6) {
                     Text(date.formatted(date: .abbreviated, time: .omitted) + " · \(filled.count) change\(filled.count == 1 ? "" : "s")")
+                        .monospacedDigit()
                         .font(Theme.Font.bodyEmphasis)
                     ForEach(filled) { draft in
                         if let summary = draftSummary(draft) {
                             Text(summary)
+                                .monospacedDigit()
                                 .font(Theme.Font.caption)
                                 .foregroundStyle(Theme.Palette.textSecondary)
                         }
@@ -622,6 +626,7 @@ private struct MedPickerSheet: View {
                         .font(Theme.Font.bodyEmphasis)
                         .foregroundStyle(Theme.Palette.textPrimary)
                     Text("\(med.genericName) · \(med.medClass)")
+                        .monospacedDigit()
                         .font(Theme.Font.caption)
                         .foregroundStyle(Theme.Palette.textSecondary)
                         .lineLimit(1)

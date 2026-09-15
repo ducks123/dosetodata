@@ -38,6 +38,7 @@ struct SideEffectQuickAddSheet: View {
                                         .overlay(
                                             Capsule().stroke(Theme.Palette.separator, lineWidth: selectedLabel == label ? 0 : 1)
                                         )
+                                        .minimumTapTarget()
                                 }
                             }
                         }
@@ -47,8 +48,12 @@ struct SideEffectQuickAddSheet: View {
                         Text("Or type your own")
                             .font(Theme.Font.caption)
                             .foregroundStyle(Theme.Palette.textSecondary)
-                        TextField("Something else", text: $customLabel)
-                            .textFieldStyle(.roundedBorder)
+                        TextField(
+                            "",
+                            text: $customLabel,
+                            prompt: Text("Something else").foregroundStyle(Theme.Palette.textDisabled)
+                        )
+                            .textFieldStyle(BrandedTextFieldStyle())
                             .onChange(of: customLabel) { _, newValue in
                                 if !newValue.isEmpty { selectedLabel = "" }
                             }
@@ -74,6 +79,7 @@ struct SideEffectQuickAddSheet: View {
                                             RoundedRectangle(cornerRadius: Theme.Radius.button)
                                                 .stroke(Theme.Palette.separator, lineWidth: severity == option ? 0 : 1)
                                         )
+                                        .minimumTapTarget()
                                 }
                             }
                         }
@@ -83,9 +89,14 @@ struct SideEffectQuickAddSheet: View {
                         Text("Note (optional)")
                             .font(Theme.Font.caption)
                             .foregroundStyle(Theme.Palette.textSecondary)
-                        TextField("When, how bad, context", text: $note, axis: .vertical)
+                        TextField(
+                            "",
+                            text: $note,
+                            prompt: Text("When, how bad, context").foregroundStyle(Theme.Palette.textDisabled),
+                            axis: .vertical
+                        )
                             .lineLimit(2...4)
-                            .textFieldStyle(.roundedBorder)
+                            .textFieldStyle(BrandedTextFieldStyle())
                     }
 
                     Button {
@@ -95,7 +106,6 @@ struct SideEffectQuickAddSheet: View {
                     }
                     .buttonStyle(PrimaryButtonStyle())
                     .disabled(resolvedLabel.isEmpty)
-                    .opacity(resolvedLabel.isEmpty ? 0.5 : 1)
                 }
                 .padding(20)
             }

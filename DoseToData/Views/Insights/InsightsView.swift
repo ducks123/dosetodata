@@ -78,6 +78,7 @@ struct InsightsView: View {
                                 Image(systemName: "pill.fill")
                                     .font(.system(size: 10))
                                 Text(event.date.formatted(date: .abbreviated, time: .omitted))
+                                    .monospacedDigit()
                                     .font(.system(size: 11, weight: .semibold))
                             }
                             .foregroundStyle(Theme.Palette.accent)
@@ -329,6 +330,7 @@ struct InsightsView: View {
             if let today {
                 VStack(alignment: .leading, spacing: 10) {
                     Text(today.date.formatted(.dateTime.weekday(.wide).month().day()))
+                        .monospacedDigit()
                         .font(Theme.Font.bodyEmphasis)
                     FlowLayout(spacing: 6) {
                         ForEach(today.answers, id: \.self) { answer in
@@ -362,6 +364,7 @@ struct InsightsView: View {
             Text(shortLabel(for: key))
                 .font(.system(size: 11, weight: .semibold))
             Text("\(level.displayName)/5")
+                .monospacedDigit()
                 .font(.system(size: 11, weight: .regular))
                 .foregroundStyle(Theme.Palette.textSecondary)
         }
@@ -408,6 +411,7 @@ struct InsightsView: View {
         let missedPoints = showAmber ? points.filter { missedMedBuckets.contains($0.date) } : []
         let key = "overall"
         let selPoint = nearestChartPoint(in: points, forKey: key)
+        let currentPoint = points.last
         return VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text("Overall score")
@@ -442,43 +446,40 @@ struct InsightsView: View {
                         .interpolationMethod(.monotone)
                         .symbol(.circle)
                     }
-                    // Current value — Signal Orange, exactly once per chart,
-                    // ringed with dataMarker because the orange alone reads
-                    // 1.93:1 on a light surface (spec §6).
-                    if let current = points.last {
-                        PointMark(
-                            x: .value("Day", current.date),
-                            y: .value("Score", current.value)
-                        )
-                        .foregroundStyle(Theme.Palette.dataMarker)
-                        .symbolSize(190)
-                        PointMark(
-                            x: .value("Day", current.date),
-                            y: .value("Score", current.value)
-                        )
-                        .foregroundStyle(Theme.Palette.dataCurrent)
-                        .symbolSize(110)
-                    }
-                    // Selection mark — drawn before amber dots so amber stays on top
+                    // Selection gets a rule and annotation. Its point is omitted
+                    // at the newest datum so it can never cover the current marker.
                     if let sel = selPoint {
                         RuleMark(x: .value("Day", sel.date))
-                            .foregroundStyle(Theme.Palette.dataMarker.opacity(0.25))
+                            .foregroundStyle(Theme.Palette.dataMarker.opacity(0.55))
                             .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
-                        PointMark(
-                            x: .value("Day", sel.date),
-                            y: .value("Score", sel.value)
-                        )
-                        .foregroundStyle(missedPoints.contains(where: { $0.date == sel.date })
-                            ? Theme.Palette.error : Theme.Palette.dataMarker)
-                        .symbolSize(200)
-                        .annotation(position: .top, spacing: 4) {
-                            Text(String(format: "%.1f", sel.value)).monospacedDigit()
-                                .font(.system(size: 10, weight: .bold))
-                                .foregroundStyle(Theme.Palette.accent)
+                        if sel.date != currentPoint?.date {
+                            PointMark(
+                                x: .value("Day", sel.date),
+                                y: .value("Score", sel.value)
+                            )
+                            .foregroundStyle(missedPoints.contains(where: { $0.date == sel.date })
+                                ? Theme.Palette.error : Theme.Palette.dataMarker)
+                            .symbolSize(200)
+                            .annotation(position: .top, spacing: 4) {
+                                Text(String(format: "%.1f", sel.value)).monospacedDigit()
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(Theme.Palette.accent)
+                            }
+                        } else {
+                            PointMark(
+                                x: .value("Day", sel.date),
+                                y: .value("Score", sel.value)
+                            )
+                            .foregroundStyle(Color.clear)
+                            .annotation(position: .top, spacing: 4) {
+                                Text(String(format: "%.1f", sel.value)).monospacedDigit()
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(Theme.Palette.accent)
+                            }
                         }
                     }
-                    // Amber dots rendered last so they always appear on top
-                    ForEach(missedPoints) { point in
+                    // Missed-dose state points, excluding the current point.
+                    ForEach(missedPoints.filter { $0.date != currentPoint?.date }) { point in
                         PointMark(
                             x: .value("Day", point.date),
                             y: .value("Score", point.value)
@@ -501,13 +502,38 @@ struct InsightsView: View {
                                     .foregroundStyle(Theme.Palette.textSecondary)
                             }
                     }
+                    // Draw current last so drag selection, missed-dose points,
+                    // and medication rules can never obscure Signal Orange.
+                    if let current = currentPoint {
+                        PointMark(
+                            x: .value("Day", current.date),
+                            y: .value("Score", current.value)
+                        )
+                        .foregroundStyle(Theme.Palette.dataMarker)
+                        .symbolSize(190)
+                        PointMark(
+                            x: .value("Day", current.date),
+                            y: .value("Score", current.value)
+                        )
+                        .foregroundStyle(Theme.Palette.dataCurrent)
+                        .symbolSize(110)
+                        .annotation(position: .bottom, spacing: 3) {
+                            if missedPoints.contains(where: { $0.date == current.date }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 9, weight: .bold))
+                                    .foregroundStyle(Theme.Palette.error)
+                                    .accessibilityLabel("Medication missed")
+                            }
+                        }
+                    }
                 }
                 .chartYScale(domain: 0...5)
                 .chartYAxis {
                     AxisMarks(position: .leading, values: [1, 2, 3, 4, 5]) { value in
-                        AxisGridLine().foregroundStyle(Theme.Palette.separator)
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                            .foregroundStyle(Theme.Palette.separator)
                         AxisValueLabel {
-                            if let v = value.as(Int.self) { Text("\(v)").foregroundStyle(Theme.Palette.textTertiary) }
+                            if let v = value.as(Int.self) { Text("\(v)").monospacedDigit().foregroundStyle(Theme.Palette.textTertiary) }
                         }
                     }
                 }
@@ -587,6 +613,7 @@ struct InsightsView: View {
     private func questionCard(title: String, key: String, onRemove: @escaping () -> Void) -> some View {
         let points = bucketedSeries(for: key)
         let selPoint = nearestChartPoint(in: points, forKey: key)
+        let currentPoint = points.last
         return VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text(title)
@@ -629,43 +656,40 @@ struct InsightsView: View {
                         .interpolationMethod(.monotone)
                         .symbol(.circle)
                     }
-                    // Current value — Signal Orange, exactly once per chart,
-                    // ringed with dataMarker because the orange alone reads
-                    // 1.93:1 on a light surface (spec §6).
-                    if let current = points.last {
-                        PointMark(
-                            x: .value("Day", current.date),
-                            y: .value("Score", current.value)
-                        )
-                        .foregroundStyle(Theme.Palette.dataMarker)
-                        .symbolSize(190)
-                        PointMark(
-                            x: .value("Day", current.date),
-                            y: .value("Score", current.value)
-                        )
-                        .foregroundStyle(Theme.Palette.dataCurrent)
-                        .symbolSize(110)
-                    }
-                    // Selection mark — drawn before amber dots so amber stays on top
+                    // Selection gets a rule and annotation. Its point is omitted
+                    // at the newest datum so it can never cover the current marker.
                     if let sel = selPoint {
                         RuleMark(x: .value("Day", sel.date))
-                            .foregroundStyle(Theme.Palette.dataMarker.opacity(0.25))
+                            .foregroundStyle(Theme.Palette.dataMarker.opacity(0.55))
                             .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
-                        PointMark(
-                            x: .value("Day", sel.date),
-                            y: .value("Level", sel.value)
-                        )
-                        .foregroundStyle(missedPoints.contains(where: { $0.date == sel.date })
-                            ? Theme.Palette.error : Theme.Palette.dataMarker)
-                        .symbolSize(200)
-                        .annotation(position: .top, spacing: 4) {
-                            Text(String(format: "%.1f", sel.value)).monospacedDigit()
-                                .font(.system(size: 10, weight: .bold))
-                                .foregroundStyle(Theme.Palette.accent)
+                        if sel.date != currentPoint?.date {
+                            PointMark(
+                                x: .value("Day", sel.date),
+                                y: .value("Level", sel.value)
+                            )
+                            .foregroundStyle(missedPoints.contains(where: { $0.date == sel.date })
+                                ? Theme.Palette.error : Theme.Palette.dataMarker)
+                            .symbolSize(200)
+                            .annotation(position: .top, spacing: 4) {
+                                Text(String(format: "%.1f", sel.value)).monospacedDigit()
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(Theme.Palette.accent)
+                            }
+                        } else {
+                            PointMark(
+                                x: .value("Day", sel.date),
+                                y: .value("Level", sel.value)
+                            )
+                            .foregroundStyle(Color.clear)
+                            .annotation(position: .top, spacing: 4) {
+                                Text(String(format: "%.1f", sel.value)).monospacedDigit()
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(Theme.Palette.accent)
+                            }
                         }
                     }
-                    // Amber dots rendered last so they always appear on top
-                    ForEach(missedPoints) { point in
+                    // Missed-dose state points, excluding the current point.
+                    ForEach(missedPoints.filter { $0.date != currentPoint?.date }) { point in
                         PointMark(
                             x: .value("Day", point.date),
                             y: .value("Level", point.value)
@@ -684,13 +708,38 @@ struct InsightsView: View {
                                     .foregroundStyle(Theme.Palette.textSecondary)
                             }
                     }
+                    // Draw current last so drag selection, missed-dose points,
+                    // and medication rules can never obscure Signal Orange.
+                    if let current = currentPoint {
+                        PointMark(
+                            x: .value("Day", current.date),
+                            y: .value("Level", current.value)
+                        )
+                        .foregroundStyle(Theme.Palette.dataMarker)
+                        .symbolSize(190)
+                        PointMark(
+                            x: .value("Day", current.date),
+                            y: .value("Level", current.value)
+                        )
+                        .foregroundStyle(Theme.Palette.dataCurrent)
+                        .symbolSize(110)
+                        .annotation(position: .bottom, spacing: 3) {
+                            if missedPoints.contains(where: { $0.date == current.date }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 9, weight: .bold))
+                                    .foregroundStyle(Theme.Palette.error)
+                                    .accessibilityLabel("Medication missed")
+                            }
+                        }
+                    }
                 }
                 .chartYScale(domain: 0...5)
                 .chartYAxis {
                     AxisMarks(position: .leading, values: [1, 2, 3, 4, 5]) { value in
-                        AxisGridLine().foregroundStyle(Theme.Palette.separator)
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                            .foregroundStyle(Theme.Palette.separator)
                         AxisValueLabel {
-                            if let v = value.as(Int.self) { Text("\(v)").foregroundStyle(Theme.Palette.textTertiary) }
+                            if let v = value.as(Int.self) { Text("\(v)").monospacedDigit().foregroundStyle(Theme.Palette.textTertiary) }
                         }
                     }
                 }
@@ -979,25 +1028,29 @@ struct InsightsView: View {
             // ~10 daily ticks once trailing headroom is added → label every
             // other day ("Wed 28") so labels never collide.
             AxisMarks(values: .stride(by: .day, count: 2)) { _ in
-                AxisGridLine().foregroundStyle(Theme.Palette.separator)
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                    .foregroundStyle(Theme.Palette.separator)
                 AxisValueLabel(format: .dateTime.weekday(.abbreviated).day())
             }
         case .week:
             // 4 weekly dots → label each week's start in "M/d" form.
             AxisMarks(values: .stride(by: .weekOfYear)) { _ in
-                AxisGridLine().foregroundStyle(Theme.Palette.separator)
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                    .foregroundStyle(Theme.Palette.separator)
                 AxisValueLabel(format: .dateTime.month(.defaultDigits).day())
             }
         case .month:
             // 3 monthly dots → label each as abbreviated month name.
             AxisMarks(values: .stride(by: .month)) { _ in
-                AxisGridLine().foregroundStyle(Theme.Palette.separator)
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                    .foregroundStyle(Theme.Palette.separator)
                 AxisValueLabel(format: .dateTime.month(.abbreviated))
             }
         case .year:
             // 12 monthly dots — label every other month to avoid clutter.
             AxisMarks(values: .stride(by: .month, count: 2)) { _ in
-                AxisGridLine().foregroundStyle(Theme.Palette.separator)
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                    .foregroundStyle(Theme.Palette.separator)
                 AxisValueLabel(format: .dateTime.month(.narrow))
             }
         }
@@ -1060,9 +1113,11 @@ struct InsightsView: View {
         return HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(bucketLabel(for: point.date))
+                    .monospacedDigit()
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(Theme.Palette.textPrimary)
                 Text(String(format: "%.1f / 5", point.value))
+                    .monospacedDigit()
                     .font(.system(size: 11))
                     .foregroundStyle(Theme.Palette.textSecondary)
             }

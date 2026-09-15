@@ -44,25 +44,26 @@ struct CheckInReminderSheet: View {
                             HStack(spacing: 14) {
                                 ZStack {
                                     Circle()
-                                        .fill(isOn ? Theme.Palette.accent : Theme.Palette.lavenderTint)
+                                        .fill(isOn ? Theme.Palette.onActionPrimary.opacity(0.16) : Theme.Palette.lavenderTint)
                                         .frame(width: 36, height: 36)
                                     Image(systemName: preset.icon)
                                         .font(.system(size: 14, weight: .semibold))
-                                        .foregroundStyle(isOn ? Theme.Palette.onAccent : Theme.Palette.accent)
+                                        .foregroundStyle(isOn ? Theme.Palette.onActionPrimary : Theme.Palette.accent)
                                 }
                                 Text(preset.label)
                                     .font(Theme.Font.bodyEmphasis)
-                                    .foregroundStyle(Theme.Palette.textPrimary)
+                                    .foregroundStyle(isOn ? Theme.Palette.onActionPrimary : Theme.Palette.textPrimary)
                                 Spacer()
                                 Text(formattedTime(preset.time))
+                                    .monospacedDigit()
                                     .font(Theme.Font.caption)
-                                    .foregroundStyle(Theme.Palette.textSecondary)
+                                    .foregroundStyle(isOn ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                                 Image(systemName: isOn ? "checkmark.circle.fill" : "circle")
-                                    .foregroundStyle(isOn ? Color.clear : Theme.Palette.separator)
+                                    .foregroundStyle(isOn ? Theme.Palette.onActionPrimary : Theme.Palette.textTertiary)
                             }
                             .padding(.horizontal, 20)
                             .padding(.vertical, 14)
-                            .background(Theme.Palette.surfaceRaised)
+                            .background(isOn ? Theme.Palette.actionPrimary : Theme.Palette.surfaceRaised)
                         }
                         .buttonStyle(.plain)
                         Divider().padding(.leading, 70)
@@ -80,6 +81,7 @@ struct CheckInReminderSheet: View {
                                     .foregroundStyle(Theme.Palette.onAccent)
                             }
                             Text(formattedTime(timeString))
+                                .monospacedDigit()
                                 .font(Theme.Font.bodyEmphasis)
                                 .foregroundStyle(Theme.Palette.textPrimary)
                             Spacer()
@@ -89,6 +91,7 @@ struct CheckInReminderSheet: View {
                                 Image(systemName: "minus.circle.fill")
                                     .foregroundStyle(Theme.Palette.error)
                                     .font(.system(size: 20))
+                                    .minimumTapTarget()
                             }
                             .buttonStyle(.plain)
                         }
@@ -154,16 +157,16 @@ struct CheckInReminderSheet: View {
                     HStack {
                         Text("No reminders")
                             .font(Theme.Font.body)
-                            .foregroundStyle(selectedTimes.isEmpty ? Theme.Palette.error : Theme.Palette.textSecondary)
+                            .foregroundStyle(selectedTimes.isEmpty ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                         Spacer()
                         if selectedTimes.isEmpty {
                             Image(systemName: "checkmark.circle.fill")
-                                .foregroundStyle(Theme.Palette.error)
+                                .foregroundStyle(Theme.Palette.onActionPrimary)
                         }
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 14)
-                    .background(Theme.Palette.surfaceRaised)
+                    .background(selectedTimes.isEmpty ? Theme.Palette.actionPrimary : Theme.Palette.surfaceRaised)
                     .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
                     .overlay(RoundedRectangle(cornerRadius: Theme.Radius.card).stroke(Theme.Palette.separator, lineWidth: 1))
                     .padding(.horizontal, 20)

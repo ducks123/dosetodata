@@ -96,26 +96,55 @@ private struct ScrollDayCell: View {
     var body: some View {
         VStack(spacing: 3) {
             Circle()
-                .fill(isToday ? Theme.Palette.accent : Color.clear)
+                .fill(isToday
+                    ? (isSelected ? Theme.Palette.onActionPrimary : Theme.Palette.accent)
+                    : Color.clear)
                 .frame(width: 6, height: 6)
 
             Text(String(date.formatted(.dateTime.weekday(.abbreviated)).prefix(3)))
                 .font(.system(size: 11, weight: isSelected ? .bold : .semibold))
-                .foregroundStyle(isSelected ? Theme.Palette.accent : Theme.Palette.textSecondary)
+                .foregroundStyle(isSelected ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
 
-            ZStack {
+            ZStack(alignment: .bottomTrailing) {
                 stateBackground
                 if isSelected {
                     Circle()
-                        .stroke(Theme.Palette.accent, lineWidth: 2.5)
+                        .stroke(Theme.Palette.surfaceRaised, lineWidth: 2)
                         .frame(width: 34, height: 34)
                 }
                 stateContent
+                stateBadge
             }
             .padding(.bottom, 2)
         }
-        .frame(width: 42)
+        .frame(width: 44)
+        .background(isSelected ? Theme.Palette.actionPrimary : Color.clear)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .contentShape(Rectangle())
         .animation(.easeInOut(duration: 0.2), value: isSelected)
+    }
+
+    @ViewBuilder private var stateBadge: some View {
+        switch state {
+        case .medsTaken:
+            stateBadge(symbol: "checkmark", fill: Theme.Palette.success)
+        case .medsMissed:
+            stateBadge(symbol: "xmark", fill: Theme.Palette.error)
+        case .empty, .complete:
+            EmptyView()
+        }
+    }
+
+    private func stateBadge(symbol: String, fill: Color) -> some View {
+        ZStack {
+            Circle().fill(fill)
+            Image(systemName: symbol)
+                .font(.system(size: 6, weight: .black))
+                .foregroundStyle(Theme.Palette.onAccent)
+        }
+        .frame(width: 11, height: 11)
+        .overlay(Circle().stroke(Theme.Palette.surfaceRaised, lineWidth: 1))
+        .offset(x: 2, y: 2)
     }
 
     @ViewBuilder private var stateBackground: some View {
@@ -191,10 +220,15 @@ struct DateStripLegend: View {
     }
 
     private var medsMissedSwatch: some View {
-        Circle()
-            .fill(Theme.Palette.surfaceRaised)
-            .overlay(Circle().stroke(Theme.Palette.error, lineWidth: 2))
-            .frame(width: 14, height: 14)
+        ZStack {
+            Circle()
+                .fill(Theme.Palette.surfaceRaised)
+                .overlay(Circle().stroke(Theme.Palette.error, lineWidth: 2))
+            Image(systemName: "xmark")
+                .font(.system(size: 6, weight: .black))
+                .foregroundStyle(Theme.Palette.error)
+        }
+        .frame(width: 14, height: 14)
     }
 
     private var emptySwatch: some View {
@@ -286,26 +320,55 @@ private struct DayCell: View {
         VStack(spacing: 2) {
             // Small dot above the label — visible only for today
             Circle()
-                .fill(day.isToday ? Theme.Palette.accent : Color.clear)
+                .fill(day.isToday
+                    ? (day.isSelected ? Theme.Palette.onActionPrimary : Theme.Palette.accent)
+                    : Color.clear)
                 .frame(width: 6, height: 6)
 
             Text(day.weekdayShort.prefix(3).uppercased())
                 .font(.system(size: 11, weight: day.isSelected ? .bold : .semibold))
-                .foregroundStyle(day.isSelected ? Theme.Palette.accent : Theme.Palette.textSecondary)
+                .foregroundStyle(day.isSelected ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                 .padding(.bottom, 2)
 
-            ZStack {
+            ZStack(alignment: .bottomTrailing) {
                 circle
-                // Blue selection ring — sits on top of the state circle
+                // A neutral inner ring keeps the state circle distinct from
+                // the selected cell's filled background in both themes.
                 if day.isSelected {
                     Circle()
-                        .stroke(Theme.Palette.accent, lineWidth: 2.5)
+                        .stroke(Theme.Palette.surfaceRaised, lineWidth: 2)
                         .frame(width: 36, height: 36)
                 }
                 icon
+                stateBadge
             }
         }
         .frame(maxWidth: .infinity)
+        .background(day.isSelected ? Theme.Palette.actionPrimary : Color.clear)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+
+    @ViewBuilder private var stateBadge: some View {
+        switch day.state {
+        case .medsTaken:
+            stateBadge(symbol: "checkmark", fill: Theme.Palette.success)
+        case .medsMissed:
+            stateBadge(symbol: "xmark", fill: Theme.Palette.error)
+        case .empty, .complete:
+            EmptyView()
+        }
+    }
+
+    private func stateBadge(symbol: String, fill: Color) -> some View {
+        ZStack {
+            Circle().fill(fill)
+            Image(systemName: symbol)
+                .font(.system(size: 6, weight: .black))
+                .foregroundStyle(Theme.Palette.onAccent)
+        }
+        .frame(width: 11, height: 11)
+        .overlay(Circle().stroke(Theme.Palette.surfaceRaised, lineWidth: 1))
+        .offset(x: 2, y: 2)
     }
 
     // MARK: Circle background / ring

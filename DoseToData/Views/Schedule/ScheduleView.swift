@@ -51,6 +51,7 @@ struct ScheduleView: View {
                 .font(Theme.Font.heroLabel)
                 .foregroundStyle(Theme.Palette.textSecondary)
             Text(Date().formatted(.dateTime.weekday(.wide).month().day()))
+                .monospacedDigit()
                 .font(Theme.Font.sectionTitle)
         }
         .padding(.top, 4)
@@ -114,6 +115,7 @@ struct ScheduleView: View {
             .padding(.horizontal, 12)
             .background(Theme.Palette.surfaceSunken)
             .clipShape(Capsule())
+            .minimumTapTarget()
         }
         .buttonStyle(.plain)
     }
@@ -179,6 +181,7 @@ private struct MedScheduleRow: View {
                     .font(Theme.Font.bodyEmphasis)
                     .foregroundStyle(Theme.Palette.textPrimary)
                 Text("\(userMed.currentDose) · \(scheduleSummary)")
+                    .monospacedDigit()
                     .font(Theme.Font.caption)
                     .foregroundStyle(Theme.Palette.textSecondary)
                     .lineLimit(1)
@@ -284,6 +287,7 @@ struct TimelineStrip: View {
                 Spacer()
                 if !events.isEmpty {
                     Text("\(events.count) dose\(events.count == 1 ? "" : "s")")
+                        .monospacedDigit()
                         .font(Theme.Font.caption)
                         .foregroundStyle(Theme.Palette.textSecondary)
                 }
@@ -398,6 +402,7 @@ private struct EventPill: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.85)
                 Text(ScheduleTime.displayString(from: timeString))
+                    .monospacedDigit()
                     .font(.system(size: 10, weight: .medium))
                     .foregroundStyle(Theme.Palette.textSecondary)
                     .lineLimit(1)
@@ -415,4 +420,3 @@ private struct EventPill: View {
         )
     }
 }
-

@@ -134,9 +134,11 @@ struct CheckInDetailView: View {
                         .foregroundStyle(Theme.Palette.textSecondary)
                     HStack(alignment: .lastTextBaseline, spacing: 4) {
                         Text(String(format: "%.1f", avg))
+                            .monospacedDigit()
                             .font(.system(size: 40, weight: .bold, design: .rounded))
                             .foregroundStyle(Theme.Palette.textPrimary)
                         Text("/ 5")
+                            .monospacedDigit()
                             .font(Theme.Font.caption)
                             .foregroundStyle(Theme.Palette.textSecondary)
                     }
@@ -173,6 +175,7 @@ struct CheckInDetailView: View {
                 .frame(width: 60, height: 60)
                 .rotationEffect(.degrees(-90))
             Text(String(format: "%.0f", avg))
+                .monospacedDigit()
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundStyle(Theme.Palette.textPrimary)
         }
@@ -226,6 +229,7 @@ struct CheckInDetailView: View {
             }
             Spacer(minLength: 12)
             Text("\(level.numericValue)/5")
+                .monospacedDigit()
                 .font(.system(size: 15, weight: .bold, design: .rounded))
                 .foregroundStyle(barColor(for: level.numericValue))
                 .frame(width: 36, alignment: .trailing)
@@ -237,7 +241,7 @@ struct CheckInDetailView: View {
     private func barColor(for score: Int) -> Color {
         switch score {
         case 5:    return Theme.Palette.success
-        case 4:    return Theme.Palette.success.opacity(0.75)
+        case 4:    return Theme.Palette.success
         case 3:    return Theme.Palette.textSecondary
         case 1, 2: return Theme.Palette.error
         default:   return Theme.Palette.textSecondary
@@ -318,6 +322,7 @@ struct CheckInDetailView: View {
                                 .font(Theme.Font.bodyEmphasis)
                                 .foregroundStyle(Theme.Palette.textPrimary)
                             Text(med.dose)
+                                .monospacedDigit()
                                 .font(Theme.Font.caption)
                                 .foregroundStyle(Theme.Palette.textSecondary)
                         }

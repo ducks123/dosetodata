@@ -28,6 +28,7 @@ struct MedicationsOnboardingStepView: View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Step 3 of 3")
+                    .monospacedDigit()
                     .font(Theme.Font.heroLabel)
                     .foregroundStyle(Theme.Palette.textSecondary)
                 Text("Any medications\nyou're taking now?")
@@ -213,6 +214,7 @@ private struct MedLibraryRow: View {
                         .font(Theme.Font.bodyEmphasis)
                         .foregroundStyle(Theme.Palette.textPrimary)
                     Text("\(med.genericName) · \(med.medClass)")
+                        .monospacedDigit()
                         .font(Theme.Font.caption)
                         .foregroundStyle(Theme.Palette.textSecondary)
                         .lineLimit(1)
@@ -294,6 +296,7 @@ private struct AddedMedRow: View {
                 Text(userMed.medication.brandName)
                     .font(Theme.Font.bodyEmphasis)
                 Text(detailLine)
+                    .monospacedDigit()
                     .font(Theme.Font.caption)
                     .foregroundStyle(Theme.Palette.textSecondary)
                     .lineLimit(2)
@@ -372,6 +375,7 @@ private struct OnboardingMedDetailsSheet: View {
                             Text(medication.brandName)
                                 .font(Theme.Font.sectionTitle)
                             Text("\(medication.genericName) · \(medication.medClass)")
+                                .monospacedDigit()
                                 .font(Theme.Font.caption)
                                 .foregroundStyle(Theme.Palette.textSecondary)
                         }
@@ -404,7 +408,6 @@ private struct OnboardingMedDetailsSheet: View {
                     }
                     .buttonStyle(PrimaryButtonStyle())
                     .disabled(dose.trimmingCharacters(in: .whitespaces).isEmpty)
-                    .opacity(dose.trimmingCharacters(in: .whitespaces).isEmpty ? 0.5 : 1)
                     .padding(.top, 8)
                 }
                 .padding(20)

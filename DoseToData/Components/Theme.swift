@@ -17,14 +17,16 @@ enum Theme {
         static let surfaceSunken  = dyn(0xF1F3F7, 0x0B1330)   // unselected fills, inset wells
 
         // MARK: Text
-        static let textPrimary    = dyn(0x0F1A3E, 0xF8F9FA)   // 16.1:1 both themes
+        static let textPrimaryUIColor = dynUIColor(0x0F1A3E, 0xF8F9FA)
+        static let textPrimary    = Color(textPrimaryUIColor) // 16.1:1 both themes
         static let textSecondary  = dyn(0x5A6478, 0x98A2B8)   // 5.65:1 / 6.62:1
         static let textTertiary   = dyn(0x626D82, 0x7A86A0)   // 4.94:1 / 4.64:1 — sparingly
         static let textDisabled   = dyn(0x98A2B8, 0x5A6478)   // placeholder/disabled only
 
         // MARK: Accent & actions
         // Cool on light (Iris Deep), warm on dark (Signal Orange) — spec §1.3.
-        static let accent          = dyn(0x2F5FB8, 0xFE9F5E)  // links, selection, interactive
+        static let accentUIColor   = dynUIColor(0x2F5FB8, 0xFE9F5E)
+        static let accent          = Color(accentUIColor)      // links, selection, interactive
         static let onAccent        = dyn(0xFFFFFF, 0x0F1A3E)
         static let actionPrimary   = dyn(0x0F1A3E, 0xFE9F5E)  // primary button fill
         static let onActionPrimary = dyn(0xF8F9FA, 0x0F1A3E)
@@ -56,9 +58,13 @@ enum Theme {
 
         // MARK: -
         private static func dyn(_ light: UInt32, _ dark: UInt32) -> Color {
-            Color(UIColor { trait in
+            Color(dynUIColor(light, dark))
+        }
+
+        private static func dynUIColor(_ light: UInt32, _ dark: UInt32) -> UIColor {
+            UIColor { trait in
                 trait.userInterfaceStyle == .dark ? UIColor(rgb: dark) : UIColor(rgb: light)
-            })
+            }
         }
     }
 
@@ -113,6 +119,13 @@ extension View {
                 y: Theme.cardShadow.y
             )
     }
+
+    /// Expands compact chips and icon controls to the 44pt accessibility
+    /// target without forcing their visible shape to become oversized.
+    func minimumTapTarget() -> some View {
+        frame(minWidth: 44, minHeight: 44)
+            .contentShape(Rectangle())
+    }
 }
 
 extension Text {
@@ -122,17 +135,20 @@ extension Text {
 }
 
 struct PrimaryButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
     var fullWidth: Bool = true
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(Theme.Font.bodyEmphasis)
-            .foregroundStyle(Theme.Palette.onActionPrimary)
+            .foregroundStyle(isEnabled ? Theme.Palette.onActionPrimary : Theme.Palette.textDisabled)
             .padding(.vertical, 14)
             .padding(.horizontal, 24)
             .frame(maxWidth: fullWidth ? .infinity : nil)
             .background(
-                Theme.Palette.actionPrimary.opacity(configuration.isPressed ? 0.85 : 1)
+                isEnabled
+                    ? Theme.Palette.actionPrimary.opacity(configuration.isPressed ? 0.85 : 1)
+                    : Theme.Palette.surfaceSunken
             )
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
     }
@@ -151,6 +167,21 @@ struct SecondaryButtonStyle: ButtonStyle {
             )
             .clipShape(Capsule())
             .opacity(configuration.isPressed ? 0.8 : 1)
+    }
+}
+
+struct BrandedTextFieldStyle: TextFieldStyle {
+    func _body(configuration: TextField<Self._Label>) -> some View {
+        configuration
+            .foregroundStyle(Theme.Palette.textPrimary)
+            .frame(minHeight: 44)
+            .padding(.horizontal, 12)
+            .background(Theme.Palette.surfaceSunken)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
+                    .stroke(Theme.Palette.separator, lineWidth: 1)
+            )
     }
 }
 

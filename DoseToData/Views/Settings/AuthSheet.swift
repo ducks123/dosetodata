@@ -40,9 +40,13 @@ struct AuthSheet: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Close") { dismiss() }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(Theme.Palette.accent)
                 }
             }
         }
+        .foregroundStyle(Theme.Palette.textPrimary)
+        .tint(Theme.Palette.accent)
         .onChange(of: auth.state) { _, newState in
             // When the listener flips us to signedIn, give the user a
             // moment to see the confirmation, then close the sheet.
@@ -113,19 +117,31 @@ struct AuthSheet: View {
             }
 
             Section {
-                TextField("you@example.com", text: $emailDraft)
-                    .textContentType(.emailAddress)
-                    .keyboardType(.emailAddress)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .focused($focusedField, equals: .email)
-                    .submitLabel(.send)
-                    .onSubmit { Task { await sendCode() } }
+                ZStack(alignment: .leading) {
+                    if emailDraft.isEmpty {
+                        Text(verbatim: "you@example.com")
+                            .foregroundStyle(Theme.Palette.textDisabled)
+                            .allowsHitTesting(false)
+                    }
+                    TextField("", text: $emailDraft)
+                        .foregroundStyle(Theme.Palette.textPrimary)
+                        .textContentType(.emailAddress)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .focused($focusedField, equals: .email)
+                        .submitLabel(.send)
+                        .onSubmit { Task { await sendCode() } }
+                }
             } header: {
                 Text("Your email")
+                    .foregroundStyle(Theme.Palette.textPrimary)
             } footer: {
                 Text("We'll email you a 6-digit code. No password to remember.")
+                    .monospacedDigit()
+                    .foregroundStyle(Theme.Palette.textSecondary)
             }
+            .listRowBackground(Theme.Palette.surfaceRaised)
 
             if let message = auth.errorMessage {
                 Section {
@@ -133,6 +149,7 @@ struct AuthSheet: View {
                         .font(Theme.Font.caption)
                         .foregroundStyle(Theme.Palette.error)
                 }
+                .listRowBackground(Theme.Palette.surfaceRaised)
             }
 
             Section {
@@ -165,30 +182,48 @@ struct AuthSheet: View {
                 }
                 .padding(.vertical, 4)
             }
+            .listRowBackground(Theme.Palette.surfaceRaised)
         }
+        .scrollContentBackground(.hidden)
+        .background(Theme.Palette.surface)
+        .tint(Theme.Palette.accent)
     }
 
     /// Step 2 — collect the 6-digit code.
     private func codePane(email: String) -> some View {
         Form {
             Section {
-                TextField("123456", text: $codeDraft)
-                    .textContentType(.oneTimeCode)
-                    .keyboardType(.numberPad)
-                    .focused($focusedField, equals: .code)
-                    .onChange(of: codeDraft) { _, new in
-                        // Keep to digits only; auto-submit when we hit 6.
-                        let digits = new.filter(\.isNumber)
-                        if digits != new { codeDraft = digits }
-                        if digits.count == 6 {
-                            Task { await verifyCode(email: email) }
-                        }
+                ZStack(alignment: .leading) {
+                    if codeDraft.isEmpty {
+                        Text(verbatim: "123456")
+                            .monospacedDigit()
+                            .foregroundStyle(Theme.Palette.textDisabled)
+                            .allowsHitTesting(false)
                     }
+                    TextField("", text: $codeDraft)
+                        .monospacedDigit()
+                        .foregroundStyle(Theme.Palette.textPrimary)
+                        .textContentType(.oneTimeCode)
+                        .keyboardType(.numberPad)
+                        .focused($focusedField, equals: .code)
+                        .onChange(of: codeDraft) { _, new in
+                            // Keep to digits only; auto-submit when we hit 6.
+                            let digits = new.filter(\.isNumber)
+                            if digits != new { codeDraft = digits }
+                            if digits.count == 6 {
+                                Task { await verifyCode(email: email) }
+                            }
+                        }
+                }
             } header: {
                 Text("Enter the 6-digit code")
+                    .monospacedDigit()
+                    .foregroundStyle(Theme.Palette.textPrimary)
             } footer: {
                 Text("Sent to \(email). Check your spam folder if it doesn't arrive within a minute.")
+                    .foregroundStyle(Theme.Palette.textSecondary)
             }
+            .listRowBackground(Theme.Palette.surfaceRaised)
 
             if let message = auth.errorMessage {
                 Section {
@@ -196,6 +231,7 @@ struct AuthSheet: View {
                         .font(Theme.Font.caption)
                         .foregroundStyle(Theme.Palette.error)
                 }
+                .listRowBackground(Theme.Palette.surfaceRaised)
             }
 
             Section {
@@ -230,6 +266,9 @@ struct AuthSheet: View {
                 .disabled(auth.isBusy)
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Theme.Palette.surface)
+        .tint(Theme.Palette.accent)
         .onAppear { focusedField = .code }
     }
 

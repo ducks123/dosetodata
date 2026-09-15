@@ -25,6 +25,7 @@ struct TrackingGoalsStepView: View {
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("Welcome · Step 1 of 3")
+                    .monospacedDigit()
                     .font(Theme.Font.heroLabel)
                     .foregroundStyle(Theme.Palette.textSecondary)
                 Text("What do you want\nto track?")
@@ -66,7 +67,6 @@ struct TrackingGoalsStepView: View {
                 }
                 .buttonStyle(PrimaryButtonStyle())
                 .disabled(selected.isEmpty)
-                .opacity(selected.isEmpty ? 0.5 : 1)
 
                 Button("I'll figure it out") {
                     onSkip()
@@ -103,26 +103,26 @@ private struct GoalRow: View {
             HStack(spacing: 14) {
                 ZStack {
                     Circle()
-                        .fill(Theme.Palette.lavenderTint)
+                        .fill(isSelected ? Theme.Palette.onActionPrimary.opacity(0.16) : Theme.Palette.lavenderTint)
                         .frame(width: 44, height: 44)
                     Image(systemName: goal.icon)
-                        .foregroundStyle(Theme.Palette.accent)
+                        .foregroundStyle(isSelected ? Theme.Palette.onActionPrimary : Theme.Palette.accent)
                         .font(.system(size: 18, weight: .semibold))
                 }
                 Text(goal.title)
                     .font(Theme.Font.bodyEmphasis)
-                    .foregroundStyle(Theme.Palette.textPrimary)
+                    .foregroundStyle(isSelected ? Theme.Palette.onActionPrimary : Theme.Palette.textPrimary)
                 Spacer()
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 22))
-                    .foregroundStyle(isSelected ? Theme.Palette.accent : Theme.Palette.separator)
+                    .foregroundStyle(isSelected ? Theme.Palette.onActionPrimary : Theme.Palette.textTertiary)
             }
             .padding(16)
-            .background(Theme.Palette.surfaceRaised)
+            .background(isSelected ? Theme.Palette.actionPrimary : Theme.Palette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
-                    .stroke(isSelected ? Theme.Palette.accent : Color.clear, lineWidth: 2)
+                    .stroke(isSelected ? Color.clear : Theme.Palette.separator, lineWidth: 1)
             )
             .shadow(
                 color: Theme.cardShadow.color,

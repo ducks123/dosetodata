@@ -18,7 +18,7 @@ struct TourGuideBanner: View {
         VStack(spacing: 0) {
             Image(systemName: "arrowtriangle.up.fill")
                 .font(.system(size: 18))
-                .foregroundStyle(Theme.Palette.accent)
+                .foregroundStyle(Theme.Palette.actionPrimary)
                 .offset(y: 3)
             HStack(spacing: 10) {
                 Image(systemName: "hand.point.up.left.fill")
@@ -66,7 +66,7 @@ struct TourTabTooltip: View {
 
             Image(systemName: "arrowtriangle.down.fill")
                 .font(.system(size: 18))
-                .foregroundStyle(Theme.Palette.accent)
+                .foregroundStyle(Theme.Palette.actionPrimary)
                 .offset(y: -3)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, UIScreen.main.bounds.width * arrowFraction - 9)
@@ -83,7 +83,7 @@ struct TourTabTooltip: View {
 /// plus a clearly-labeled example of what two weeks of tracking looks like.
 /// The scrim behind it (owned by MainTabView) makes Continue the only action.
 ///
-/// Compliance note (Guideline 1.4.2): the grey line is generic EXAMPLE data,
+/// Compliance note (Guideline 1.4.2): the dashed line is generic EXAMPLE data,
 /// dashed and muted, labeled as an example in the caption. It is deliberately
 /// not anchored to the user's real value and must never be framed as a
 /// forecast of their own trajectory.
@@ -111,7 +111,7 @@ struct TourInsightsCard: View {
             chart
                 .frame(height: 150)
 
-            Label("The grey line is example data. Your real trend builds one check-in at a time.",
+            Label("The dashed line is example data. Your real trend builds one check-in at a time.",
                   systemImage: "info.circle")
                 .font(Theme.Font.caption)
                 .foregroundStyle(Theme.Palette.textSecondary)
@@ -137,18 +137,18 @@ struct TourInsightsCard: View {
                     y: .value("Score", point.value),
                     series: .value("Series", "example")
                 )
-                .foregroundStyle(Theme.Palette.textSecondary.opacity(0.35))
+                .foregroundStyle(Theme.Palette.data2)
                 .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 4]))
                 .interpolationMethod(.catmullRom)
             }
 
             RuleMark(x: .value("Day", exampleChangeDay))
-                .foregroundStyle(Theme.Palette.textSecondary.opacity(0.3))
-                .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                .foregroundStyle(Theme.Palette.dataMarker.opacity(0.55))
+                .lineStyle(StrokeStyle(lineWidth: 1.2, dash: [3, 3]))
                 .annotation(position: .top, alignment: .center) {
                     Text("Med change")
                         .font(.system(size: 9, weight: .medium))
-                        .foregroundStyle(Theme.Palette.textSecondary.opacity(0.7))
+                        .foregroundStyle(Theme.Palette.textTertiary)
                 }
 
             if let score = todayScore {
@@ -156,12 +156,18 @@ struct TourInsightsCard: View {
                     x: .value("Day", 0),
                     y: .value("Score", score)
                 )
-                .foregroundStyle(Theme.Palette.accent)
+                .foregroundStyle(Theme.Palette.dataMarker)
                 .symbolSize(180)
+                PointMark(
+                    x: .value("Day", 0),
+                    y: .value("Score", score)
+                )
+                .foregroundStyle(Theme.Palette.dataCurrent)
+                .symbolSize(104)
                 .annotation(position: .topTrailing, alignment: .leading) {
                     Text("You, today")
                         .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(Theme.Palette.accent)
+                        .foregroundStyle(Theme.Palette.textPrimary)
                 }
             }
         }
@@ -169,8 +175,10 @@ struct TourInsightsCard: View {
         .chartXScale(domain: -0.5...14.5)
         .chartYAxis {
             AxisMarks(values: [1, 3, 5]) {
-                AxisGridLine()
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                    .foregroundStyle(Theme.Palette.separator)
                 AxisValueLabel()
+                    .foregroundStyle(Theme.Palette.textTertiary)
             }
         }
         .chartXAxis {
@@ -178,7 +186,9 @@ struct TourInsightsCard: View {
                 AxisValueLabel(anchor: value.as(Int.self) == 13 ? .topTrailing : .topLeading) {
                     if let day = value.as(Int.self) {
                         Text(day == 0 ? "Today" : "2 weeks")
+                            .monospacedDigit()
                             .font(.system(size: 11))
+                            .foregroundStyle(Theme.Palette.textTertiary)
                     }
                 }
             }

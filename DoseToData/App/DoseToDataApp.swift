@@ -10,6 +10,18 @@ struct DoseToDataApp: App {
     @State private var auth = AuthService()
     @State private var subscriptionService = SubscriptionService()
 
+    init() {
+        // SwiftUI navigation titles otherwise fall back to platform label
+        // black/white, breaking the semantic navy/Paper type system.
+        UINavigationBar.appearance().titleTextAttributes = [
+            .foregroundColor: Theme.Palette.textPrimaryUIColor
+        ]
+        UINavigationBar.appearance().largeTitleTextAttributes = [
+            .foregroundColor: Theme.Palette.textPrimaryUIColor
+        ]
+        UINavigationBar.appearance().tintColor = Theme.Palette.accentUIColor
+    }
+
     let sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Medication.self,
@@ -74,6 +86,8 @@ struct DoseToDataApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .foregroundStyle(Theme.Palette.textPrimary)
+                .tint(Theme.Palette.accent)
                 .environment(appState)
                 .environment(userPreferences)
                 .environment(auth)

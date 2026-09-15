@@ -16,7 +16,7 @@ struct PaywallView: View {
     /// skips during onboarding. Used when PaywallView is embedded in the onboarding flow.
     var onComplete: (() -> Void)? = nil
 
-    @State private var selectedPlan: Plan = .trialAnnual
+    @State private var selectedPlan: Plan
     @State private var showError = false
     @State private var showSilentRestoreAlert = false
     @State private var restoreMessage: String? = nil
@@ -34,6 +34,20 @@ struct PaywallView: View {
         var isAnnual: Bool {
             self == .annual || self == .trialAnnual
         }
+    }
+
+    init(
+        isDismissible: Bool = true,
+        dayOneLogged: Bool = false,
+        onComplete: (() -> Void)? = nil
+    ) {
+        self.isDismissible = isDismissible
+        self.dayOneLogged = dayOneLogged
+        self.onComplete = onComplete
+        // Direct plans render before StoreKit returns on in-app paywalls.
+        // Begin with a visible selection instead of two temporarily
+        // unselected cards while the hidden trial option is loading.
+        _selectedPlan = State(initialValue: isDismissible ? .annual : .trialAnnual)
     }
 
     // MARK: - Packages
@@ -242,7 +256,9 @@ struct PaywallView: View {
             if sub.isLoading {
                 ZStack {
                     Color.black.opacity(0.15).ignoresSafeArea()
-                    ProgressView().scaleEffect(1.4).tint(.white)
+                    ProgressView()
+                        .scaleEffect(1.4)
+                        .tint(Theme.Palette.textPrimary)
                 }
             }
         }
@@ -277,7 +293,7 @@ struct PaywallView: View {
             // is actually attached to either package. Otherwise the user
             // would land on a hidden/invalid trial selection.
             if !anyTrialAvailable && selectedPlan.isTrial {
-                selectedPlan = annualPackage != nil ? .annual : .monthly
+                selectedPlan = annualPackage != nil || monthlyPackage == nil ? .annual : .monthly
             } else if !annualHasTrial && selectedPlan == .trialAnnual && monthlyHasTrial {
                 selectedPlan = .trialMonthly
             } else if !monthlyHasTrial && selectedPlan == .trialMonthly && annualHasTrial {
@@ -353,7 +369,7 @@ struct PaywallView: View {
         }
         .padding(20)
         .background(Theme.Palette.surfaceRaised)
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
         .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
     }
 
@@ -411,34 +427,37 @@ struct PaywallView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(.system(size: 13))
-                        .foregroundStyle(Theme.Palette.textSecondary)
+                        .foregroundStyle(isSelected ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                     Text(billed)
+                        .monospacedDigit()
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundStyle(Theme.Palette.textPrimary)
+                        .foregroundStyle(isSelected ? Theme.Palette.onActionPrimary : Theme.Palette.textPrimary)
                     if let secondary {
                         Text(secondary)
+                            .monospacedDigit()
                             .font(.system(size: 11))
-                            .foregroundStyle(Theme.Palette.textSecondary)
+                            .foregroundStyle(isSelected ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                     }
                 }
                 Spacer()
                 if let badge {
                     Text(badge)
+                        .monospacedDigit()
                         .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(Theme.Palette.onAccent)
+                        .foregroundStyle(isSelected ? Theme.Palette.actionPrimary : Theme.Palette.onAccent)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(Theme.Palette.accent)
+                        .background(isSelected ? Theme.Palette.onActionPrimary : Theme.Palette.accent)
                         .clipShape(Capsule())
                 }
             }
             .padding(16)
-            .background(Theme.Palette.surfaceRaised)
+            .background(isSelected ? Theme.Palette.actionPrimary : Theme.Palette.surfaceRaised)
             .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(isSelected ? Theme.Palette.accent : Color.clear, lineWidth: 2)
+                RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
+                    .stroke(isSelected ? Color.clear : Theme.Palette.separator, lineWidth: 1)
             )
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
             .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
         }
         .buttonStyle(.plain)
@@ -469,18 +488,19 @@ struct PaywallView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Try it first")
                             .font(.system(size: 13))
-                            .foregroundStyle(Theme.Palette.textSecondary)
+                            .foregroundStyle(isTrialSelected ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                         Text(trialHeadlineText)
+                            .monospacedDigit()
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(Theme.Palette.textPrimary)
+                            .foregroundStyle(isTrialSelected ? Theme.Palette.onActionPrimary : Theme.Palette.textPrimary)
                         Text("Then the plan you choose below. Cancel anytime")
                             .font(.system(size: 11))
-                            .foregroundStyle(Theme.Palette.textSecondary)
+                            .foregroundStyle(isTrialSelected ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
                     }
                     Spacer()
                     Image(systemName: "gift.fill")
                         .font(.system(size: 15))
-                        .foregroundStyle(Theme.Palette.accent)
+                        .foregroundStyle(isTrialSelected ? Theme.Palette.onActionPrimary : Theme.Palette.accent)
                 }
                 .padding(16)
             }
@@ -494,7 +514,9 @@ struct PaywallView: View {
             // got charged immediately" — the same Amanda bug at a more
             // granular level.
             if isTrialSelected {
-                Divider().padding(.horizontal, 16)
+                Divider()
+                    .overlay(Theme.Palette.onActionPrimary.opacity(0.35))
+                    .padding(.horizontal, 16)
 
                 HStack(spacing: 0) {
                     if annualHasTrial {
@@ -522,12 +544,12 @@ struct PaywallView: View {
                 .padding(.vertical, 6)
             }
         }
-        .background(Theme.Palette.surfaceRaised)
+        .background(isTrialSelected ? Theme.Palette.actionPrimary : Theme.Palette.surfaceRaised)
         .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(isTrialSelected ? Theme.Palette.accent : Color.clear, lineWidth: 2)
+            RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous)
+                .stroke(isTrialSelected ? Color.clear : Theme.Palette.separator, lineWidth: 1)
         )
-        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card, style: .continuous))
         .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
         .animation(.easeInOut(duration: 0.18), value: isTrialSelected)
     }
@@ -538,39 +560,44 @@ struct PaywallView: View {
             VStack(spacing: 3) {
                 HStack(spacing: 6) {
                     Circle()
-                        .fill(isSelected ? Theme.Palette.accent : Color.clear)
-                        .overlay(Circle().stroke(isSelected ? Theme.Palette.accent : Theme.Palette.separator, lineWidth: 1.5))
+                        .fill(isSelected ? Theme.Palette.actionPrimary : Theme.Palette.surfaceSunken)
+                        .overlay(Circle().stroke(isSelected ? Theme.Palette.actionPrimary : Theme.Palette.textTertiary, lineWidth: 1.5))
                         .frame(width: 14, height: 14)
                     Text(label)
                         .font(.system(size: 11))
-                        .foregroundStyle(Theme.Palette.textSecondary)
+                        .foregroundStyle(isSelected ? Theme.Palette.actionPrimary : Theme.Palette.onActionPrimary)
                 }
                 Text(billed)
+                    .monospacedDigit()
                     .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(Theme.Palette.textPrimary)
+                    .foregroundStyle(isSelected ? Theme.Palette.actionPrimary : Theme.Palette.onActionPrimary)
                     .multilineTextAlignment(.center)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
                 if let secondary {
                     Text(secondary)
+                        .monospacedDigit()
                         .font(.system(size: 10))
-                        .foregroundStyle(Theme.Palette.textSecondary)
+                        .foregroundStyle(isSelected ? Theme.Palette.actionPrimary : Theme.Palette.onActionPrimary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                 }
                 if let badge {
                     Text(badge)
+                        .monospacedDigit()
                         .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(Theme.Palette.onAccent)
+                        .foregroundStyle(isSelected ? Theme.Palette.onActionPrimary : Theme.Palette.actionPrimary)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
-                        .background(Theme.Palette.accent)
+                        .background(isSelected ? Theme.Palette.actionPrimary : Theme.Palette.onActionPrimary)
                         .clipShape(Capsule())
                 }
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 8)
             .padding(.horizontal, 6)
+            .background(isSelected ? Theme.Palette.onActionPrimary : Color.clear)
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
         .buttonStyle(.plain)
     }
@@ -578,11 +605,17 @@ struct PaywallView: View {
     private func radioCircle(selected: Bool) -> some View {
         ZStack {
             Circle()
-                .stroke(selected ? Theme.Palette.accent : Theme.Palette.separator, lineWidth: 2)
+                .fill(selected ? Theme.Palette.onActionPrimary.opacity(0.16) : Theme.Palette.surfaceSunken)
+                .overlay(
+                    Circle().stroke(
+                        selected ? Theme.Palette.onActionPrimary : Theme.Palette.textTertiary,
+                        lineWidth: 2
+                    )
+                )
                 .frame(width: 22, height: 22)
             if selected {
                 Circle()
-                    .fill(Theme.Palette.accent)
+                    .fill(Theme.Palette.onActionPrimary)
                     .frame(width: 12, height: 12)
             }
         }
@@ -618,6 +651,7 @@ struct PaywallView: View {
             }
         }
         return Text(text)
+            .monospacedDigit()
             .font(.system(size: 15, weight: .semibold))
             .foregroundStyle(Theme.Palette.textPrimary)
             .multilineTextAlignment(.center)
@@ -643,6 +677,7 @@ struct PaywallView: View {
                 Text("Cancel any time in iOS Settings.")
             }
         }
+        .monospacedDigit()
         .font(.system(size: 11))
         .foregroundStyle(Theme.Palette.textSecondary)
         .multilineTextAlignment(.center)
@@ -659,7 +694,7 @@ You can manage and cancel your subscriptions in your App Store account settings.
 Any unused portion of a free trial will be forfeited upon purchase of a subscription.
 """)
         .font(.system(size: 11))
-        .foregroundStyle(Theme.Palette.textSecondary.opacity(0.8))
+        .foregroundStyle(Theme.Palette.textSecondary)
         .multilineTextAlignment(.center)
         .fixedSize(horizontal: false, vertical: true)
     }
@@ -708,7 +743,9 @@ Any unused portion of a free trial will be forfeited upon purchase of a subscrip
             Group {
                 if sub.isLoading || sub.isRefreshing {
                     HStack(spacing: 10) {
-                        ProgressView().tint(.white).scaleEffect(0.85)
+                        ProgressView()
+                            .tint(packagesLoaded ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
+                            .scaleEffect(0.85)
                         Text("Loading…").font(.system(size: 16, weight: .bold))
                     }
                 } else {
@@ -716,7 +753,7 @@ Any unused portion of a free trial will be forfeited upon purchase of a subscrip
                         .font(.system(size: 16, weight: .bold))
                 }
             }
-            .foregroundStyle(packagesLoaded ? Theme.Palette.onActionPrimary : Theme.Palette.textDisabled)
+            .foregroundStyle(packagesLoaded ? Theme.Palette.onActionPrimary : Theme.Palette.textSecondary)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(packagesLoaded ? Theme.Palette.actionPrimary : Theme.Palette.surfaceSunken)
@@ -797,8 +834,10 @@ struct TrialBanner: View {
                         .font(.system(size: 13, weight: .semibold))
                     VStack(alignment: .leading, spacing: 1) {
                         Text(days == 1 ? "Last day of your free trial" : "Free trial · Day \(dayNumber) of \(totalDays)")
+                            .monospacedDigit()
                             .font(.system(size: 13, weight: .semibold))
                         Text(days == 1 ? "Upgrade today to keep access" : "\(days) days remaining")
+                            .monospacedDigit()
                             .font(.system(size: 11))
                             .opacity(0.8)
                     }
